@@ -1,0 +1,12 @@
+id: REQ-WEB-001
+type: requirement
+title: Landing page with project showcase
+body: forkzero.ai displays a hero section and project cards for Lattice, Team of Rivals, and s3proxy. React 19 + Vite + TypeScript.
+status: active
+version: 1.0.0
+created_at: 2026-02-08T15:31:28.889638+00:00
+created_by: agent:claude-2026-02-08
+requested_by: George Moon <george.moon@gmail.com>
+priority: P0
+category: WEB
+edges: {}
