@@ -1,2 +1,4 @@
 # Lattice configuration
 version: "1.0"
+project: "forkzero.ai"
+description: "Forkzero - AI-first developer tooling"

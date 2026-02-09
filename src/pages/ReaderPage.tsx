@@ -272,34 +272,33 @@ function Collapsible({ summary, children }: { summary: React.ReactNode; children
 
 // --- Main Reader ---
 
+interface LatticeExport {
+  project: string
+  description: string
+  generated_at?: string
+  nodes: LatticeNode[]
+}
+
 export function ReaderPage() {
-  const [nodes, setNodes] = useState<LatticeNode[] | null>(null)
+  const [data, setData] = useState<LatticeExport | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [priorityFilter, setPriorityFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
 
   const url = new URLSearchParams(window.location.search).get('url')
 
-  // Derive project name from the JSON URL path
-  // e.g. https://forkzero.github.io/forkzero.ai/lattice-data.json → "forkzero.ai"
-  // e.g. https://example.com/my-project/lattice-data.json → "my-project"
-  const projectName = (() => {
-    if (!url) return null
-    try {
-      const parts = new URL(url).pathname.split('/').filter(Boolean)
-      // Find the last path segment before the JSON filename
-      const jsonIndex = parts.findIndex(p => p.endsWith('.json'))
-      if (jsonIndex > 0) return parts[jsonIndex - 1]
-      if (parts.length > 1) return parts[parts.length - 2]
-      return null
-    } catch { return null }
-  })()
-
   useEffect(() => {
     if (!url) { setError('No URL provided. Use ?url=<json-url>'); return }
     fetch(url)
       .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() })
-      .then(data => setNodes(data))
+      .then(raw => {
+        // Handle both new format (object with nodes) and old format (flat array)
+        if (Array.isArray(raw)) {
+          setData({ project: '', description: '', nodes: raw })
+        } else {
+          setData({ project: raw.project ?? '', description: raw.description ?? '', nodes: raw.nodes ?? [] })
+        }
+      })
       .catch(e => setError(`Failed to load: ${e.message}`))
   }, [url])
 
@@ -315,7 +314,7 @@ export function ReaderPage() {
     )
   }
 
-  if (!nodes) {
+  if (!data) {
     return (
       <div style={s.page}>
         <PoweredByHeader />
@@ -324,6 +323,7 @@ export function ReaderPage() {
     )
   }
 
+  const nodes = data.nodes
   const stats = computeStats(nodes)
   const traceability = buildTraceability(nodes)
   const sources = nodes.filter(n => n.type === 'source')
@@ -343,8 +343,11 @@ export function ReaderPage() {
     <div style={s.page}>
       <PoweredByHeader />
       <div style={s.container}>
-        <h1 style={s.title}>{projectName ?? 'Lattice'}</h1>
-        <p style={s.subtitle}>Lattice Dashboard</p>
+        <h1 style={s.title}>{data.project || 'Lattice Dashboard'}</h1>
+        {data.description && <p style={{ ...s.subtitle, marginBottom: '0.5rem' }}>{data.description}</p>}
+        <p style={{ ...s.subtitle, fontSize: '0.8rem', opacity: 0.6, marginBottom: '2rem' }}>
+          Lattice Dashboard{data.generated_at && <> &middot; Generated {new Date(data.generated_at).toLocaleDateString()}</>}
+        </p>
 
         {/* Stats grid */}
         <div style={s.statsGrid}>
