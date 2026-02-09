@@ -280,6 +280,21 @@ export function ReaderPage() {
 
   const url = new URLSearchParams(window.location.search).get('url')
 
+  // Derive project name from the JSON URL path
+  // e.g. https://forkzero.github.io/forkzero.ai/lattice-data.json → "forkzero.ai"
+  // e.g. https://example.com/my-project/lattice-data.json → "my-project"
+  const projectName = (() => {
+    if (!url) return null
+    try {
+      const parts = new URL(url).pathname.split('/').filter(Boolean)
+      // Find the last path segment before the JSON filename
+      const jsonIndex = parts.findIndex(p => p.endsWith('.json'))
+      if (jsonIndex > 0) return parts[jsonIndex - 1]
+      if (parts.length > 1) return parts[parts.length - 2]
+      return null
+    } catch { return null }
+  })()
+
   useEffect(() => {
     if (!url) { setError('No URL provided. Use ?url=<json-url>'); return }
     fetch(url)
@@ -328,8 +343,8 @@ export function ReaderPage() {
     <div style={s.page}>
       <PoweredByHeader />
       <div style={s.container}>
-        <h1 style={s.title}>Lattice Dashboard</h1>
-        <p style={s.subtitle}>Knowledge Coordination Protocol</p>
+        <h1 style={s.title}>{projectName ?? 'Lattice'}</h1>
+        <p style={s.subtitle}>Lattice Dashboard</p>
 
         {/* Stats grid */}
         <div style={s.statsGrid}>
