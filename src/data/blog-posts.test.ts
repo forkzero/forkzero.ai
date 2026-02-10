@@ -13,8 +13,32 @@ describe('blog posts data integrity', () => {
       expect(post.title).toBeTruthy()
       expect(post.date).toBeTruthy()
       expect(post.author).toBeTruthy()
+      expect(post.author.name).toBeTruthy()
+      expect(post.author.bio).toBeTruthy()
       expect(post.excerpt).toBeTruthy()
       expect(post.content).toBeTruthy()
+    }
+  })
+
+  it('posts with sources have valid source entries', () => {
+    for (const post of blogPosts) {
+      if (post.sources) {
+        expect(post.sources.length).toBeGreaterThan(0)
+        for (const source of post.sources) {
+          expect(source.name).toBeTruthy()
+          expect(source.author).toBeTruthy()
+          expect(source.description).toBeTruthy()
+          expect(source.url).toMatch(/^https?:\/\//)
+        }
+      }
+    }
+  })
+
+  it('posts with discussionPrompt have non-empty string', () => {
+    for (const post of blogPosts) {
+      if (post.discussionPrompt) {
+        expect(post.discussionPrompt.length).toBeGreaterThan(0)
+      }
     }
   })
 

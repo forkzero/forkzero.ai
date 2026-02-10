@@ -87,7 +87,7 @@ describe('pre-rendered blog post', () => {
     const html = readFileSync(file, 'utf-8')
     expect(html).toContain('<noscript>')
     expect(html).toContain('<article')
-    expect(html).toContain(post.author)
+    expect(html).toContain(post.author.name)
   })
 
   it('noscript contains post headings', () => {

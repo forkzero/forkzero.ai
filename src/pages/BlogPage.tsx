@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { colors, fonts, shadows, radius } from '../tokens'
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
+import { BlogComments } from '../components/BlogComments'
 import { blogPosts, type BlogPost } from '../data/blog-posts'
 
 // --- SEO helpers ---
@@ -36,15 +37,115 @@ function setCanonical(url: string) {
   el.href = url
 }
 
+// --- Lattice flow diagram ---
+
+function LatticeFlowDiagram() {
+  const nodes = [
+    { label: 'Sources', color: colors.accentBlue },
+    { label: 'Theses', color: colors.accentPurple },
+    { label: 'Requirements', color: colors.accentYellow },
+    { label: 'Implementations', color: colors.accentGreen },
+  ]
+  const edges = ['supports', 'derives', 'satisfies']
+
+  return (
+    <div style={s.diagramContainer}>
+      <div style={s.diagramFlow}>
+        {nodes.map((node, i) => (
+          <div key={node.label} style={s.diagramSegment}>
+            <div style={s.diagramNode}>
+              <span style={{ ...s.diagramDot, background: node.color }} />
+              <span style={s.diagramLabel}>{node.label}</span>
+            </div>
+            {i < edges.length && (
+              <div style={s.diagramEdge}>
+                <span style={s.diagramArrow}>&rarr;</span>
+                <span style={s.diagramEdgeLabel}>{edges[i]}</span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 // --- Simple markdown-ish renderer ---
 
-function renderContent(content: string) {
+export function renderContent(content: string) {
   const blocks: React.ReactNode[] = []
   const lines = content.split('\n')
   let i = 0
 
   while (i < lines.length) {
     const line = lines[i]
+
+    // Diagram marker
+    if (line.trim() === '<!-- diagram:lattice-flow -->') {
+      blocks.push(<LatticeFlowDiagram key={`diagram-${i}`} />)
+      i++
+      continue
+    }
+
+    // Callout blocks (:::insight ... :::)
+    if (line.trim().startsWith(':::')) {
+      const calloutType = line.trim().slice(3).trim()
+      const calloutLines: string[] = []
+      i++
+      while (i < lines.length && lines[i].trim() !== ':::') {
+        calloutLines.push(lines[i])
+        i++
+      }
+      i++ // skip closing :::
+      const calloutStyle =
+        calloutType === 'insight'
+          ? { borderColor: colors.accentPurple, bg: `${colors.accentPurple}08` }
+          : { borderColor: colors.accentBlue, bg: `${colors.accentBlue}08` }
+      blocks.push(
+        <div
+          key={`callout-${i}`}
+          style={{
+            ...s.callout,
+            borderLeftColor: calloutStyle.borderColor,
+            background: calloutStyle.bg,
+          }}
+        >
+          {calloutLines.map((cl, j) => {
+            const trimmed = cl.trim()
+            if (trimmed === '') return null
+            return (
+              <p key={j} style={j === 0 ? s.calloutFirstLine : s.calloutText}>
+                {renderInline(trimmed)}
+              </p>
+            )
+          })}
+        </div>,
+      )
+      continue
+    }
+
+    // Blockquotes (> lines, with optional > — attribution)
+    if (line.startsWith('> ')) {
+      const quoteLines: string[] = []
+      while (i < lines.length && lines[i].startsWith('> ')) {
+        quoteLines.push(lines[i].slice(2))
+        i++
+      }
+      // Check for attribution line (starts with "— " or "- ")
+      let attribution: string | null = null
+      const lastLine = quoteLines[quoteLines.length - 1]
+      if (lastLine && lastLine.startsWith('— ')) {
+        attribution = lastLine.slice(2)
+        quoteLines.pop()
+      }
+      blocks.push(
+        <blockquote key={`bq-${i}`} style={s.blockquote}>
+          <p style={s.blockquoteText}>{renderInline(quoteLines.join(' '))}</p>
+          {attribution && <footer style={s.blockquoteAttribution}>{renderInline(attribution)}</footer>}
+        </blockquote>,
+      )
+      continue
+    }
 
     // Headings
     if (line.startsWith('## ')) {
@@ -133,6 +234,9 @@ function renderContent(content: string) {
       !lines[i].startsWith('## ') &&
       !lines[i].startsWith('```') &&
       !lines[i].startsWith('- ') &&
+      !lines[i].startsWith('> ') &&
+      !lines[i].trim().startsWith(':::') &&
+      !lines[i].trim().startsWith('<!-- diagram:') &&
       !/^\d+\.\s/.test(lines[i]) &&
       lines[i].trim() !== '---'
     ) {
@@ -151,8 +255,8 @@ function renderContent(content: string) {
   return blocks
 }
 
-function renderInline(text: string): React.ReactNode {
-  // Process inline: **bold**, `code`, [link](url)
+export function renderInline(text: string): React.ReactNode {
+  // Process inline: **bold**, *italic*, `code`, [link](url)
   const parts: React.ReactNode[] = []
   let remaining = text
   let key = 0
@@ -164,6 +268,15 @@ function renderInline(text: string): React.ReactNode {
       if (boldMatch[1]) parts.push(<span key={key++}>{renderInline(boldMatch[1])}</span>)
       parts.push(<strong key={key++}>{renderInline(boldMatch[2])}</strong>)
       remaining = boldMatch[3]
+      continue
+    }
+
+    // Italic (single *)
+    const italicMatch = remaining.match(/^(.*?)\*(.+?)\*(.*)$/s)
+    if (italicMatch) {
+      if (italicMatch[1]) parts.push(<span key={key++}>{renderInline(italicMatch[1])}</span>)
+      parts.push(<em key={key++}>{renderInline(italicMatch[2])}</em>)
+      remaining = italicMatch[3]
       continue
     }
 
@@ -201,9 +314,91 @@ function renderInline(text: string): React.ReactNode {
   return parts.length === 1 ? parts[0] : <>{parts}</>
 }
 
+// --- Source cards ---
+
+function SourceCards({ post }: { post: BlogPost }) {
+  if (!post.sources || post.sources.length === 0) return null
+  return (
+    <div style={s.sourceCardsSection}>
+      <h3 style={s.sourceCardsTitle}>Sources</h3>
+      <div style={s.sourceCardsGrid}>
+        {post.sources.map((source) => (
+          <a key={source.url} href={source.url} target="_blank" rel="noopener noreferrer" style={s.sourceCard}>
+            <div style={s.sourceCardName}>{source.name}</div>
+            <div style={s.sourceCardAuthor}>{source.author}</div>
+            <div style={s.sourceCardDesc}>{source.description}</div>
+          </a>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// --- Author bio ---
+
+function AuthorBio({ post }: { post: BlogPost }) {
+  return (
+    <div style={s.authorBio}>
+      <div style={s.authorInfo}>
+        <div style={s.authorName}>{post.author.name}</div>
+        <div style={s.authorBioText}>{post.author.bio}</div>
+        <div style={s.authorLinks}>
+          {post.author.github && (
+            <a href={post.author.github} target="_blank" rel="noopener noreferrer" style={s.authorLink}>
+              GitHub
+            </a>
+          )}
+          {post.author.x && (
+            <a href={post.author.x} target="_blank" rel="noopener noreferrer" style={s.authorLink}>
+              X
+            </a>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// --- Discussion CTA ---
+
+function DiscussionCTA({ prompt }: { prompt: string }) {
+  return (
+    <div style={s.ctaSection}>
+      <h3 style={s.ctaTitle}>Join the conversation</h3>
+      <p style={s.ctaText}>{prompt}</p>
+    </div>
+  )
+}
+
+// --- Share links ---
+
+function ShareLinks({ post }: { post: BlogPost }) {
+  const url = `https://forkzero.ai/blog/${post.slug}`
+  const title = post.title
+
+  const xUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`
+  const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`
+  const hnUrl = `https://news.ycombinator.com/submitlink?u=${encodeURIComponent(url)}&t=${encodeURIComponent(title)}`
+
+  return (
+    <div style={s.shareSection}>
+      <span style={s.shareLabel}>Share</span>
+      <a href={xUrl} target="_blank" rel="noopener noreferrer" style={s.sharePill}>
+        X
+      </a>
+      <a href={linkedInUrl} target="_blank" rel="noopener noreferrer" style={s.sharePill}>
+        LinkedIn
+      </a>
+      <a href={hnUrl} target="_blank" rel="noopener noreferrer" style={s.sharePill}>
+        Hacker News
+      </a>
+    </div>
+  )
+}
+
 // --- Styles ---
 
-const s = {
+const s: Record<string, React.CSSProperties> = {
   page: { background: colors.bgSecondary, minHeight: '100vh', fontFamily: fonts.system },
   container: { maxWidth: '800px', margin: '0 auto', padding: '3rem 2rem' },
   listContainer: { maxWidth: '800px', margin: '0 auto', padding: '3rem 2rem' },
@@ -334,18 +529,249 @@ const s = {
     fontSize: '0.9rem',
     marginBottom: '1.5rem',
   },
+
+  // Blockquote
+  blockquote: {
+    borderLeft: `3px solid ${colors.accentBlue}`,
+    background: `${colors.accentBlue}06`,
+    margin: '1.5rem 0',
+    padding: '1rem 1.25rem',
+    borderRadius: `0 ${radius} ${radius} 0`,
+  },
+  blockquoteText: {
+    color: colors.textSecondary,
+    fontSize: '1.05rem',
+    lineHeight: 1.75,
+    fontStyle: 'italic',
+    margin: 0,
+  },
+  blockquoteAttribution: {
+    color: colors.textMuted,
+    fontSize: '0.9rem',
+    marginTop: '0.5rem',
+  },
+
+  // Callout
+  callout: {
+    borderLeft: `3px solid ${colors.accentPurple}`,
+    background: `${colors.accentPurple}08`,
+    margin: '1.5rem 0',
+    padding: '1rem 1.25rem',
+    borderRadius: `0 ${radius} ${radius} 0`,
+  },
+  calloutFirstLine: {
+    color: colors.textPrimary,
+    fontSize: '1.05rem',
+    lineHeight: 1.75,
+    fontWeight: 600,
+    margin: 0,
+    marginBottom: '0.25rem',
+  },
+  calloutText: {
+    color: colors.textSecondary,
+    fontSize: '1.05rem',
+    lineHeight: 1.75,
+    margin: 0,
+  },
+
+  // Diagram
+  diagramContainer: {
+    margin: '2rem 0',
+    padding: '1.5rem',
+    background: colors.bgSecondary,
+    borderRadius: radius,
+    border: `1px solid ${colors.borderColor}`,
+    overflowX: 'auto' as const,
+  },
+  diagramFlow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0',
+    minWidth: 'fit-content',
+  },
+  diagramSegment: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  diagramNode: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    gap: '0.4rem',
+  },
+  diagramDot: {
+    width: '12px',
+    height: '12px',
+    borderRadius: '50%',
+    display: 'inline-block',
+  },
+  diagramLabel: {
+    fontSize: '0.85rem',
+    fontWeight: 600,
+    color: colors.textPrimary,
+    whiteSpace: 'nowrap' as const,
+  },
+  diagramEdge: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    padding: '0 0.75rem',
+    gap: '0.2rem',
+  },
+  diagramArrow: {
+    fontSize: '1.1rem',
+    color: colors.textMuted,
+  },
+  diagramEdgeLabel: {
+    fontSize: '0.7rem',
+    color: colors.textMuted,
+    fontStyle: 'italic',
+    whiteSpace: 'nowrap' as const,
+  },
+
+  // Source cards
+  sourceCardsSection: {
+    marginTop: '2.5rem',
+    paddingTop: '2rem',
+    borderTop: `1px solid ${colors.borderColor}`,
+  },
+  sourceCardsTitle: {
+    fontSize: '1.2rem',
+    fontWeight: 600,
+    color: colors.textPrimary,
+    marginBottom: '1rem',
+  },
+  sourceCardsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+    gap: '1rem',
+  },
+  sourceCard: {
+    background: colors.bgSecondary,
+    borderRadius: radius,
+    padding: '1rem 1.25rem',
+    border: `1px solid ${colors.borderColor}`,
+    textDecoration: 'none',
+    color: 'inherit',
+    transition: 'box-shadow 0.2s, transform 0.2s',
+    display: 'block',
+  },
+  sourceCardName: {
+    fontSize: '0.95rem',
+    fontWeight: 600,
+    color: colors.textPrimary,
+    marginBottom: '0.25rem',
+  },
+  sourceCardAuthor: {
+    fontSize: '0.8rem',
+    color: colors.accentBlue,
+    marginBottom: '0.4rem',
+  },
+  sourceCardDesc: {
+    fontSize: '0.8rem',
+    color: colors.textMuted,
+    lineHeight: 1.5,
+  },
+
+  // Author bio
+  authorBio: {
+    marginTop: '2.5rem',
+    paddingTop: '1.5rem',
+    borderTop: `1px solid ${colors.borderColor}`,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1rem',
+  },
+  authorInfo: {
+    flex: 1,
+  },
+  authorName: {
+    fontSize: '1rem',
+    fontWeight: 600,
+    color: colors.textPrimary,
+    marginBottom: '0.25rem',
+  },
+  authorBioText: {
+    fontSize: '0.9rem',
+    color: colors.textSecondary,
+    lineHeight: 1.5,
+    marginBottom: '0.4rem',
+  },
+  authorLinks: {
+    display: 'flex',
+    gap: '0.75rem',
+  },
+  authorLink: {
+    fontSize: '0.85rem',
+    color: colors.accentBlue,
+    textDecoration: 'none',
+    fontWeight: 500,
+  },
+
+  // Discussion CTA
+  ctaSection: {
+    marginTop: '2rem',
+    padding: '1.5rem',
+    background: colors.bgSecondary,
+    borderRadius: radius,
+    border: `1px solid ${colors.borderColor}`,
+  },
+  ctaTitle: {
+    fontSize: '1.1rem',
+    fontWeight: 600,
+    color: colors.textPrimary,
+    margin: 0,
+    marginBottom: '0.5rem',
+  },
+  ctaText: {
+    fontSize: '0.95rem',
+    color: colors.textSecondary,
+    lineHeight: 1.6,
+    margin: 0,
+  },
+
+  // Share links
+  shareSection: {
+    marginTop: '1.5rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+  },
+  shareLabel: {
+    fontSize: '0.85rem',
+    color: colors.textMuted,
+    fontWeight: 500,
+    marginRight: '0.25rem',
+  },
+  sharePill: {
+    fontSize: '0.8rem',
+    fontWeight: 500,
+    color: colors.accentBlue,
+    background: `${colors.accentBlue}0a`,
+    border: `1px solid ${colors.accentBlue}30`,
+    borderRadius: '100px',
+    padding: '0.3rem 0.75rem',
+    textDecoration: 'none',
+    transition: 'background 0.2s',
+  },
+
+  // Comments wrapper
+  commentsSection: {
+    marginTop: '2rem',
+  },
 }
 
 // --- Components ---
 
 function BlogListing() {
   useEffect(() => {
-    document.title = 'Blog — Forkzero'
+    document.title = 'Blog \u2014 Forkzero'
     setMetaTag(
       'description',
       'Technical writing on knowledge coordination, context engineering, and AI-first developer tooling.',
     )
-    setOgTag('og:title', 'Blog — Forkzero')
+    setOgTag('og:title', 'Blog \u2014 Forkzero')
     setOgTag(
       'og:description',
       'Technical writing on knowledge coordination, context engineering, and AI-first developer tooling.',
@@ -369,7 +795,7 @@ function BlogListing() {
             <div style={s.postMeta}>
               {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               {' \u00b7 '}
-              {post.author}
+              {post.author.name}
             </div>
             <p style={s.postExcerpt}>{post.excerpt}</p>
             <span style={s.readMore}>Read more &rarr;</span>
@@ -383,7 +809,7 @@ function BlogListing() {
 
 function BlogPostView({ post }: { post: BlogPost }) {
   useEffect(() => {
-    document.title = `${post.title} — Forkzero`
+    document.title = `${post.title} \u2014 Forkzero`
     setMetaTag('description', post.excerpt)
     setOgTag('og:title', post.title)
     setOgTag('og:description', post.excerpt)
@@ -404,10 +830,18 @@ function BlogPostView({ post }: { post: BlogPost }) {
           <div style={s.articleMeta}>
             {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             {' \u00b7 '}
-            {post.author}
+            {post.author.name}
           </div>
           {renderContent(post.content)}
+          <SourceCards post={post} />
+          <AuthorBio post={post} />
         </article>
+
+        {post.discussionPrompt && <DiscussionCTA prompt={post.discussionPrompt} />}
+        <ShareLinks post={post} />
+        <div style={s.commentsSection}>
+          <BlogComments slug={post.slug} />
+        </div>
       </div>
       <Footer />
     </div>
@@ -416,7 +850,7 @@ function BlogPostView({ post }: { post: BlogPost }) {
 
 function BlogNotFound() {
   useEffect(() => {
-    document.title = 'Post not found — Forkzero'
+    document.title = 'Post not found \u2014 Forkzero'
   }, [])
 
   return (

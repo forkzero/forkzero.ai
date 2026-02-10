@@ -72,7 +72,7 @@ for (const route of routes) {
       const articleHtml = [
         `<article style="max-width:800px;margin:0 auto;padding:2rem;font-family:sans-serif">`,
         `<h1>${esc(post.title)}</h1>`,
-        `<p><em>${post.date} · ${esc(post.author)}</em></p>`,
+        `<p><em>${post.date} · ${esc(post.author.name)}</em></p>`,
         contentToHtml(post.content),
         `</article>`,
       ].join('')
