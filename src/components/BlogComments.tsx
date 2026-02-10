@@ -7,7 +7,7 @@ export function BlogComments({ slug }: { slug: string }) {
       repo="forkzero/forkzero.ai"
       repoId="R_kgDORLeYLw"
       category="Blog Comments"
-      categoryId="" /* TODO: Enable Discussions, create "Blog Comments" category, get ID from https://giscus.app */
+      categoryId="DIC_kwDORLeYL84C2H-a"
       mapping="pathname"
       strict="0"
       reactionsEnabled="1"
