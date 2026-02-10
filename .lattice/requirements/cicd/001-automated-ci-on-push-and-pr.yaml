@@ -1,0 +1,23 @@
+id: REQ-CICD-001
+type: requirement
+title: Automated CI on push and pull requests
+body: 'All pushes and pull requests to main trigger a CI workflow in GitHub Actions. The pipeline runs in order: (1) npm ci, (2) Prettier format check, (3) ESLint, (4) TypeScript typecheck, (5) Vite build with pre-render, (6) vitest with coverage thresholds. Any failure blocks the workflow. Each step is a separate named action for clear failure attribution.'
+status: active
+version: 1.0.0
+created_at: 2026-02-10T05:00:00.000000+00:00
+created_by: agent:claude-2026-02-10
+requested_by: George Moon <george.moon@gmail.com>
+priority: P0
+category: CICD
+tags:
+- ci
+- github-actions
+- automation
+resolution:
+  status: verified
+  resolved_at: 2026-02-10T05:00:00.000000+00:00
+  resolved_by: agent:claude-2026-02-10
+edges:
+  derives_from:
+  - target: THX-AI-FIRST-TOOLING
+    version: 1.0.0

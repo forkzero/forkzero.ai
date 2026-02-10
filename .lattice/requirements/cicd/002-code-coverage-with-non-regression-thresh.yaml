@@ -1,0 +1,26 @@
+id: REQ-CICD-002
+type: requirement
+title: Code coverage with non-regression thresholds
+body: 'CI measures code coverage using vitest with the v8 provider. Thresholds are configured in vitest.config.ts for statements, branches, functions, and lines. thresholdAutoUpdate is enabled so thresholds ratchet up automatically when coverage improves — they can never decrease. CI fails if coverage drops below any threshold. Coverage is scoped to src/**/*.{ts,tsx} excluding main.tsx and test files. Reports are generated in text and lcov formats.'
+status: active
+version: 1.0.0
+created_at: 2026-02-10T05:00:00.000000+00:00
+created_by: agent:claude-2026-02-10
+requested_by: George Moon <george.moon@gmail.com>
+priority: P1
+category: CICD
+tags:
+- coverage
+- testing
+- quality
+resolution:
+  status: verified
+  resolved_at: 2026-02-10T05:00:00.000000+00:00
+  resolved_by: agent:claude-2026-02-10
+edges:
+  derives_from:
+  - target: THX-AI-FIRST-TOOLING
+    version: 1.0.0
+  depends_on:
+  - target: REQ-CICD-001
+    version: 1.0.0

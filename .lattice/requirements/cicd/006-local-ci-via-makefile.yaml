@@ -1,0 +1,26 @@
+id: REQ-CICD-006
+type: requirement
+title: Local CI via Makefile
+body: 'A Makefile provides the same quality gates locally that CI enforces remotely. The make ci target runs: install, format check, lint, typecheck, build, and test with coverage — in that order. Individual targets (make format, make lint, make test, etc.) can be run independently. make clean removes dist/ and node_modules/. Developers run make ci before pushing to catch issues before CI.'
+status: active
+version: 1.0.0
+created_at: 2026-02-10T05:00:00.000000+00:00
+created_by: agent:claude-2026-02-10
+requested_by: George Moon <george.moon@gmail.com>
+priority: P1
+category: CICD
+tags:
+- makefile
+- developer-workflow
+- local-ci
+resolution:
+  status: verified
+  resolved_at: 2026-02-10T05:00:00.000000+00:00
+  resolved_by: agent:claude-2026-02-10
+edges:
+  derives_from:
+  - target: THX-AI-FIRST-TOOLING
+    version: 1.0.0
+  depends_on:
+  - target: REQ-CICD-001
+    version: 1.0.0

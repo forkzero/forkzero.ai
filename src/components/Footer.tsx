@@ -21,7 +21,10 @@ export function Footer() {
     <footer style={styles.footer}>
       <p>
         &copy; {new Date().getFullYear()} Forkzero. Built with{' '}
-        <a href="https://github.com/forkzero/lattice" style={styles.link}>Lattice</a>.
+        <a href="https://github.com/forkzero/lattice" style={styles.link}>
+          Lattice
+        </a>
+        .
       </p>
     </footer>
   )

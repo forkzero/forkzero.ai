@@ -1,0 +1,18 @@
+id: REQ-WEB-004
+type: requirement
+title: Blog infrastructure with static routes
+body: Add a /blog route to forkzero.ai that lists blog posts, and /blog/<slug> routes for individual posts. Posts are stored as structured data in src/data/blog-posts.ts. Uses shared Header/Footer, inline styles, and tokens.ts design system. Blog listing shows title, date, excerpt. Individual post renders full content with proper typography.
+status: active
+version: 1.0.0
+created_at: 2026-02-10T03:42:56.018236+00:00
+created_by: agent:claude-2026-02-10
+requested_by: George Moon <george.moon@gmail.com>
+priority: P1
+category: WEB
+edges:
+  derives_from:
+  - target: THX-AI-FIRST-TOOLING
+    version: 1.0.0
+  depends_on:
+  - target: REQ-WEB-001
+    version: 1.0.0

@@ -1,0 +1,23 @@
+id: REQ-CICD-003
+type: requirement
+title: Lattice validation in CI
+body: 'CI validates the .lattice/ directory on every push and PR. Three checks run: (1) YAML syntax validation on all .lattice/*.yaml files using yaml-lint, (2) required field check — every node must have id, title, and status fields, (3) lattice lint using the lattice CLI binary installed from the forkzero/lattice release. Additionally, smoke tests run lattice list commands to verify the lattice is loadable. These checks run as a separate parallel job so failures are clearly attributed to lattice issues, not code issues.'
+status: active
+version: 1.0.0
+created_at: 2026-02-10T05:00:00.000000+00:00
+created_by: agent:claude-2026-02-10
+requested_by: George Moon <george.moon@gmail.com>
+priority: P1
+category: CICD
+tags:
+- lattice
+- validation
+- yaml
+resolution:
+  status: verified
+  resolved_at: 2026-02-10T05:00:00.000000+00:00
+  resolved_by: agent:claude-2026-02-10
+edges:
+  derives_from:
+  - target: THX-AI-FIRST-TOOLING
+    version: 1.0.0

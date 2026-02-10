@@ -70,10 +70,10 @@ interface Stats {
 }
 
 function computeStats(nodes: LatticeNode[]): Stats {
-  const sources = nodes.filter(n => n.type === 'source')
-  const theses = nodes.filter(n => n.type === 'thesis')
-  const requirements = nodes.filter(n => n.type === 'requirement')
-  const implementations = nodes.filter(n => n.type === 'implementation')
+  const sources = nodes.filter((n) => n.type === 'source')
+  const theses = nodes.filter((n) => n.type === 'thesis')
+  const requirements = nodes.filter((n) => n.type === 'requirement')
+  const implementations = nodes.filter((n) => n.type === 'implementation')
 
   const implementedIds = new Set<string>()
   for (const impl of implementations) {
@@ -82,12 +82,21 @@ function computeStats(nodes: LatticeNode[]): Stats {
     }
   }
 
-  const implemented = requirements.filter(r => implementedIds.has(r.id)).length
+  const implemented = requirements.filter((r) => implementedIds.has(r.id)).length
   const totalReqs = requirements.length
   const coveragePct = totalReqs > 0 ? Math.round((implemented * 100) / totalReqs) : 0
 
-  let verified = 0, blocked = 0, deferred = 0, unresolved = 0, wontfix = 0
-  let p0 = 0, p1 = 0, p2 = 0, p0Verified = 0, p1Verified = 0, p2Verified = 0
+  let verified = 0,
+    blocked = 0,
+    deferred = 0,
+    unresolved = 0,
+    wontfix = 0
+  let p0 = 0,
+    p1 = 0,
+    p2 = 0,
+    p0Verified = 0,
+    p1Verified = 0,
+    p2Verified = 0
 
   for (const req of requirements) {
     const res = req.resolution?.status?.toLowerCase()
@@ -100,16 +109,36 @@ function computeStats(nodes: LatticeNode[]): Stats {
     else unresolved++
 
     const pri = req.priority?.toUpperCase()
-    if (pri === 'P0') { p0++; if (isVerified) p0Verified++ }
-    else if (pri === 'P1') { p1++; if (isVerified) p1Verified++ }
-    else if (pri === 'P2') { p2++; if (isVerified) p2Verified++ }
+    if (pri === 'P0') {
+      p0++
+      if (isVerified) p0Verified++
+    } else if (pri === 'P1') {
+      p1++
+      if (isVerified) p1Verified++
+    } else if (pri === 'P2') {
+      p2++
+      if (isVerified) p2Verified++
+    }
   }
 
   return {
-    sources: sources.length, theses: theses.length, requirements: totalReqs,
-    implementations: implementations.length, implemented, coveragePct,
-    verified, blocked, deferred, unresolved, wontfix,
-    p0, p1, p2, p0Verified, p1Verified, p2Verified,
+    sources: sources.length,
+    theses: theses.length,
+    requirements: totalReqs,
+    implementations: implementations.length,
+    implemented,
+    coveragePct,
+    verified,
+    blocked,
+    deferred,
+    unresolved,
+    wontfix,
+    p0,
+    p1,
+    p2,
+    p0Verified,
+    p1Verified,
+    p2Verified,
   }
 }
 
@@ -130,9 +159,9 @@ interface TraceThesis {
 }
 
 function buildTraceability(nodes: LatticeNode[]): TraceThesis[] {
-  const theses = nodes.filter(n => n.type === 'thesis')
-  const requirements = nodes.filter(n => n.type === 'requirement')
-  const implementations = nodes.filter(n => n.type === 'implementation')
+  const theses = nodes.filter((n) => n.type === 'thesis')
+  const requirements = nodes.filter((n) => n.type === 'requirement')
+  const implementations = nodes.filter((n) => n.type === 'implementation')
 
   const reqToImpls = new Map<string, { id: string; title: string }[]>()
   for (const impl of implementations) {
@@ -152,10 +181,10 @@ function buildTraceability(nodes: LatticeNode[]): TraceThesis[] {
     }
   }
 
-  return theses.map(t => ({
+  return theses.map((t) => ({
     id: t.id,
     title: t.title,
-    requirements: (thesisToReqs.get(t.id) ?? []).map(r => ({
+    requirements: (thesisToReqs.get(t.id) ?? []).map((r) => ({
       id: r.id,
       title: r.title,
       priority: r.priority,
@@ -172,57 +201,143 @@ const s = {
   container: { maxWidth: '1200px', margin: '0 auto', padding: '2rem' },
   title: { fontSize: '2rem', fontWeight: 700, color: colors.textPrimary, marginBottom: '0.25rem' },
   subtitle: { color: colors.textMuted, fontSize: '0.9rem', marginBottom: '2rem' },
-  statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' },
-  statCard: {
-    background: colors.bgCard, borderRadius: radius, padding: '1.5rem',
-    boxShadow: shadows.md, border: `1px solid ${colors.borderColor}`,
-    cursor: 'pointer', textDecoration: 'none' as const, color: 'inherit',
-    transition: 'transform 0.2s, box-shadow 0.2s', display: 'block',
+  statsGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '1rem',
+    marginBottom: '2rem',
   },
-  statLabel: { fontSize: '0.85rem', color: colors.textMuted, textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '0.5rem' },
+  statCard: {
+    background: colors.bgCard,
+    borderRadius: radius,
+    padding: '1.5rem',
+    boxShadow: shadows.md,
+    border: `1px solid ${colors.borderColor}`,
+    cursor: 'pointer',
+    textDecoration: 'none' as const,
+    color: 'inherit',
+    transition: 'transform 0.2s, box-shadow 0.2s',
+    display: 'block',
+  },
+  statLabel: {
+    fontSize: '0.85rem',
+    color: colors.textMuted,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.5px',
+    marginBottom: '0.5rem',
+  },
   statValue: { fontSize: '2rem', fontWeight: 700 },
   section: {
-    background: colors.bgCard, borderRadius: radius, marginBottom: '1.5rem',
-    boxShadow: shadows.md, border: `1px solid ${colors.borderColor}`, overflow: 'hidden',
+    background: colors.bgCard,
+    borderRadius: radius,
+    marginBottom: '1.5rem',
+    boxShadow: shadows.md,
+    border: `1px solid ${colors.borderColor}`,
+    overflow: 'hidden',
   },
-  sectionHeader: { background: colors.bgSecondary, padding: '1rem 1.5rem', borderBottom: `1px solid ${colors.borderColor}` },
+  sectionHeader: {
+    background: colors.bgSecondary,
+    padding: '1rem 1.5rem',
+    borderBottom: `1px solid ${colors.borderColor}`,
+  },
   sectionTitle: { fontSize: '1.1rem', fontWeight: 600, color: colors.textPrimary, margin: 0 },
   sectionContent: { padding: '1.5rem' },
-  progressBar: { background: colors.bgSecondary, borderRadius: '9999px', height: '1rem', overflow: 'hidden', margin: '1rem 0' },
-  progressFill: { height: '100%', background: `linear-gradient(90deg, ${colors.accentGreen}, ${colors.accentBlue})`, transition: 'width 0.3s' },
+  progressBar: {
+    background: colors.bgSecondary,
+    borderRadius: '9999px',
+    height: '1rem',
+    overflow: 'hidden',
+    margin: '1rem 0',
+  },
+  progressFill: {
+    height: '100%',
+    background: `linear-gradient(90deg, ${colors.accentGreen}, ${colors.accentBlue})`,
+    transition: 'width 0.3s',
+  },
   resGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '0.75rem' },
   resItem: { textAlign: 'center' as const, padding: '1rem', background: colors.bgSecondary, borderRadius: radius },
   resCount: { fontSize: '1.5rem', fontWeight: 700 },
   resLabel: { fontSize: '0.75rem', color: colors.textMuted, textTransform: 'uppercase' as const },
-  miniProgress: { height: '4px', background: colors.borderColor, borderRadius: '2px', marginTop: '0.5rem', overflow: 'hidden' },
+  miniProgress: {
+    height: '4px',
+    background: colors.borderColor,
+    borderRadius: '2px',
+    marginTop: '0.5rem',
+    overflow: 'hidden',
+  },
   miniProgressFill: { height: '100%', background: colors.accentGreen, transition: 'width 0.3s' },
   miniLabel: { fontSize: '0.7rem', color: colors.textMuted, marginTop: '0.25rem' },
   detailsSummary: {
-    padding: '1rem 1.5rem', cursor: 'pointer', fontWeight: 500,
-    display: 'flex', alignItems: 'center', gap: '0.5rem',
-    borderBottom: `1px solid ${colors.borderColor}`, userSelect: 'none' as const,
+    padding: '1rem 1.5rem',
+    cursor: 'pointer',
+    fontWeight: 500,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    borderBottom: `1px solid ${colors.borderColor}`,
+    userSelect: 'none' as const,
   },
   detailsContent: { padding: '1rem 1.5rem', background: colors.bgSecondary },
   nodeId: { fontFamily: fonts.mono, fontSize: '0.85rem', color: colors.accentBlue, fontWeight: 500 },
   nodeTitle: { color: colors.textPrimary, marginLeft: '0.5rem' },
   nodeBody: { color: colors.textSecondary, fontSize: '0.9rem', marginTop: '0.5rem', whiteSpace: 'pre-wrap' as const },
-  badge: { display: 'inline-block', padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase' as const, marginLeft: '0.5rem' },
-  treeNode: { marginLeft: '1.5rem', padding: '0.5rem 0', borderLeft: `2px solid ${colors.borderColor}`, paddingLeft: '1rem' },
+  badge: {
+    display: 'inline-block',
+    padding: '0.2rem 0.6rem',
+    borderRadius: '4px',
+    fontSize: '0.75rem',
+    fontWeight: 600,
+    textTransform: 'uppercase' as const,
+    marginLeft: '0.5rem',
+  },
+  treeNode: {
+    marginLeft: '1.5rem',
+    padding: '0.5rem 0',
+    borderLeft: `2px solid ${colors.borderColor}`,
+    paddingLeft: '1rem',
+  },
   filterControls: { display: 'flex', gap: '1rem', flexWrap: 'wrap' as const },
   filterGroup: { display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' as const },
   filterLabel: { fontSize: '0.8rem', color: colors.textMuted, fontWeight: 500 },
   filterBtn: {
-    padding: '0.25rem 0.75rem', border: `1px solid ${colors.borderColor}`,
-    background: colors.bgCard, borderRadius: '4px', fontSize: '0.8rem',
-    cursor: 'pointer', transition: 'all 0.2s', color: colors.textSecondary,
+    padding: '0.25rem 0.75rem',
+    border: `1px solid ${colors.borderColor}`,
+    background: colors.bgCard,
+    borderRadius: '4px',
+    fontSize: '0.8rem',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    color: colors.textSecondary,
   },
   filterBtnActive: {
-    padding: '0.25rem 0.75rem', border: `1px solid ${colors.accentBlue}`,
-    background: colors.accentBlue, borderRadius: '4px', fontSize: '0.8rem',
-    cursor: 'pointer', color: '#ffffff',
+    padding: '0.25rem 0.75rem',
+    border: `1px solid ${colors.accentBlue}`,
+    background: colors.accentBlue,
+    borderRadius: '4px',
+    fontSize: '0.8rem',
+    cursor: 'pointer',
+    color: '#ffffff',
   },
-  loading: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', fontFamily: fonts.system, color: colors.textMuted, fontSize: '1.1rem' },
-  error: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', fontFamily: fonts.system, color: colors.accentRed, fontSize: '1.1rem', flexDirection: 'column' as const, gap: '1rem' },
+  loading: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '60vh',
+    fontFamily: fonts.system,
+    color: colors.textMuted,
+    fontSize: '1.1rem',
+  },
+  error: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '60vh',
+    fontFamily: fonts.system,
+    color: colors.accentRed,
+    fontSize: '1.1rem',
+    flexDirection: 'column' as const,
+    gap: '1rem',
+  },
 }
 
 const badgeColors: Record<string, { bg: string; fg: string }> = {
@@ -260,7 +375,7 @@ function Collapsible({ summary, children }: { summary: React.ReactNode; children
         onClick={() => setOpen(!open)}
         role="button"
         tabIndex={0}
-        onKeyDown={e => e.key === 'Enter' && setOpen(!open)}
+        onKeyDown={(e) => e.key === 'Enter' && setOpen(!open)}
       >
         <span style={{ color: colors.accentBlue, marginRight: '0.25rem' }}>{open ? '\u25BC' : '\u25B6'}</span>
         {summary}
@@ -281,17 +396,23 @@ interface LatticeExport {
 
 export function ReaderPage() {
   const [data, setData] = useState<LatticeExport | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(() => {
+    const u = new URLSearchParams(window.location.search).get('url')
+    return u ? null : 'No URL provided. Use ?url=<json-url>'
+  })
   const [priorityFilter, setPriorityFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
 
   const url = new URLSearchParams(window.location.search).get('url')
 
   useEffect(() => {
-    if (!url) { setError('No URL provided. Use ?url=<json-url>'); return }
+    if (!url) return
     fetch(url)
-      .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json() })
-      .then(raw => {
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`)
+        return r.json()
+      })
+      .then((raw) => {
         // Handle both new format (object with nodes) and old format (flat array)
         if (Array.isArray(raw)) {
           setData({ project: '', description: '', nodes: raw })
@@ -299,7 +420,7 @@ export function ReaderPage() {
           setData({ project: raw.project ?? '', description: raw.description ?? '', nodes: raw.nodes ?? [] })
         }
       })
-      .catch(e => setError(`Failed to load: ${e.message}`))
+      .catch((e) => setError(`Failed to load: ${e.message}`))
   }, [url])
 
   if (error) {
@@ -308,7 +429,9 @@ export function ReaderPage() {
         <PoweredByHeader />
         <div style={s.error}>
           <span>{error}</span>
-          <a href="/" style={{ color: colors.accentBlue, textDecoration: 'none' }}>Back to Forkzero</a>
+          <a href="/" style={{ color: colors.accentBlue, textDecoration: 'none' }}>
+            Back to Forkzero
+          </a>
         </div>
       </div>
     )
@@ -326,12 +449,12 @@ export function ReaderPage() {
   const nodes = data.nodes
   const stats = computeStats(nodes)
   const traceability = buildTraceability(nodes)
-  const sources = nodes.filter(n => n.type === 'source')
-  const theses = nodes.filter(n => n.type === 'thesis')
-  const requirements = nodes.filter(n => n.type === 'requirement')
-  const implementations = nodes.filter(n => n.type === 'implementation')
+  const sources = nodes.filter((n) => n.type === 'source')
+  const theses = nodes.filter((n) => n.type === 'thesis')
+  const requirements = nodes.filter((n) => n.type === 'requirement')
+  const implementations = nodes.filter((n) => n.type === 'implementation')
 
-  const filteredReqs = requirements.filter(r => {
+  const filteredReqs = requirements.filter((r) => {
     const pri = r.priority?.toUpperCase() ?? ''
     const res = r.resolution?.status?.toLowerCase() ?? 'open'
     const matchPri = priorityFilter === 'all' || pri === priorityFilter
@@ -346,12 +469,13 @@ export function ReaderPage() {
         <h1 style={s.title}>{data.project || 'Lattice Dashboard'}</h1>
         {data.description && <p style={{ ...s.subtitle, marginBottom: '0.5rem' }}>{data.description}</p>}
         <p style={{ ...s.subtitle, fontSize: '0.8rem', opacity: 0.6, marginBottom: '2rem' }}>
-          Lattice Dashboard{data.generated_at && <> &middot; Generated {new Date(data.generated_at).toLocaleDateString()}</>}
+          Lattice Dashboard
+          {data.generated_at && <> &middot; Generated {new Date(data.generated_at).toLocaleDateString()}</>}
         </p>
 
         {/* Stats grid */}
         <div style={s.statsGrid}>
-          {(['sources', 'theses', 'requirements', 'implementations'] as const).map(key => (
+          {(['sources', 'theses', 'requirements', 'implementations'] as const).map((key) => (
             <a key={key} href={`#${key}-section`} style={s.statCard}>
               <div style={s.statLabel}>{key}</div>
               <div style={{ ...s.statValue, color: statColors[key] }}>{stats[key]}</div>
@@ -361,10 +485,14 @@ export function ReaderPage() {
 
         {/* Implementation Coverage */}
         <div style={s.section}>
-          <div style={s.sectionHeader}><h2 style={s.sectionTitle}>Implementation Coverage</h2></div>
+          <div style={s.sectionHeader}>
+            <h2 style={s.sectionTitle}>Implementation Coverage</h2>
+          </div>
           <div style={s.sectionContent}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>{stats.implemented} of {stats.requirements} requirements implemented</span>
+              <span>
+                {stats.implemented} of {stats.requirements} requirements implemented
+              </span>
               <strong>{stats.coveragePct}%</strong>
             </div>
             <div style={s.progressBar}>
@@ -375,16 +503,18 @@ export function ReaderPage() {
 
         {/* Resolution Status */}
         <div style={s.section}>
-          <div style={s.sectionHeader}><h2 style={s.sectionTitle}>Resolution Status</h2></div>
+          <div style={s.sectionHeader}>
+            <h2 style={s.sectionTitle}>Resolution Status</h2>
+          </div>
           <div style={s.sectionContent}>
             <div style={s.resGrid}>
-              {([
+              {[
                 { label: 'Verified', count: stats.verified, color: colors.accentGreen },
                 { label: 'Blocked', count: stats.blocked, color: colors.accentRed },
                 { label: 'Deferred', count: stats.deferred, color: colors.accentYellow },
                 { label: 'Unresolved', count: stats.unresolved, color: colors.textMuted },
                 { label: "Won't Fix", count: stats.wontfix, color: colors.textSecondary },
-              ]).map(item => (
+              ].map((item) => (
                 <div key={item.label} style={s.resItem}>
                   <div style={{ ...s.resCount, color: item.color }}>{item.count}</div>
                   <div style={s.resLabel}>{item.label}</div>
@@ -396,21 +526,30 @@ export function ReaderPage() {
 
         {/* Priority Breakdown */}
         <div style={s.section}>
-          <div style={s.sectionHeader}><h2 style={s.sectionTitle}>Priority Breakdown</h2></div>
+          <div style={s.sectionHeader}>
+            <h2 style={s.sectionTitle}>Priority Breakdown</h2>
+          </div>
           <div style={s.sectionContent}>
             <div style={s.resGrid}>
-              {([
+              {[
                 { label: 'P0 (MVP)', total: stats.p0, verified: stats.p0Verified, color: '#92400e' },
                 { label: 'P1 (Beta)', total: stats.p1, verified: stats.p1Verified, color: '#1e40af' },
                 { label: 'P2 (Future)', total: stats.p2, verified: stats.p2Verified, color: '#6b21a8' },
-              ]).map(item => (
+              ].map((item) => (
                 <div key={item.label} style={s.resItem}>
                   <div style={{ ...s.resCount, color: item.color }}>{item.total}</div>
                   <div style={s.resLabel}>{item.label}</div>
                   <div style={s.miniProgress}>
-                    <div style={{ ...s.miniProgressFill, width: `${item.total > 0 ? (item.verified * 100) / item.total : 0}%` }} />
+                    <div
+                      style={{
+                        ...s.miniProgressFill,
+                        width: `${item.total > 0 ? (item.verified * 100) / item.total : 0}%`,
+                      }}
+                    />
                   </div>
-                  <div style={s.miniLabel}>{item.verified}/{item.total} verified</div>
+                  <div style={s.miniLabel}>
+                    {item.verified}/{item.total} verified
+                  </div>
                 </div>
               ))}
             </div>
@@ -419,8 +558,10 @@ export function ReaderPage() {
 
         {/* Traceability Tree */}
         <div style={s.section}>
-          <div style={s.sectionHeader}><h2 style={s.sectionTitle}>Traceability Tree</h2></div>
-          {traceability.map(thesis => (
+          <div style={s.sectionHeader}>
+            <h2 style={s.sectionTitle}>Traceability Tree</h2>
+          </div>
+          {traceability.map((thesis) => (
             <Collapsible
               key={thesis.id}
               summary={
@@ -430,7 +571,7 @@ export function ReaderPage() {
                 </>
               }
             >
-              {thesis.requirements.map(req => (
+              {thesis.requirements.map((req) => (
                 <div key={req.id} style={s.treeNode}>
                   <span style={s.nodeId}>{req.id}</span>
                   <span style={s.nodeTitle}>{req.title}</span>
@@ -438,7 +579,7 @@ export function ReaderPage() {
                   <Badge label={req.resolution ?? 'Open'} />
                   {req.implementations.length > 0 && (
                     <div style={{ marginLeft: '1.5rem', marginTop: '0.5rem' }}>
-                      {req.implementations.map(impl => (
+                      {req.implementations.map((impl) => (
                         <div key={impl.id} style={s.treeNode}>
                           <span style={s.nodeId}>{impl.id}</span>
                           <span style={s.nodeTitle}>{impl.title}</span>
@@ -454,8 +595,10 @@ export function ReaderPage() {
 
         {/* Sources */}
         <div style={s.section} id="sources-section">
-          <div style={s.sectionHeader}><h2 style={s.sectionTitle}>Sources ({sources.length})</h2></div>
-          {sources.map(src => (
+          <div style={s.sectionHeader}>
+            <h2 style={s.sectionTitle}>Sources ({sources.length})</h2>
+          </div>
+          {sources.map((src) => (
             <Collapsible
               key={src.id}
               summary={
@@ -469,7 +612,12 @@ export function ReaderPage() {
               {typeof (src.meta as Record<string, unknown>)?.url === 'string' && (
                 <p style={{ marginTop: '1rem' }}>
                   <strong>URL: </strong>
-                  <a href={String((src.meta as Record<string, unknown>).url)} target="_blank" rel="noopener noreferrer" style={{ color: colors.accentBlue }}>
+                  <a
+                    href={String((src.meta as Record<string, unknown>).url)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: colors.accentBlue }}
+                  >
                     {String((src.meta as Record<string, unknown>).url)}
                   </a>
                 </p>
@@ -480,8 +628,10 @@ export function ReaderPage() {
 
         {/* Theses */}
         <div style={s.section} id="theses-section">
-          <div style={s.sectionHeader}><h2 style={s.sectionTitle}>Theses ({theses.length})</h2></div>
-          {theses.map(t => (
+          <div style={s.sectionHeader}>
+            <h2 style={s.sectionTitle}>Theses ({theses.length})</h2>
+          </div>
+          {theses.map((t) => (
             <Collapsible
               key={t.id}
               summary={
@@ -498,12 +648,21 @@ export function ReaderPage() {
 
         {/* Requirements */}
         <div style={s.section} id="requirements-section">
-          <div style={{ ...s.sectionHeader, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+          <div
+            style={{
+              ...s.sectionHeader,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '0.5rem',
+            }}
+          >
             <h2 style={s.sectionTitle}>Requirements ({requirements.length})</h2>
             <div style={s.filterControls}>
               <div style={s.filterGroup}>
                 <span style={s.filterLabel}>Priority:</span>
-                {['all', 'P0', 'P1', 'P2'].map(v => (
+                {['all', 'P0', 'P1', 'P2'].map((v) => (
                   <button
                     key={v}
                     style={priorityFilter === v ? s.filterBtnActive : s.filterBtn}
@@ -515,7 +674,7 @@ export function ReaderPage() {
               </div>
               <div style={s.filterGroup}>
                 <span style={s.filterLabel}>Status:</span>
-                {['all', 'verified', 'blocked', 'deferred', 'open'].map(v => (
+                {['all', 'verified', 'blocked', 'deferred', 'open'].map((v) => (
                   <button
                     key={v}
                     style={statusFilter === v ? s.filterBtnActive : s.filterBtn}
@@ -527,7 +686,7 @@ export function ReaderPage() {
               </div>
             </div>
           </div>
-          {filteredReqs.map(req => (
+          {filteredReqs.map((req) => (
             <Collapsible
               key={req.id}
               summary={
@@ -543,14 +702,18 @@ export function ReaderPage() {
             </Collapsible>
           ))}
           {filteredReqs.length === 0 && (
-            <p style={{ padding: '1rem', color: colors.textMuted, textAlign: 'center' }}>No requirements match the selected filters.</p>
+            <p style={{ padding: '1rem', color: colors.textMuted, textAlign: 'center' }}>
+              No requirements match the selected filters.
+            </p>
           )}
         </div>
 
         {/* Implementations */}
         <div style={s.section} id="implementations-section">
-          <div style={s.sectionHeader}><h2 style={s.sectionTitle}>Implementations ({implementations.length})</h2></div>
-          {implementations.map(impl => (
+          <div style={s.sectionHeader}>
+            <h2 style={s.sectionTitle}>Implementations ({implementations.length})</h2>
+          </div>
+          {implementations.map((impl) => (
             <Collapsible
               key={impl.id}
               summary={

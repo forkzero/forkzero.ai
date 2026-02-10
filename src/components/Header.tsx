@@ -58,12 +58,10 @@ export function Header({ minimal }: { minimal?: boolean }) {
       </a>
       {!minimal && (
         <nav style={styles.nav}>
-          <a
-            href="https://github.com/forkzero"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={styles.navLinkGh}
-          >
+          <a href="/blog" style={styles.navLink}>
+            Blog
+          </a>
+          <a href="https://github.com/forkzero" target="_blank" rel="noopener noreferrer" style={styles.navLinkGh}>
             GitHub
           </a>
         </nav>
@@ -81,8 +79,12 @@ export function PoweredByHeader() {
       </a>
       <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem', fontFamily: fonts.system }}>
         Powered by{' '}
-        <a href="https://github.com/forkzero/lattice" target="_blank" rel="noopener noreferrer"
-          style={{ color: colors.bgPrimary, textDecoration: 'none' }}>
+        <a
+          href="https://github.com/forkzero/lattice"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: colors.bgPrimary, textDecoration: 'none' }}
+        >
           Forkzero/Lattice
         </a>
       </span>

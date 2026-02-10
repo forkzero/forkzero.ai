@@ -43,16 +43,10 @@ export function Hero() {
     <section style={styles.hero}>
       <h1 style={styles.title}>Tools for the human-agent era</h1>
       <p style={styles.subtitle}>
-        Forkzero builds developer tools where AI agents are first-class users.
-        Knowledge coordination, multi-agent debate, and infrastructure —
-        designed for how software gets built now.
+        Forkzero builds developer tools where AI agents are first-class users. Knowledge coordination, multi-agent
+        debate, and infrastructure — designed for how software gets built now.
       </p>
-      <a
-        href="https://github.com/forkzero"
-        target="_blank"
-        rel="noopener noreferrer"
-        style={styles.cta}
-      >
+      <a href="https://github.com/forkzero" target="_blank" rel="noopener noreferrer" style={styles.cta}>
         View on GitHub
       </a>
     </section>

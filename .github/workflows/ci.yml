@@ -1,0 +1,137 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Format / Lint / Typecheck / Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+
+      - name: Test with coverage
+        run: npm test
+
+  validate-lattice:
+    name: Validate Lattice Structure
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate YAML syntax
+        run: |
+          npm install -g yaml-lint
+          find .lattice -name "*.yaml" -exec yaml-lint {} \;
+
+      - name: Check required fields
+        run: |
+          for file in $(find .lattice/requirements .lattice/theses .lattice/sources -name "*.yaml" 2>/dev/null); do
+            echo "Checking $file..."
+
+            if ! grep -q "^id:" "$file"; then
+              echo "ERROR: $file missing 'id' field"
+              exit 1
+            fi
+
+            if ! grep -q "^title:" "$file"; then
+              echo "ERROR: $file missing 'title' field"
+              exit 1
+            fi
+
+            if ! grep -q "^status:" "$file"; then
+              echo "ERROR: $file missing 'status' field"
+              exit 1
+            fi
+          done
+
+          echo "All lattice nodes have required fields"
+
+  lattice-lint:
+    name: Lattice Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install lattice
+        run: curl -fsSL https://raw.githubusercontent.com/forkzero/lattice/main/install.sh | sh
+
+      - name: Run lattice lint
+        run: lattice lint
+
+      - name: Smoke test - list nodes
+        run: |
+          lattice list requirements
+          lattice list theses
+          lattice list sources
+
+  pages:
+    name: Deploy Lattice to GitHub Pages
+    runs-on: ubuntu-latest
+    needs: [ci, validate-lattice, lattice-lint]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install lattice
+        run: curl -fsSL https://raw.githubusercontent.com/forkzero/lattice/main/install.sh | sh
+
+      - name: Export lattice data
+        run: lattice export --format pages --output _site
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

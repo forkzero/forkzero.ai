@@ -1,0 +1,29 @@
+id: REQ-CICD-004
+type: requirement
+title: Gated deploy to S3 and CloudFront
+body: 'Production deployment to S3 (forkzero-web-prod) and CloudFront invalidation only triggers after the CI workflow succeeds on main. Uses workflow_run trigger with conclusion check. The deploy workflow builds the site independently (npm ci, npm run build) then syncs dist/ to S3 with --delete flag and creates a CloudFront invalidation for all paths. AWS credentials are stored as GitHub secrets. If CI fails for any reason — lint, format, typecheck, tests, coverage, or lattice validation — no deploy occurs.'
+status: active
+version: 1.0.0
+created_at: 2026-02-10T05:00:00.000000+00:00
+created_by: agent:claude-2026-02-10
+requested_by: George Moon <george.moon@gmail.com>
+priority: P0
+category: CICD
+tags:
+- deploy
+- s3
+- cloudfront
+- gating
+resolution:
+  status: verified
+  resolved_at: 2026-02-10T05:00:00.000000+00:00
+  resolved_by: agent:claude-2026-02-10
+edges:
+  derives_from:
+  - target: THX-AI-FIRST-TOOLING
+    version: 1.0.0
+  depends_on:
+  - target: REQ-CICD-001
+    version: 1.0.0
+  - target: REQ-CICD-003
+    version: 1.0.0

@@ -1,0 +1,18 @@
+id: REQ-WEB-005
+type: requirement
+title: Blog SEO with pre-rendering
+body: 'Blog pages shall be pre-rendered at build time to static HTML for search engine indexing. Use vite-plugin-prerender or equivalent to generate static HTML for /blog and /blog/<slug> routes. Each page shall have appropriate meta tags: title, description, Open Graph (og:title, og:description, og:type, og:url), and canonical URL.'
+status: active
+version: 1.0.0
+created_at: 2026-02-10T03:43:01.600038+00:00
+created_by: agent:claude-2026-02-10
+requested_by: George Moon <george.moon@gmail.com>
+priority: P1
+category: WEB
+edges:
+  derives_from:
+  - target: THX-AI-FIRST-TOOLING
+    version: 1.0.0
+  depends_on:
+  - target: REQ-WEB-004
+    version: 1.0.0

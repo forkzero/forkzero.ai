@@ -77,11 +77,11 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <div
       style={styles.card}
-      onMouseEnter={e => {
+      onMouseEnter={(e) => {
         e.currentTarget.style.transform = 'translateY(-2px)'
         e.currentTarget.style.boxShadow = shadows.lg
       }}
-      onMouseLeave={e => {
+      onMouseLeave={(e) => {
         e.currentTarget.style.transform = 'translateY(0)'
         e.currentTarget.style.boxShadow = shadows.md
       }}
@@ -103,8 +103,10 @@ export function ProjectCard({ project }: { project: Project }) {
       </div>
       <p style={styles.description}>{project.description}</p>
       <div style={styles.techRow}>
-        {project.tech.map(t => (
-          <span key={t} style={styles.techBadge}>{t}</span>
+        {project.tech.map((t) => (
+          <span key={t} style={styles.techBadge}>
+            {t}
+          </span>
         ))}
       </div>
       <div style={styles.links}>

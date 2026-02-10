@@ -1,0 +1,28 @@
+id: REQ-CICD-005
+type: requirement
+title: GitHub Pages deployment for lattice data
+body: 'On push to main, after CI and lattice validation pass, the pipeline exports lattice data to GitHub Pages using lattice export --format pages. The pages job depends on the ci, validate-lattice, and lattice-lint jobs. Uses actions/upload-pages-artifact and actions/deploy-pages for deployment. The exported data is consumed by the lattice reader at forkzero.ai/reader.'
+status: active
+version: 1.0.0
+created_at: 2026-02-10T05:00:00.000000+00:00
+created_by: agent:claude-2026-02-10
+requested_by: George Moon <george.moon@gmail.com>
+priority: P1
+category: CICD
+tags:
+- github-pages
+- lattice
+- deployment
+resolution:
+  status: verified
+  resolved_at: 2026-02-10T05:00:00.000000+00:00
+  resolved_by: agent:claude-2026-02-10
+edges:
+  derives_from:
+  - target: THX-AI-FIRST-TOOLING
+    version: 1.0.0
+  depends_on:
+  - target: REQ-CICD-001
+    version: 1.0.0
+  - target: REQ-CICD-003
+    version: 1.0.0

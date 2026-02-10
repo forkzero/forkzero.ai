@@ -33,7 +33,7 @@ export function HomePage() {
       <section style={styles.projectsSection}>
         <h2 style={styles.sectionTitle}>Projects</h2>
         <div style={styles.grid}>
-          {projects.map(p => (
+          {projects.map((p) => (
             <ProjectCard key={p.name} project={p} />
           ))}
         </div>
