@@ -2,7 +2,6 @@ import { colors, fonts, shadows, radius } from '../tokens'
 import { Header } from '../components/Header'
 import { Hero } from '../components/Hero'
 import { ProjectCard } from '../components/ProjectCard'
-import { LatticeFlowDiagram } from '../components/LatticeFlowDiagram'
 import { Footer } from '../components/Footer'
 import { projects } from '../data/projects'
 import { blogPosts } from '../data/blog-posts'
@@ -84,7 +83,36 @@ function ValueProps() {
   )
 }
 
-// --- How It Works ---
+// --- How It Works (Vertical Trace) ---
+
+const traceNodes = [
+  {
+    type: 'Source',
+    color: colors.accentBlue,
+    id: 'SRC-REQUIREMENTS-DRIFT',
+    title: 'Requirements Documentation Drifts From Implementation',
+  },
+  {
+    type: 'Thesis',
+    color: colors.accentPurple,
+    id: 'THX-VERSION-AWARE',
+    title: 'Traceability Must Be Version-Aware to Enable Drift Detection',
+  },
+  {
+    type: 'Requirement',
+    color: colors.accentYellow,
+    id: 'REQ-CORE-005',
+    title: 'Automatic Drift Detection',
+  },
+  {
+    type: 'Implementation',
+    color: colors.accentGreen,
+    id: 'IMP-GRAPH-001',
+    title: 'Graph Traversal and Drift Detection',
+  },
+]
+
+const traceEdges = ['supports', 'derives', 'satisfies']
 
 const howStyles: Record<string, React.CSSProperties> = {
   section: {
@@ -139,20 +167,133 @@ const howStyles: Record<string, React.CSSProperties> = {
   },
 }
 
+const traceStyles: Record<string, React.CSSProperties> = {
+  wrapper: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    margin: '2rem 0',
+  },
+  card: {
+    width: '100%',
+    maxWidth: '520px',
+    background: colors.bgCard,
+    borderRadius: radius,
+    padding: '1rem 1.25rem',
+    boxShadow: shadows.sm,
+    border: `1px solid ${colors.borderColor}`,
+  },
+  cardHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    marginBottom: '0.35rem',
+    flexWrap: 'wrap' as const,
+  },
+  typePill: {
+    fontSize: '0.65rem',
+    fontWeight: 700,
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase' as const,
+    borderRadius: '100px',
+    padding: '0.15rem 0.55rem',
+    lineHeight: 1.4,
+  },
+  nodeId: {
+    fontSize: '0.78rem',
+    fontFamily: fonts.mono,
+    color: colors.textMuted,
+  },
+  version: {
+    fontSize: '0.72rem',
+    fontFamily: fonts.mono,
+    color: colors.textMuted,
+    marginLeft: 'auto',
+  },
+  nodeTitle: {
+    fontSize: '1rem',
+    fontWeight: 600,
+    fontFamily: fonts.system,
+    color: colors.textPrimary,
+    margin: 0,
+    lineHeight: 1.35,
+  },
+  connector: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    padding: '0.15rem 0',
+  },
+  connectorLine: {
+    width: '2px',
+    height: '12px',
+    background: colors.borderColor,
+  },
+  connectorLabel: {
+    fontSize: '0.75rem',
+    fontFamily: fonts.mono,
+    color: colors.textMuted,
+    padding: '0.1rem 0',
+  },
+  connectorArrow: {
+    fontSize: '0.65rem',
+    color: colors.textMuted,
+    lineHeight: 1,
+  },
+}
+
+const inlineCode: React.CSSProperties = {
+  background: 'rgba(0,0,0,0.06)',
+  color: colors.accentBlue,
+  padding: '0.15rem 0.4rem',
+  borderRadius: '4px',
+  fontSize: '0.9em',
+  fontFamily: fonts.mono,
+}
+
+function VerticalTrace() {
+  return (
+    <div style={traceStyles.wrapper}>
+      {traceNodes.flatMap((node, i) => [
+        <div key={node.id} style={{ ...traceStyles.card, borderLeft: `4px solid ${node.color}` }}>
+          <div style={traceStyles.cardHeader}>
+            <span style={{ ...traceStyles.typePill, color: node.color, background: `${node.color}14` }}>
+              {node.type}
+            </span>
+            <span style={traceStyles.nodeId}>{node.id}</span>
+            <span style={traceStyles.version}>v1.0.0</span>
+          </div>
+          <p style={traceStyles.nodeTitle}>{node.title}</p>
+        </div>,
+        ...(i < traceEdges.length
+          ? [
+              <div key={`edge-${i}`} style={traceStyles.connector}>
+                <div style={traceStyles.connectorLine} />
+                <span style={traceStyles.connectorLabel}>{traceEdges[i]}</span>
+                <div style={traceStyles.connectorLine} />
+                <span style={traceStyles.connectorArrow}>{'\u25BC'}</span>
+              </div>,
+            ]
+          : []),
+      ])}
+    </div>
+  )
+}
+
 function HowItWorks() {
   return (
     <section style={howStyles.section}>
       <div style={howStyles.container}>
         <h2 style={howStyles.sectionTitle}>How it works</h2>
         <p style={howStyles.intro}>
-          Lattice organizes knowledge into four layers, connected by version-bound edges. When anything changes
-          upstream, you know.
+          Lattice organizes knowledge into four layers &mdash; sources, theses, requirements, and implementations
+          &mdash; connected by version-bound edges. Here&rsquo;s a real trace from Lattice&rsquo;s own knowledge graph:
         </p>
-        <LatticeFlowDiagram />
+        <VerticalTrace />
         <p style={howStyles.body}>
-          Every edge records the version of both source and target nodes. When a node is updated, edges bound to the old
-          version are flagged as potentially stale. Run <code style={inlineCode}>lattice drift</code> to surface exactly
-          what needs review — no manual tracking, no stale docs hiding in a wiki.
+          Every edge records the version it was bound to. When a source is updated or a thesis is revised,{' '}
+          <code style={inlineCode}>lattice drift</code> tells you exactly which downstream requirements and
+          implementations need review.
         </p>
         <pre style={howStyles.codeBlock}>
           <code>{`.lattice/
@@ -169,15 +310,6 @@ function HowItWorks() {
       </div>
     </section>
   )
-}
-
-const inlineCode: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.1)',
-  color: colors.accentBlue,
-  padding: '0.15rem 0.4rem',
-  borderRadius: '4px',
-  fontSize: '0.9em',
-  fontFamily: fonts.mono,
 }
 
 // --- Featured Article ---

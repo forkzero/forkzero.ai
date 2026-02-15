@@ -74,8 +74,8 @@ export function Hero() {
     <section style={styles.hero}>
       <h1 style={styles.title}>Structure the knowledge behind what you build</h1>
       <p style={styles.subtitle}>
-        When you build with LLMs, the research and reasoning behind every decision disappears into chat. Lattice
-        captures it — connecting sources, strategy, requirements, and code into a knowledge graph that any collaborator,
+        When you build with LLMs, research and reasoning vanish into chat logs. Lattice is a CLI that captures it —
+        connecting sources, strategy, requirements, and code into a Git-native knowledge graph that any collaborator,
         human or agent, can pick up and build on.
       </p>
       <div style={styles.ctaRow}>
