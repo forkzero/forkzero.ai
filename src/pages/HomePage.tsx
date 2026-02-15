@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react'
 import { colors, fonts, shadows, radius } from '../tokens'
 import { Header } from '../components/Header'
 import { Hero } from '../components/Hero'
@@ -5,6 +6,25 @@ import { ProjectCard } from '../components/ProjectCard'
 import { Footer } from '../components/Footer'
 import { projects } from '../data/projects'
 import { blogPosts } from '../data/blog-posts'
+
+// --- Intersection Observer Hook ---
+
+function useInView() {
+  const ref = useRef<HTMLDivElement>(null)
+  const [inView, setInView] = useState(false)
+  useEffect(() => {
+    if (!ref.current) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setInView(true)
+      },
+      { threshold: 0.15 },
+    )
+    observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+  return { ref, inView }
+}
 
 // --- Value Props ---
 
@@ -251,11 +271,77 @@ const inlineCode: React.CSSProperties = {
   fontFamily: fonts.mono,
 }
 
-function VerticalTrace() {
+const driftStyles: Record<string, React.CSSProperties> = {
+  container: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '0.6rem',
+    maxWidth: '520px',
+    margin: '1rem auto 0',
+    background: `${colors.accentRed}0a`,
+    border: `1px solid ${colors.accentRed}30`,
+    borderRadius: radius,
+    padding: '0.75rem 1rem',
+    fontFamily: fonts.mono,
+    fontSize: '0.78rem',
+    color: colors.accentRed,
+    lineHeight: 1.5,
+  },
+  icon: {
+    flexShrink: 0,
+    fontSize: '0.9rem',
+  },
+}
+
+const feedbackStyles: Record<string, React.CSSProperties> = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column' as const,
+    alignItems: 'center',
+    gap: '0.5rem',
+    margin: '1.5rem 0',
+  },
+  label: {
+    fontSize: '0.85rem',
+    fontFamily: fonts.system,
+    color: colors.textMuted,
+    fontWeight: 500,
+  },
+  pills: {
+    display: 'flex',
+    gap: '0.5rem',
+    flexWrap: 'wrap' as const,
+    justifyContent: 'center',
+  },
+  pill: {
+    fontFamily: fonts.mono,
+    fontSize: '0.72rem',
+    padding: '0.25rem 0.65rem',
+    borderRadius: '100px',
+    border: `1px solid ${colors.borderColor}`,
+    background: 'rgba(0,0,0,0.02)',
+    color: colors.textMuted,
+  },
+  arrow: {
+    fontSize: '0.65rem',
+    marginLeft: '0.2rem',
+  },
+}
+
+function VerticalTrace({ inView }: { inView: boolean }) {
   return (
     <div style={traceStyles.wrapper}>
       {traceNodes.flatMap((node, i) => [
-        <div key={node.id} style={{ ...traceStyles.card, borderLeft: `4px solid ${node.color}` }}>
+        <div
+          key={node.id}
+          style={{
+            ...traceStyles.card,
+            borderLeft: `4px solid ${node.color}`,
+            opacity: inView ? 1 : 0,
+            transform: inView ? 'none' : 'translateY(12px)',
+            transition: `opacity 0.5s ease ${i * 0.2}s, transform 0.5s ease ${i * 0.2}s`,
+          }}
+        >
           <div style={traceStyles.cardHeader}>
             <span style={{ ...traceStyles.typePill, color: node.color, background: `${node.color}14` }}>
               {node.type}
@@ -267,7 +353,14 @@ function VerticalTrace() {
         </div>,
         ...(i < traceEdges.length
           ? [
-              <div key={`edge-${i}`} style={traceStyles.connector}>
+              <div
+                key={`edge-${i}`}
+                style={{
+                  ...traceStyles.connector,
+                  opacity: inView ? 1 : 0,
+                  transition: `opacity 0.3s ease ${i * 0.2 + 0.1}s`,
+                }}
+              >
                 <div style={traceStyles.connectorLine} />
                 <span style={traceStyles.connectorLabel}>{traceEdges[i]}</span>
                 <div style={traceStyles.connectorLine} />
@@ -280,21 +373,64 @@ function VerticalTrace() {
   )
 }
 
+function DriftBadge({ inView }: { inView: boolean }) {
+  return (
+    <div
+      style={{
+        ...driftStyles.container,
+        opacity: inView ? 1 : 0,
+        transform: inView ? 'none' : 'translateY(8px)',
+        transition: 'opacity 0.5s ease 0.9s, transform 0.5s ease 0.9s',
+      }}
+    >
+      <span style={driftStyles.icon}>{'\u26A0'}</span>
+      <span>
+        drift detected &mdash; <strong>THX-VERSION-AWARE</strong> changed v1.0.0 &rarr; v1.1.0 &mdash;{' '}
+        <strong>REQ-CORE-005</strong> needs review
+      </span>
+    </div>
+  )
+}
+
+function FeedbackArc({ inView }: { inView: boolean }) {
+  return (
+    <div
+      style={{
+        ...feedbackStyles.container,
+        opacity: inView ? 1 : 0,
+        transition: 'opacity 0.5s ease 1.1s',
+      }}
+    >
+      <span style={feedbackStyles.label}>Knowledge flows upstream too</span>
+      <div style={feedbackStyles.pills}>
+        {['challenges', 'validates', 'reveals_gap_in'].map((edge) => (
+          <span key={edge} style={feedbackStyles.pill}>
+            {edge}
+            <span style={feedbackStyles.arrow}>{'\u2191'}</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function HowItWorks() {
+  const { ref, inView } = useInView()
   return (
     <section style={howStyles.section}>
-      <div style={howStyles.container}>
+      <div ref={ref} style={howStyles.container}>
         <h2 style={howStyles.sectionTitle}>How it works</h2>
         <p style={howStyles.intro}>
           Lattice organizes knowledge into four layers &mdash; sources, theses, requirements, and implementations
           &mdash; connected by version-bound edges. Here&rsquo;s a real trace from Lattice&rsquo;s own knowledge graph:
         </p>
-        <VerticalTrace />
+        <VerticalTrace inView={inView} />
         <p style={howStyles.body}>
-          Every edge records the version it was bound to. When a source is updated or a thesis is revised,{' '}
-          <code style={inlineCode}>lattice drift</code> tells you exactly which downstream requirements and
-          implementations need review.
+          Every edge records the version it was bound to. When something changes,{' '}
+          <code style={inlineCode}>lattice drift</code> tells you what needs review:
         </p>
+        <DriftBadge inView={inView} />
+        <FeedbackArc inView={inView} />
         <pre style={howStyles.codeBlock}>
           <code>{`.lattice/
 ├── config.yaml
