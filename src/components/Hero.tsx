@@ -1,6 +1,6 @@
 import { colors, fonts, gradient } from '../tokens'
 
-const styles = {
+const styles: Record<string, React.CSSProperties> = {
   hero: {
     background: gradient,
     padding: '5rem 2rem 4rem',
@@ -15,15 +15,23 @@ const styles = {
     lineHeight: 1.2,
   },
   subtitle: {
-    fontSize: '1.25rem',
+    fontSize: '1.15rem',
     fontWeight: 400,
     fontFamily: fonts.system,
     opacity: 0.9,
-    maxWidth: '600px',
+    maxWidth: '680px',
     margin: '0 auto 2rem',
-    lineHeight: 1.6,
+    lineHeight: 1.7,
   },
-  cta: {
+  ctaRow: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '1rem',
+    flexWrap: 'wrap' as const,
+    marginBottom: '1.5rem',
+  },
+  ctaPrimary: {
     display: 'inline-block',
     padding: '0.75rem 2rem',
     background: '#ffffff',
@@ -36,19 +44,54 @@ const styles = {
     transition: 'transform 0.2s, box-shadow 0.2s',
     boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
   },
+  ctaSecondary: {
+    display: 'inline-block',
+    padding: '0.75rem 2rem',
+    background: 'transparent',
+    color: '#ffffff',
+    border: '2px solid rgba(255,255,255,0.6)',
+    borderRadius: '8px',
+    textDecoration: 'none',
+    fontWeight: 600,
+    fontSize: '1rem',
+    fontFamily: fonts.system,
+    transition: 'transform 0.2s, border-color 0.2s',
+  },
+  installHint: {
+    display: 'inline-block',
+    background: 'rgba(0,0,0,0.2)',
+    borderRadius: '100px',
+    padding: '0.4rem 1.25rem',
+    fontFamily: fonts.mono,
+    fontSize: '0.85rem',
+    opacity: 0.85,
+    letterSpacing: '0.01em',
+  },
 }
 
 export function Hero() {
   return (
     <section style={styles.hero}>
-      <h1 style={styles.title}>Tools for the human-agent era</h1>
+      <h1 style={styles.title}>Structure the knowledge behind what you build</h1>
       <p style={styles.subtitle}>
-        Forkzero builds developer tools where AI agents are first-class users. Knowledge coordination, multi-agent
-        debate, and infrastructure — designed for how software gets built now.
+        When you build with LLMs, the research and reasoning behind every decision disappears into chat. Lattice
+        captures it — connecting sources, strategy, requirements, and code into a knowledge graph that any collaborator,
+        human or agent, can pick up and build on.
       </p>
-      <a href="https://github.com/forkzero" target="_blank" rel="noopener noreferrer" style={styles.cta}>
-        View on GitHub
-      </a>
+      <div style={styles.ctaRow}>
+        <a
+          href="https://github.com/forkzero/lattice"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={styles.ctaPrimary}
+        >
+          Get Started
+        </a>
+        <a href="/reader?url=https://forkzero.github.io/lattice/lattice-data.json" style={styles.ctaSecondary}>
+          See it live
+        </a>
+      </div>
+      <span style={styles.installHint}>curl -fsSL https://lattice.forkzero.ai/install.sh | sh</span>
     </section>
   )
 }
