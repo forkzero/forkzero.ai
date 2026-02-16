@@ -80,10 +80,7 @@ export function Hero() {
         human or agent, can pick up and build on.
       </p>
       <div style={styles.ctaRow}>
-        <a
-          href="/getting-started"
-          style={styles.ctaPrimary}
-        >
+        <a href="/getting-started" style={styles.ctaPrimary}>
           Get Started
         </a>
         <a href="/reader?url=https://forkzero.github.io/lattice/lattice-data.json" style={styles.ctaSecondary}>

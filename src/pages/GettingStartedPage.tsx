@@ -543,7 +543,8 @@ export function GettingStartedPage() {
             <div style={s.stepContent}>
               <h3 style={s.stepTitle}>Create requirements</h3>
               <p style={s.stepText}>
-                Requirements are testable specifications derived from your theses. They bridge strategy to implementation.
+                Requirements are testable specifications derived from your theses. They bridge strategy to
+                implementation.
               </p>
               <CodeBlock
                 code={`lattice add requirement \\
@@ -592,9 +593,9 @@ export function GettingStartedPage() {
           <div style={s.claudeCard}>
             <h3 style={s.claudeTitle}>Generate a CLAUDE.md snippet</h3>
             <p style={s.claudeText}>
-              The <code style={s.inlineCode}>lattice prompt</code> command outputs a context block designed for
-              Claude Code. Add it to your project's <code style={s.inlineCode}>CLAUDE.md</code> so Claude always
-              knows the state of your knowledge graph.
+              The <code style={s.inlineCode}>lattice prompt</code> command outputs a context block designed for Claude
+              Code. Add it to your project's <code style={s.inlineCode}>CLAUDE.md</code> so Claude always knows the
+              state of your knowledge graph.
             </p>
             <CodeBlock
               code={`# Generate the prompt and append to CLAUDE.md
@@ -632,8 +633,8 @@ lattice drift`}
             <div style={s.tipTitle}>Workflow</div>
             <p style={s.tipText}>
               The power of Lattice with Claude Code is that your agent's reasoning becomes persistent and traceable.
-              Instead of losing research and decisions in chat logs, everything is captured in your Git-tracked knowledge
-              graph. The next agent, or the next human, can pick up right where you left off.
+              Instead of losing research and decisions in chat logs, everything is captured in your Git-tracked
+              knowledge graph. The next agent, or the next human, can pick up right where you left off.
             </p>
           </div>
         </section>
@@ -644,8 +645,8 @@ lattice drift`}
         <section style={s.section}>
           <h2 style={s.sectionTitle}>LLM Integrations</h2>
           <p style={s.sectionSubtitle}>
-            Lattice works with any tool that can run CLI commands. First-class integrations are on the roadmap for
-            these editors and agents:
+            Lattice works with any tool that can run CLI commands. First-class integrations are on the roadmap for these
+            editors and agents:
           </p>
 
           <div style={s.integrationGrid}>
@@ -693,9 +694,7 @@ lattice drift`}
         {/* Next Steps */}
         <section style={s.section}>
           <h2 style={s.sectionTitle}>Next Steps</h2>
-          <p style={s.sectionSubtitle}>
-            Explore the project, read the source, and join the community:
-          </p>
+          <p style={s.sectionSubtitle}>Explore the project, read the source, and join the community:</p>
 
           <div style={s.linkGrid}>
             <a
