@@ -591,21 +591,31 @@ export function GettingStartedPage() {
           </p>
 
           <div style={s.claudeCard}>
-            <h3 style={s.claudeTitle}>Generate a CLAUDE.md snippet</h3>
+            <h3 style={s.claudeTitle}>Install the /lattice skill</h3>
             <p style={s.claudeText}>
-              The <code style={s.inlineCode}>lattice prompt</code> command outputs a context block designed for Claude
-              Code. Add it to your project's <code style={s.inlineCode}>CLAUDE.md</code> so Claude always knows the
-              state of your knowledge graph.
+              The recommended way to integrate with Claude Code. This installs a{' '}
+              <code style={s.inlineCode}>/lattice</code> skill (command reference, workflow guidance, node/edge types)
+              and a product-owner agent for backlog triage and planning.
+            </p>
+            <CodeBlock code="lattice init --skill" language="shell" />
+            <p style={s.claudeText}>
+              This creates <code style={s.inlineCode}>.claude/skills/lattice/SKILL.md</code> and{' '}
+              <code style={s.inlineCode}>.claude/agents/product-owner.md</code> in your project. Claude Code
+              automatically discovers these and can use the lattice skill when working in your codebase.
+            </p>
+          </div>
+
+          <div style={s.claudeCard}>
+            <h3 style={s.claudeTitle}>Alternative: Generate a CLAUDE.md snippet</h3>
+            <p style={s.claudeText}>
+              If you prefer a manual approach, the <code style={s.inlineCode}>lattice prompt</code> command outputs a
+              context block you can append to your project's <code style={s.inlineCode}>CLAUDE.md</code>.
             </p>
             <CodeBlock
               code={`# Generate the prompt and append to CLAUDE.md
 lattice prompt >> CLAUDE.md`}
               language="shell"
             />
-            <p style={s.claudeText}>
-              This gives Claude Code awareness of your sources, theses, requirements, and their relationships. When
-              Claude makes changes, it can reference the right requirements and flag when something drifts.
-            </p>
           </div>
 
           <div style={s.claudeCard}>
@@ -652,7 +662,7 @@ lattice drift`}
           <div style={s.integrationGrid}>
             <IntegrationCard
               name="Claude Code"
-              description="Full CLI access. Use lattice prompt to generate context for CLAUDE.md."
+              description="Install the /lattice skill with lattice init --skill for full integration."
               available={true}
               icon={'\u2728'}
             />
