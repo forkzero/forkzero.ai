@@ -154,7 +154,7 @@ Think of it as the coordination layer underneath. RAG selects *from* knowledge; 
 
 \`\`\`bash
 # Install
-curl -fsSL https://raw.githubusercontent.com/forkzero/lattice/main/install.sh | sh
+curl -fsSL https://forkzero.ai/lattice/install.sh | sh
 
 # Initialize a lattice in your project
 lattice init

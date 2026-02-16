@@ -1,4 +1,5 @@
 import { colors, fonts, gradient } from '../tokens'
+import { INSTALL_CMD } from '../constants'
 
 const styles: Record<string, React.CSSProperties> = {
   hero: {
@@ -80,9 +81,7 @@ export function Hero() {
       </p>
       <div style={styles.ctaRow}>
         <a
-          href="https://github.com/forkzero/lattice"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="/getting-started"
           style={styles.ctaPrimary}
         >
           Get Started
@@ -91,7 +90,7 @@ export function Hero() {
           See it live
         </a>
       </div>
-      <span style={styles.installHint}>curl -fsSL https://lattice.forkzero.ai/install.sh | sh</span>
+      <span style={styles.installHint}>{INSTALL_CMD}</span>
     </section>
   )
 }

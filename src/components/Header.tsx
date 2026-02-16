@@ -58,6 +58,9 @@ export function Header({ minimal }: { minimal?: boolean }) {
       </a>
       {!minimal && (
         <nav style={styles.nav}>
+          <a href="/getting-started" style={styles.navLink}>
+            Get Started
+          </a>
           <a href="/blog" style={styles.navLink}>
             Blog
           </a>
