@@ -19,6 +19,14 @@ describe('parseRoute', () => {
     expect(parseRoute('/reader/')).toEqual({ page: 'reader' })
   })
 
+  it('returns getting-started for /getting-started', () => {
+    expect(parseRoute('/getting-started')).toEqual({ page: 'getting-started' })
+  })
+
+  it('returns getting-started for /getting-started/ with trailing slash', () => {
+    expect(parseRoute('/getting-started/')).toEqual({ page: 'getting-started' })
+  })
+
   it('returns blog listing for /blog', () => {
     expect(parseRoute('/blog')).toEqual({ page: 'blog' })
   })
