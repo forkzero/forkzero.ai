@@ -13,7 +13,7 @@ export function BlogComments({ slug }: { slug: string }) {
       reactionsEnabled="1"
       emitMetadata="0"
       inputPosition="top"
-      theme="light"
+      theme="dark"
       lang="en"
       loading="lazy"
     />

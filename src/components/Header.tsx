@@ -1,8 +1,10 @@
-import { colors, fonts, gradient } from '../tokens'
+import { colors, fonts } from '../tokens'
 
 const styles = {
   header: {
-    background: gradient,
+    background: colors.bgGlass,
+    backdropFilter: 'blur(12px)',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
     padding: '1rem 2rem',
     display: 'flex',
     alignItems: 'center',
@@ -86,7 +88,7 @@ export function PoweredByHeader() {
           href="https://github.com/forkzero/lattice"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: colors.bgPrimary, textDecoration: 'none' }}
+          style={{ color: colors.textPrimary, textDecoration: 'none' }}
         >
           Forkzero/Lattice
         </a>

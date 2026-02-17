@@ -1,5 +1,6 @@
 import { createRoot } from 'react-dom/client'
 import { App } from './App'
+import { colors, fonts } from './tokens'
 
 const root = document.getElementById('root')!
 
@@ -7,9 +8,9 @@ const root = document.getElementById('root')!
 Object.assign(document.body.style, {
   margin: '0',
   padding: '0',
-  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif",
-  background: '#f8f9fa',
-  color: '#1a1a2e',
+  fontFamily: fonts.system,
+  background: colors.bgSecondary,
+  color: colors.textPrimary,
   lineHeight: '1.6',
 })
 

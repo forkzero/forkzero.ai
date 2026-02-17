@@ -37,7 +37,7 @@ export const projects: Project[] = [
     description:
       'A lightweight proxy that streams S3 objects directly to clients. Signed URL generation, range requests, and multi-tenant bucket routing.',
     status: 'Production v3.x',
-    statusColor: '#3b82f6',
+    statusColor: 'hsl(180, 100%, 50%)',
     tech: ['TypeScript', 'Node.js'],
     url: 'https://github.com/forkzero/s3proxy',
   },

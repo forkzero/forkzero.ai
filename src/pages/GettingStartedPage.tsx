@@ -81,7 +81,7 @@ function StepBadge({ number }: { number: number }) {
         height: '28px',
         borderRadius: '50%',
         background: colors.accentBlue,
-        color: '#ffffff',
+        color: colors.textOnAccent,
         fontSize: '0.85rem',
         fontWeight: 700,
         fontFamily: fonts.system,
@@ -221,6 +221,8 @@ const s: Record<string, React.CSSProperties> = {
     padding: '4rem 2rem 3rem',
     textAlign: 'center',
     color: '#ffffff',
+    position: 'relative',
+    overflow: 'hidden',
   },
   heroTitle: {
     fontSize: '2.5rem',
@@ -270,7 +272,7 @@ const s: Record<string, React.CSSProperties> = {
 
   // Code blocks
   codeBlock: {
-    background: '#1a1a2e',
+    background: colors.bgDeep,
     color: '#e2e8f0',
     padding: '1.25rem',
     paddingTop: '1.75rem',
@@ -285,7 +287,7 @@ const s: Record<string, React.CSSProperties> = {
 
   // Install section
   installBox: {
-    background: '#1a1a2e',
+    background: colors.bgDeep,
     borderRadius: radius,
     padding: '1.5rem',
     position: 'relative',

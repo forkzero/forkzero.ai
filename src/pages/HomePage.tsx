@@ -167,7 +167,7 @@ const howStyles: Record<string, React.CSSProperties> = {
     marginBottom: '1.25rem',
   },
   codeBlock: {
-    background: '#1a1a2e',
+    background: colors.bgDeep,
     color: '#e2e8f0',
     padding: '1.25rem',
     borderRadius: radius,
@@ -263,7 +263,7 @@ const traceStyles: Record<string, React.CSSProperties> = {
 }
 
 const inlineCode: React.CSSProperties = {
-  background: 'rgba(0,0,0,0.06)',
+  background: 'rgba(255, 255, 255, 0.06)',
   color: colors.accentBlue,
   padding: '0.15rem 0.4rem',
   borderRadius: '4px',
@@ -319,7 +319,7 @@ const feedbackStyles: Record<string, React.CSSProperties> = {
     padding: '0.25rem 0.65rem',
     borderRadius: '100px',
     border: `1px solid ${colors.borderColor}`,
-    background: 'rgba(0,0,0,0.02)',
+    background: 'rgba(255, 255, 255, 0.04)',
     color: colors.textMuted,
   },
   arrow: {

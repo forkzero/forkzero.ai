@@ -67,8 +67,8 @@ export function renderContent(content: string) {
       i++ // skip closing :::
       const calloutStyle =
         calloutType === 'insight'
-          ? { borderColor: colors.accentPurple, bg: `${colors.accentPurple}08` }
-          : { borderColor: colors.accentBlue, bg: `${colors.accentBlue}08` }
+          ? { borderColor: colors.accentPurple, bg: `${colors.accentPurple}18` }
+          : { borderColor: colors.accentBlue, bg: `${colors.accentBlue}18` }
       blocks.push(
         <div
           key={`callout-${i}`}
@@ -458,7 +458,7 @@ const s: Record<string, React.CSSProperties> = {
     margin: '2rem 0',
   },
   codeBlock: {
-    background: '#1a1a2e',
+    background: colors.bgDeep,
     color: '#e2e8f0',
     padding: '1.25rem',
     borderRadius: radius,
@@ -501,7 +501,7 @@ const s: Record<string, React.CSSProperties> = {
   // Blockquote
   blockquote: {
     borderLeft: `3px solid ${colors.accentBlue}`,
-    background: `${colors.accentBlue}06`,
+    background: `${colors.accentBlue}14`,
     margin: '1.5rem 0',
     padding: '1rem 1.25rem',
     borderRadius: `0 ${radius} ${radius} 0`,
@@ -522,7 +522,7 @@ const s: Record<string, React.CSSProperties> = {
   // Callout
   callout: {
     borderLeft: `3px solid ${colors.accentPurple}`,
-    background: `${colors.accentPurple}08`,
+    background: `${colors.accentPurple}18`,
     margin: '1.5rem 0',
     padding: '1rem 1.25rem',
     borderRadius: `0 ${radius} ${radius} 0`,
@@ -660,7 +660,7 @@ const s: Record<string, React.CSSProperties> = {
     fontSize: '0.8rem',
     fontWeight: 500,
     color: colors.accentBlue,
-    background: `${colors.accentBlue}0a`,
+    background: `${colors.accentBlue}14`,
     border: `1px solid ${colors.accentBlue}30`,
     borderRadius: '100px',
     padding: '0.3rem 0.75rem',

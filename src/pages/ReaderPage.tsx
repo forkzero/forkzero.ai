@@ -341,14 +341,14 @@ const s = {
 }
 
 const badgeColors: Record<string, { bg: string; fg: string }> = {
-  p0: { bg: '#fef3c7', fg: '#92400e' },
-  p1: { bg: '#dbeafe', fg: '#1e40af' },
-  p2: { bg: '#f3e8ff', fg: '#6b21a8' },
-  verified: { bg: '#d1fae5', fg: '#065f46' },
-  blocked: { bg: '#fee2e2', fg: '#991b1b' },
-  deferred: { bg: '#fef3c7', fg: '#92400e' },
-  open: { bg: '#e5e7eb', fg: '#374151' },
-  wontfix: { bg: '#f3f4f6', fg: '#6b7280' },
+  p0: { bg: 'rgba(245, 158, 11, 0.15)', fg: '#fbbf24' },
+  p1: { bg: 'rgba(59, 130, 246, 0.15)', fg: '#60a5fa' },
+  p2: { bg: 'rgba(139, 92, 246, 0.15)', fg: '#a78bfa' },
+  verified: { bg: 'rgba(16, 185, 129, 0.15)', fg: '#34d399' },
+  blocked: { bg: 'rgba(239, 68, 68, 0.15)', fg: '#f87171' },
+  deferred: { bg: 'rgba(245, 158, 11, 0.15)', fg: '#fbbf24' },
+  open: { bg: 'rgba(255, 255, 255, 0.08)', fg: 'rgba(232, 240, 254, 0.7)' },
+  wontfix: { bg: 'rgba(255, 255, 255, 0.05)', fg: 'rgba(232, 240, 254, 0.45)' },
 }
 
 function Badge({ label }: { label: string }) {
@@ -532,9 +532,9 @@ export function ReaderPage() {
           <div style={s.sectionContent}>
             <div style={s.resGrid}>
               {[
-                { label: 'P0 (MVP)', total: stats.p0, verified: stats.p0Verified, color: '#92400e' },
-                { label: 'P1 (Beta)', total: stats.p1, verified: stats.p1Verified, color: '#1e40af' },
-                { label: 'P2 (Future)', total: stats.p2, verified: stats.p2Verified, color: '#6b21a8' },
+                { label: 'P0 (MVP)', total: stats.p0, verified: stats.p0Verified, color: '#fbbf24' },
+                { label: 'P1 (Beta)', total: stats.p1, verified: stats.p1Verified, color: '#60a5fa' },
+                { label: 'P2 (Future)', total: stats.p2, verified: stats.p2Verified, color: '#a78bfa' },
               ].map((item) => (
                 <div key={item.label} style={s.resItem}>
                   <div style={{ ...s.resCount, color: item.color }}>{item.total}</div>
