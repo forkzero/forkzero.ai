@@ -199,7 +199,15 @@ function buildTraceability(nodes: LatticeNode[]): TraceThesis[] {
 const s = {
   page: { background: colors.bgSecondary, minHeight: '100vh', fontFamily: fonts.system },
   container: { maxWidth: '1200px', margin: '0 auto', padding: '2rem' },
-  title: { fontSize: '2rem', fontWeight: 700, color: colors.textPrimary, marginBottom: '0.25rem' },
+  title: {
+    fontSize: 'clamp(24px, 3vw, 36px)',
+    fontWeight: 200,
+    fontFamily: "'Outfit', sans-serif",
+    letterSpacing: '0.35em',
+    textTransform: 'uppercase' as const,
+    color: colors.textPrimary,
+    marginBottom: '0.25rem',
+  },
   subtitle: { color: colors.textMuted, fontSize: '0.9rem', marginBottom: '2rem' },
   statsGrid: {
     display: 'grid',
