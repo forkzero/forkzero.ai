@@ -1,8 +1,16 @@
 import { useEffect, useMemo, useState } from 'react'
-import { colors, fonts, radius } from '../tokens'
-import { pageWrapper, cardBase, containerWide, LATTICE_LAYERS } from '../styles'
-import { PoweredByHeader } from '../components/Header'
-import { Footer } from '../components/Footer'
+import {
+  colors,
+  fonts,
+  radius,
+  pageWrapper,
+  cardBase,
+  containerWide,
+  LATTICE_LAYERS,
+  PoweredByHeader,
+  Footer,
+} from '@forkzero/ui'
+import { GITHUB_REPO_URL } from '../constants'
 
 // --- Types matching lattice export --format json ---
 
@@ -442,7 +450,7 @@ export function ReaderPage() {
   if (error) {
     return (
       <div style={s.page}>
-        <PoweredByHeader />
+        <PoweredByHeader poweredByUrl={GITHUB_REPO_URL} />
         <div style={s.error}>
           <span>{error}</span>
           <a href="/" style={{ color: colors.accentBlue, textDecoration: 'none' }}>
@@ -456,7 +464,7 @@ export function ReaderPage() {
   if (!data || !grouped || !stats || !traceability) {
     return (
       <div style={s.page}>
-        <PoweredByHeader />
+        <PoweredByHeader poweredByUrl={GITHUB_REPO_URL} />
         <div style={s.loading}>Loading lattice data...</div>
       </div>
     )
@@ -474,7 +482,7 @@ export function ReaderPage() {
 
   return (
     <div style={s.page}>
-      <PoweredByHeader />
+      <PoweredByHeader poweredByUrl={GITHUB_REPO_URL} />
       <div style={s.container}>
         <h1 style={s.title}>{data.project || 'Lattice Dashboard'}</h1>
         {data.description && <p style={{ ...s.subtitle, marginBottom: '0.5rem' }}>{data.description}</p>}
@@ -738,7 +746,7 @@ export function ReaderPage() {
           ))}
         </div>
       </div>
-      <Footer />
+      <Footer repoUrl={GITHUB_REPO_URL} />
     </div>
   )
 }

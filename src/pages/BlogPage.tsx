@@ -1,11 +1,24 @@
 import { useEffect, useMemo } from 'react'
-import { colors, radius } from '../tokens'
-import { codeBlock, inlineCode, pageWrapper, cardBase, containerNarrow } from '../styles'
-import { Header } from '../components/Header'
-import { Footer } from '../components/Footer'
+import {
+  colors,
+  radius,
+  codeBlock,
+  inlineCode,
+  pageWrapper,
+  cardBase,
+  containerNarrow,
+  Header,
+  Footer,
+} from '@forkzero/ui'
+import { GITHUB_ORG_URL, GITHUB_REPO_URL } from '../constants'
 import { BlogComments } from '../components/BlogComments'
 import { LatticeFlowDiagram } from '../components/LatticeFlowDiagram'
 import { blogPosts, type BlogPost } from '../data/blog-posts'
+
+const NAV_LINKS = [
+  { label: 'Get Started', href: '/getting-started' },
+  { label: 'Blog', href: '/blog' },
+]
 
 // --- SEO helpers ---
 
@@ -700,7 +713,7 @@ function BlogListing() {
 
   return (
     <div style={s.page}>
-      <Header />
+      <Header navLinks={NAV_LINKS} githubUrl={GITHUB_ORG_URL} />
       <div style={s.container}>
         <h1 style={s.pageTitle}>Blog</h1>
         <p style={s.pageSubtitle}>
@@ -719,7 +732,7 @@ function BlogListing() {
           </a>
         ))}
       </div>
-      <Footer />
+      <Footer repoUrl={GITHUB_REPO_URL} />
     </div>
   )
 }
@@ -739,7 +752,7 @@ function BlogPostView({ post }: { post: BlogPost }) {
 
   return (
     <div style={s.page}>
-      <Header />
+      <Header navLinks={NAV_LINKS} githubUrl={GITHUB_ORG_URL} />
       <div style={s.container}>
         <a href="/blog" style={s.backLink}>
           &larr; All posts
@@ -762,7 +775,7 @@ function BlogPostView({ post }: { post: BlogPost }) {
           <BlogComments slug={post.slug} />
         </div>
       </div>
-      <Footer />
+      <Footer repoUrl={GITHUB_REPO_URL} />
     </div>
   )
 }
@@ -774,7 +787,7 @@ function BlogNotFound() {
 
   return (
     <div style={s.page}>
-      <Header />
+      <Header navLinks={NAV_LINKS} githubUrl={GITHUB_ORG_URL} />
       <div style={{ ...s.container, textAlign: 'center' as const, paddingTop: '4rem' }}>
         <h1 style={s.pageTitle}>Post not found</h1>
         <p style={{ color: colors.textMuted, marginBottom: '2rem' }}>The blog post you're looking for doesn't exist.</p>
@@ -782,7 +795,7 @@ function BlogNotFound() {
           Back to blog
         </a>
       </div>
-      <Footer />
+      <Footer repoUrl={GITHUB_REPO_URL} />
     </div>
   )
 }

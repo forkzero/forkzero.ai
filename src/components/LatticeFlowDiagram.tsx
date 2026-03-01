@@ -1,5 +1,4 @@
-import { colors, radius, fonts } from '../tokens'
-import { LATTICE_LAYERS, LATTICE_EDGES } from '../styles'
+import { colors, radius, fonts, LATTICE_LAYERS, LATTICE_EDGES } from '@forkzero/ui'
 
 const styles: Record<string, React.CSSProperties> = {
   diagramContainer: {

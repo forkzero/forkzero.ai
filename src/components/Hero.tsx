@@ -1,4 +1,4 @@
-import { colors, fonts, gradient } from '../tokens'
+import { colors, fonts, gradient } from '@forkzero/ui'
 import { INSTALL_CMD, LATTICE_DASHBOARD_PATH } from '../constants'
 
 const keyframesStyle = `

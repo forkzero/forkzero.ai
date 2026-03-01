@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
+  "workspaces": ["packages/*"],
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build && tsx scripts/prerender.ts",
@@ -10,10 +11,10 @@
     "test": "vitest run --coverage",
     "test:fast": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint src scripts",
-    "lint:fix": "eslint src scripts --fix",
-    "format": "prettier --write 'src/**/*.{ts,tsx}' 'scripts/**/*.ts'",
-    "format:check": "prettier --check 'src/**/*.{ts,tsx}' 'scripts/**/*.ts'"
+    "lint": "eslint src scripts packages/ui/src",
+    "lint:fix": "eslint src scripts packages/ui/src --fix",
+    "format": "prettier --write 'src/**/*.{ts,tsx}' 'scripts/**/*.ts' 'packages/ui/src/**/*.{ts,tsx}'",
+    "format:check": "prettier --check 'src/**/*.{ts,tsx}' 'scripts/**/*.ts' 'packages/ui/src/**/*.{ts,tsx}'"
   },
   "dependencies": {
     "@giscus/react": "^3.1.0",

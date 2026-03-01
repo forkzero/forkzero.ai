@@ -1,7 +1,10 @@
 import { useEffect } from 'react'
-import { colors, fonts, shadows, radius, gradient } from '../tokens'
-import { INSTALL_CMD, GITHUB_REPO_URL, LATTICE_DASHBOARD_PATH } from '../constants'
 import {
+  colors,
+  fonts,
+  shadows,
+  radius,
+  gradient,
   codeBlock as codeBlockBase,
   inlineCode,
   pageWrapper,
@@ -9,10 +12,11 @@ import {
   sectionTitle as sectionTitleBase,
   containerNarrow,
   hoverLiftHandlers,
-} from '../styles'
-import { Header } from '../components/Header'
-import { Footer } from '../components/Footer'
-import { CopyButton } from '../components/CopyButton'
+  Header,
+  Footer,
+  CopyButton,
+} from '@forkzero/ui'
+import { INSTALL_CMD, GITHUB_ORG_URL, GITHUB_REPO_URL, LATTICE_DASHBOARD_PATH } from '../constants'
 
 // --- Code block with copy ---
 
@@ -394,6 +398,11 @@ const s: Record<string, React.CSSProperties> = {
 
 // --- Page ---
 
+const NAV_LINKS = [
+  { label: 'Get Started', href: '/getting-started' },
+  { label: 'Blog', href: '/blog' },
+]
+
 export function GettingStartedPage() {
   useEffect(() => {
     document.title = 'Get Started with Lattice — Forkzero'
@@ -401,7 +410,7 @@ export function GettingStartedPage() {
 
   return (
     <div style={s.page}>
-      <Header />
+      <Header navLinks={NAV_LINKS} githubUrl={GITHUB_ORG_URL} />
 
       {/* Hero */}
       <section style={s.hero}>
@@ -708,7 +717,7 @@ lattice drift`}
         </section>
       </div>
 
-      <Footer />
+      <Footer repoUrl={GITHUB_REPO_URL} />
     </div>
   )
 }

@@ -1,5 +1,4 @@
-import { colors, fonts, shadows } from '../tokens'
-import { cardBase, hoverLiftHandlers } from '../styles'
+import { colors, fonts, shadows, cardBase, hoverLiftHandlers } from '@forkzero/ui'
 import type { Project } from '../data/projects'
 
 const styles = {

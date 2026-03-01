@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { colors, fonts, shadows, radius } from '../tokens'
 import {
+  colors,
+  fonts,
+  shadows,
+  radius,
   cardBase,
   sectionTitle as sectionTitleBase,
   containerNarrow,
@@ -9,11 +12,12 @@ import {
   inlineCode,
   LATTICE_LAYERS,
   LATTICE_EDGES,
-} from '../styles'
-import { Header } from '../components/Header'
+  Header,
+  Footer,
+} from '@forkzero/ui'
+import { GITHUB_ORG_URL, GITHUB_REPO_URL } from '../constants'
 import { Hero } from '../components/Hero'
 import { ProjectCard } from '../components/ProjectCard'
-import { Footer } from '../components/Footer'
 import { projects } from '../data/projects'
 import { blogPosts } from '../data/blog-posts'
 
@@ -545,16 +549,21 @@ function Projects() {
 
 // --- Page ---
 
+const NAV_LINKS = [
+  { label: 'Get Started', href: '/getting-started' },
+  { label: 'Blog', href: '/blog' },
+]
+
 export function HomePage() {
   return (
     <>
-      <Header />
+      <Header navLinks={NAV_LINKS} githubUrl={GITHUB_ORG_URL} />
       <Hero />
       <ValueProps />
       <HowItWorks />
       <FeaturedArticle />
       <Projects />
-      <Footer />
+      <Footer repoUrl={GITHUB_REPO_URL} />
     </>
   )
 }

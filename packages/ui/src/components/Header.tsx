@@ -1,5 +1,20 @@
 import { colors, fonts } from '../tokens'
-import { GITHUB_ORG_URL, GITHUB_REPO_URL } from '../constants'
+
+export interface HeaderLink {
+  label: string
+  href: string
+}
+
+export interface HeaderProps {
+  minimal?: boolean
+  navLinks?: HeaderLink[]
+  githubUrl?: string
+}
+
+export interface PoweredByHeaderProps {
+  poweredByUrl?: string
+  poweredByLabel?: string
+}
 
 const styles = {
   header: {
@@ -52,7 +67,7 @@ const styles = {
   },
 }
 
-export function Header({ minimal }: { minimal?: boolean }) {
+export function Header({ minimal, navLinks, githubUrl }: HeaderProps) {
   return (
     <header style={styles.header}>
       <a href="/" style={styles.logo}>
@@ -61,22 +76,23 @@ export function Header({ minimal }: { minimal?: boolean }) {
       </a>
       {!minimal && (
         <nav style={styles.nav}>
-          <a href="/getting-started" style={styles.navLink}>
-            Get Started
-          </a>
-          <a href="/blog" style={styles.navLink}>
-            Blog
-          </a>
-          <a href={GITHUB_ORG_URL} target="_blank" rel="noopener noreferrer" style={styles.navLinkGh}>
-            GitHub
-          </a>
+          {navLinks?.map((link) => (
+            <a key={link.href} href={link.href} style={styles.navLink}>
+              {link.label}
+            </a>
+          ))}
+          {githubUrl && (
+            <a href={githubUrl} target="_blank" rel="noopener noreferrer" style={styles.navLinkGh}>
+              GitHub
+            </a>
+          )}
         </nav>
       )}
     </header>
   )
 }
 
-export function PoweredByHeader() {
+export function PoweredByHeader({ poweredByUrl, poweredByLabel }: PoweredByHeaderProps) {
   return (
     <header style={{ ...styles.header, padding: '0.75rem 2rem' }}>
       <a href="/" style={styles.logo}>
@@ -85,14 +101,18 @@ export function PoweredByHeader() {
       </a>
       <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem', fontFamily: fonts.system }}>
         Powered by{' '}
-        <a
-          href={GITHUB_REPO_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: colors.textPrimary, textDecoration: 'none' }}
-        >
-          Forkzero/Lattice
-        </a>
+        {poweredByUrl ? (
+          <a
+            href={poweredByUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: colors.textPrimary, textDecoration: 'none' }}
+          >
+            {poweredByLabel ?? 'Forkzero/Lattice'}
+          </a>
+        ) : (
+          <span style={{ color: colors.textPrimary }}>{poweredByLabel ?? 'Forkzero/Lattice'}</span>
+        )}
       </span>
     </header>
   )

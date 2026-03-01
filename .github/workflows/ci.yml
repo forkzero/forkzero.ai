@@ -33,6 +33,9 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Build design system
+        run: npm run build -w packages/ui
+
       - name: Typecheck
         run: npx tsc --noEmit
 

@@ -1,0 +1,26 @@
+name: Publish Design System
+
+on:
+  push:
+    branches: [main]
+    paths: ['packages/ui/**']
+
+jobs:
+  publish:
+    name: Publish @forkzero/ui
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://npm.pkg.github.com
+          cache: npm
+      - run: npm ci
+      - run: npm run build -w packages/ui
+      - run: npm publish -w packages/ui
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
