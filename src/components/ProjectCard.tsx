@@ -1,4 +1,4 @@
-import { colors, fonts, shadows, cardBase, hoverLiftHandlers } from '@forkzero/ui'
+import { colors, fonts, shadows, cardBase, useHoverLift } from '@forkzero/ui'
 import type { Project } from '../data/projects'
 
 const styles = {
@@ -71,8 +71,10 @@ const styles = {
 }
 
 export function ProjectCard({ project }: { project: Project }) {
+  const { style: hoverStyle, handlers } = useHoverLift(shadows.md)
+
   return (
-    <div style={styles.card} {...hoverLiftHandlers(shadows.md)}>
+    <div style={{ ...styles.card, ...hoverStyle }} {...handlers}>
       <div style={styles.header}>
         <div>
           <h3 style={styles.name}>{project.name}</h3>

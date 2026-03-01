@@ -14,6 +14,16 @@ const keyframesStyle = `
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
+@media (prefers-reduced-motion: reduce) {
+  @keyframes lattice-fade-slide-up {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes lattice-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(0); }
+  }
+}
 `
 
 const styles: Record<string, React.CSSProperties> = {

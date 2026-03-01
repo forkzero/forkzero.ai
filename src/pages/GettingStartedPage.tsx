@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import {
   colors,
   fonts,
@@ -11,7 +12,7 @@ import {
   cardBase,
   sectionTitle as sectionTitleBase,
   containerNarrow,
-  hoverLiftHandlers,
+  useHoverLift,
   Header,
   Footer,
   CopyButton,
@@ -182,6 +183,28 @@ function IntegrationCard({
         </a>
       )}
     </div>
+  )
+}
+
+// --- Hover lift link wrapper ---
+
+function HoverLiftLink({
+  href,
+  style,
+  children,
+  ...rest
+}: {
+  href: string
+  style: CSSProperties
+  children: ReactNode
+  target?: string
+  rel?: string
+}) {
+  const { style: hoverStyle, handlers } = useHoverLift(shadows.sm)
+  return (
+    <a href={href} style={{ ...style, ...hoverStyle }} {...handlers} {...rest}>
+      {children}
+    </a>
   )
 }
 
@@ -670,49 +693,42 @@ lattice drift`}
           <p style={s.sectionSubtitle}>Explore the project, read the source, and join the community:</p>
 
           <div style={s.linkGrid}>
-            <a
-              href={GITHUB_REPO_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={s.linkCard}
-              {...hoverLiftHandlers(shadows.sm)}
-            >
+            <HoverLiftLink href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer" style={s.linkCard}>
               <span style={s.linkIcon}>{'\u{1F4BB}'}</span>
               <div>
                 <div style={s.linkTitle}>GitHub Repository</div>
                 <div style={s.linkDesc}>Source code and issues</div>
               </div>
-            </a>
+            </HoverLiftLink>
 
-            <a href={LATTICE_DASHBOARD_PATH} style={s.linkCard} {...hoverLiftHandlers(shadows.sm)}>
+            <HoverLiftLink href={LATTICE_DASHBOARD_PATH} style={s.linkCard}>
               <span style={s.linkIcon}>{'\u{1F4CA}'}</span>
               <div>
                 <div style={s.linkTitle}>Live Dashboard</div>
                 <div style={s.linkDesc}>Lattice describing itself</div>
               </div>
-            </a>
+            </HoverLiftLink>
 
-            <a href="/blog" style={s.linkCard} {...hoverLiftHandlers(shadows.sm)}>
+            <HoverLiftLink href="/blog" style={s.linkCard}>
               <span style={s.linkIcon}>{'\u{1F4DD}'}</span>
               <div>
                 <div style={s.linkTitle}>Blog</div>
                 <div style={s.linkDesc}>Technical writing and updates</div>
               </div>
-            </a>
+            </HoverLiftLink>
 
-            <a
+            <HoverLiftLink
               href={`${GITHUB_REPO_URL}/discussions`}
               target="_blank"
               rel="noopener noreferrer"
               style={s.linkCard}
-              {...hoverLiftHandlers(shadows.sm)}
             >
               <span style={s.linkIcon}>{'\u{1F4AC}'}</span>
               <div>
                 <div style={s.linkTitle}>Discussions</div>
                 <div style={s.linkDesc}>Questions and ideas</div>
               </div>
-            </a>
+            </HoverLiftLink>
           </div>
         </section>
       </div>

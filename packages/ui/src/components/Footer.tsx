@@ -1,4 +1,5 @@
 import { colors, fonts } from '../tokens'
+import { injectGlobalStyles } from '../styles'
 
 export interface FooterProps {
   repoUrl?: string
@@ -23,8 +24,9 @@ const styles = {
 }
 
 export function Footer({ repoUrl, repoLabel, orgName }: FooterProps) {
+  injectGlobalStyles()
   return (
-    <footer style={styles.footer}>
+    <footer style={styles.footer} data-fzui>
       <p>
         &copy; {new Date().getFullYear()} {orgName ?? 'Forkzero'}.{' '}
         {repoUrl ? (

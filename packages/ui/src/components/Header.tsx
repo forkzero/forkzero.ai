@@ -1,4 +1,5 @@
 import { colors, fonts } from '../tokens'
+import { injectGlobalStyles } from '../styles'
 
 export interface HeaderLink {
   label: string
@@ -9,6 +10,7 @@ export interface HeaderProps {
   minimal?: boolean
   navLinks?: HeaderLink[]
   githubUrl?: string
+  ctaLink?: { label: string; href: string }
 }
 
 export interface PoweredByHeaderProps {
@@ -54,6 +56,18 @@ const styles = {
     fontFamily: fonts.system,
     transition: 'color 0.2s',
   },
+  ctaLink: {
+    color: colors.accentBlue,
+    textDecoration: 'none',
+    fontSize: '0.9rem',
+    fontFamily: fonts.system,
+    fontWeight: 600,
+    background: 'rgba(0, 255, 255, 0.1)',
+    padding: '0.4rem 0.8rem',
+    borderRadius: '6px',
+    border: `1px solid ${colors.accentBlue}`,
+    transition: 'background 0.2s',
+  },
   navLinkGh: {
     color: '#ffffff',
     textDecoration: 'none',
@@ -67,9 +81,10 @@ const styles = {
   },
 }
 
-export function Header({ minimal, navLinks, githubUrl }: HeaderProps) {
+export function Header({ minimal, navLinks, githubUrl, ctaLink }: HeaderProps) {
+  injectGlobalStyles()
   return (
-    <header style={styles.header}>
+    <header style={styles.header} data-fzui>
       <a href="/" style={styles.logo}>
         <span style={styles.logoBold}>FORK</span>
         <span style={styles.logoThin}>ZERO</span>
@@ -81,6 +96,11 @@ export function Header({ minimal, navLinks, githubUrl }: HeaderProps) {
               {link.label}
             </a>
           ))}
+          {ctaLink && (
+            <a href={ctaLink.href} style={styles.ctaLink}>
+              {ctaLink.label}
+            </a>
+          )}
           {githubUrl && (
             <a href={githubUrl} target="_blank" rel="noopener noreferrer" style={styles.navLinkGh}>
               GitHub
@@ -93,8 +113,9 @@ export function Header({ minimal, navLinks, githubUrl }: HeaderProps) {
 }
 
 export function PoweredByHeader({ poweredByUrl, poweredByLabel }: PoweredByHeaderProps) {
+  injectGlobalStyles()
   return (
-    <header style={{ ...styles.header, padding: '0.75rem 2rem' }}>
+    <header style={{ ...styles.header, padding: '0.75rem 2rem' }} data-fzui>
       <a href="/" style={styles.logo}>
         <span style={styles.logoBold}>FORK</span>
         <span style={styles.logoThin}>ZERO</span>

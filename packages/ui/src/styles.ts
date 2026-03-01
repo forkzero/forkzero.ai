@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import type { CSSProperties, MouseEvent } from 'react'
 import { colors, fonts, shadows, radius } from './tokens'
 
@@ -65,8 +66,76 @@ export const LATTICE_LAYERS = [
 
 export const LATTICE_EDGES = ['supports', 'derives', 'satisfies'] as const
 
-// --- Hover lift helper ---
+// --- Global styles injection ---
 
+let globalStylesInjected = false
+
+export function injectGlobalStyles(): void {
+  if (typeof document === 'undefined' || globalStylesInjected) return
+  globalStylesInjected = true
+
+  const style = document.createElement('style')
+  style.setAttribute('data-fzui-global', '')
+  style.textContent = `
+[data-fzui] :focus-visible {
+  outline: 2px solid ${colors.accentBlue};
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-fzui] *,
+  [data-fzui] *::before,
+  [data-fzui] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+`
+  document.head.appendChild(style)
+}
+
+// --- Reduced motion hook ---
+
+export function useReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(() => {
+    if (typeof window === 'undefined') return false
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  })
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const handler = (e: MediaQueryListEvent) => setReduced(e.matches)
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  return reduced
+}
+
+// --- Hover lift hook ---
+
+export function useHoverLift(defaultShadow: string = shadows.md) {
+  const reducedMotion = useReducedMotion()
+  const [hovered, setHovered] = useState(false)
+
+  const style: CSSProperties =
+    hovered && !reducedMotion
+      ? { transform: 'translateY(-2px)', boxShadow: shadows.lg }
+      : { transform: 'translateY(0)', boxShadow: defaultShadow }
+
+  const handlers = {
+    onMouseEnter: () => setHovered(true),
+    onMouseLeave: () => setHovered(false),
+  }
+
+  return { style, handlers }
+}
+
+// --- Hover lift helper (deprecated) ---
+
+/**
+ * @deprecated Use the `useHoverLift` hook instead. This function mutates the DOM directly.
+ */
 export function hoverLiftHandlers(defaultShadow: string) {
   return {
     onMouseEnter: (e: MouseEvent<HTMLElement>) => {

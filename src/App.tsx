@@ -2,12 +2,14 @@ import { HomePage } from './pages/HomePage'
 import { ReaderPage } from './pages/ReaderPage'
 import { BlogPage } from './pages/BlogPage'
 import { GettingStartedPage } from './pages/GettingStartedPage'
+import { DesignSystemPage } from './pages/DesignSystemPage'
 
-type PageRoute = 'home' | 'reader' | 'getting-started' | 'blog' | 'blog-post'
+type PageRoute = 'home' | 'reader' | 'getting-started' | 'blog' | 'blog-post' | 'design-system'
 
 export function parseRoute(path: string): { page: PageRoute; slug?: string } {
   if (path === '/reader' || path === '/reader/') return { page: 'reader' }
   if (path === '/getting-started' || path === '/getting-started/') return { page: 'getting-started' }
+  if (path === '/design-system' || path === '/design-system/') return { page: 'design-system' }
   if (path === '/blog' || path === '/blog/') return { page: 'blog' }
   if (path.startsWith('/blog/')) {
     const slug = path.replace(/^\/blog\//, '').replace(/\/$/, '')
@@ -24,6 +26,8 @@ export function App() {
       return <ReaderPage />
     case 'getting-started':
       return <GettingStartedPage />
+    case 'design-system':
+      return <DesignSystemPage />
     case 'blog':
       return <BlogPage />
     case 'blog-post':

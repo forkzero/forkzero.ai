@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { colors, fonts } from '../tokens'
+import { injectGlobalStyles } from '../styles'
 
 export function CopyButton({ text }: { text: string }) {
+  injectGlobalStyles()
   const [copied, setCopied] = useState(false)
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
@@ -23,6 +25,7 @@ export function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
+      data-fzui
       style={{
         position: 'absolute',
         top: '0.5rem',
@@ -32,6 +35,10 @@ export function CopyButton({ text }: { text: string }) {
         border: 'none',
         borderRadius: '4px',
         padding: '0.3rem 0.6rem',
+        minHeight: '2.75rem',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         fontSize: '0.75rem',
         fontFamily: fonts.system,
         cursor: 'pointer',
