@@ -13,6 +13,98 @@ beforeAll(() => {
   }
 }, 120_000)
 
+describe('pre-rendered homepage', () => {
+  const file = join(distDir, 'index.html')
+
+  it('has correct title', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('<title>Forkzero — Knowledge Coordination for AI-Native Teams</title>')
+  })
+
+  it('has meta description', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('<meta name="description"')
+    expect(html).toContain('knowledge graph')
+  })
+
+  it('has og:type website', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('og:type" content="website"')
+  })
+
+  it('has canonical URL', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('<link rel="canonical" href="https://forkzero.ai/"')
+  })
+
+  it('has noscript fallback with projects', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('<noscript>')
+    expect(html).toContain('Lattice')
+    expect(html).toContain('knowledge graph')
+  })
+
+  it('has Organization JSON-LD', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('application/ld+json')
+    expect(html).toContain('"@type":"Organization"')
+    expect(html).toContain('"name":"Forkzero"')
+  })
+
+  it('has WebSite JSON-LD', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('"@type":"WebSite"')
+  })
+
+  it('has SoftwareApplication JSON-LD', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('"@type":"SoftwareApplication"')
+    expect(html).toContain('"name":"Lattice"')
+  })
+})
+
+describe('pre-rendered getting-started', () => {
+  const file = join(distDir, 'getting-started', 'index.html')
+
+  it('exists', () => {
+    expect(existsSync(file)).toBe(true)
+  })
+
+  it('has correct title', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('<title>Getting Started — Forkzero</title>')
+  })
+
+  it('has meta description', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('<meta name="description"')
+    expect(html).toContain('Install Lattice')
+  })
+
+  it('has og:type website', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('og:type" content="website"')
+  })
+
+  it('has noscript fallback with install command', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('<noscript>')
+    expect(html).toContain('lattice init --skill')
+  })
+
+  it('has WebPage JSON-LD', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('application/ld+json')
+    expect(html).toContain('"@type":"WebPage"')
+  })
+
+  it('has BreadcrumbList JSON-LD', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('"@type":"BreadcrumbList"')
+    expect(html).toContain('Getting Started')
+  })
+})
+
 describe('pre-rendered blog listing', () => {
   const file = join(distDir, 'blog', 'index.html')
 
@@ -39,6 +131,11 @@ describe('pre-rendered blog listing', () => {
     expect(html).toContain('og:url')
   })
 
+  it('has og:type website', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('og:type" content="website"')
+  })
+
   it('has canonical URL', () => {
     const html = readFileSync(file, 'utf-8')
     expect(html).toContain('<link rel="canonical" href="https://forkzero.ai/blog"')
@@ -50,6 +147,16 @@ describe('pre-rendered blog listing', () => {
     for (const post of blogPosts) {
       expect(html).toContain(`/blog/${post.slug}`)
     }
+  })
+
+  it('has WebPage JSON-LD', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('"@type":"WebPage"')
+  })
+
+  it('has BreadcrumbList JSON-LD', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('"@type":"BreadcrumbList"')
   })
 })
 
@@ -95,5 +202,17 @@ describe('pre-rendered blog post', () => {
     expect(html).toContain('The standard framing')
     expect(html).toContain('The missing layer')
     expect(html).toContain('Knowledge as a graph problem')
+  })
+
+  it('has BlogPosting JSON-LD', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('"@type":"BlogPosting"')
+    expect(html).toContain(`"headline":"${post.title}"`)
+  })
+
+  it('has BreadcrumbList JSON-LD with 3 levels', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('"@type":"BreadcrumbList"')
+    expect(html).toContain('"position":3')
   })
 })
