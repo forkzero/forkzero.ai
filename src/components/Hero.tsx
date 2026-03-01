@@ -1,5 +1,5 @@
 import { colors, fonts, gradient } from '../tokens'
-import { INSTALL_CMD } from '../constants'
+import { INSTALL_CMD, LATTICE_DASHBOARD_PATH } from '../constants'
 
 const keyframesStyle = `
 @keyframes lattice-fade-slide-up {
@@ -238,7 +238,7 @@ export function Hero() {
           <a href="/getting-started" style={styles.ctaPrimary}>
             Get Started
           </a>
-          <a href="/reader?url=https://forkzero.github.io/lattice/lattice-data.json" style={styles.ctaSecondary}>
+          <a href={LATTICE_DASHBOARD_PATH} style={styles.ctaSecondary}>
             See it live
           </a>
         </div>

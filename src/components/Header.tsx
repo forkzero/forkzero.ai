@@ -1,4 +1,5 @@
 import { colors, fonts } from '../tokens'
+import { GITHUB_ORG_URL, GITHUB_REPO_URL } from '../constants'
 
 const styles = {
   header: {
@@ -66,7 +67,7 @@ export function Header({ minimal }: { minimal?: boolean }) {
           <a href="/blog" style={styles.navLink}>
             Blog
           </a>
-          <a href="https://github.com/forkzero" target="_blank" rel="noopener noreferrer" style={styles.navLinkGh}>
+          <a href={GITHUB_ORG_URL} target="_blank" rel="noopener noreferrer" style={styles.navLinkGh}>
             GitHub
           </a>
         </nav>
@@ -85,7 +86,7 @@ export function PoweredByHeader() {
       <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.8rem', fontFamily: fonts.system }}>
         Powered by{' '}
         <a
-          href="https://github.com/forkzero/lattice"
+          href={GITHUB_REPO_URL}
           target="_blank"
           rel="noopener noreferrer"
           style={{ color: colors.textPrimary, textDecoration: 'none' }}

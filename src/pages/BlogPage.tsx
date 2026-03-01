@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
-import { colors, fonts, shadows, radius } from '../tokens'
+import { useEffect, useMemo } from 'react'
+import { colors, radius } from '../tokens'
+import { codeBlock, inlineCode, pageWrapper, cardBase, containerNarrow } from '../styles'
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
 import { BlogComments } from '../components/BlogComments'
@@ -224,60 +225,84 @@ export function renderContent(content: string) {
 }
 
 export function renderInline(text: string): React.ReactNode {
-  // Process inline: **bold**, *italic*, `code`, [link](url)
+  // Single-pass character scanner for inline markdown:
+  // **bold**, *italic*, `code`, [link text](url), plain text
   const parts: React.ReactNode[] = []
-  let remaining = text
   let key = 0
+  let i = 0
+  let plain = ''
 
-  while (remaining.length > 0) {
-    // Bold
-    const boldMatch = remaining.match(/^(.*?)\*\*(.+?)\*\*(.*)$/s)
-    if (boldMatch) {
-      if (boldMatch[1]) parts.push(<span key={key++}>{renderInline(boldMatch[1])}</span>)
-      parts.push(<strong key={key++}>{renderInline(boldMatch[2])}</strong>)
-      remaining = boldMatch[3]
-      continue
+  const flushPlain = () => {
+    if (plain) {
+      parts.push(<span key={key++}>{plain}</span>)
+      plain = ''
     }
-
-    // Italic (single *)
-    const italicMatch = remaining.match(/^(.*?)\*(.+?)\*(.*)$/s)
-    if (italicMatch) {
-      if (italicMatch[1]) parts.push(<span key={key++}>{renderInline(italicMatch[1])}</span>)
-      parts.push(<em key={key++}>{renderInline(italicMatch[2])}</em>)
-      remaining = italicMatch[3]
-      continue
-    }
-
-    // Inline code
-    const codeMatch = remaining.match(/^(.*?)`(.+?)`(.*)$/s)
-    if (codeMatch) {
-      if (codeMatch[1]) parts.push(<span key={key++}>{renderInline(codeMatch[1])}</span>)
-      parts.push(
-        <code key={key++} style={s.inlineCode}>
-          {codeMatch[2]}
-        </code>,
-      )
-      remaining = codeMatch[3]
-      continue
-    }
-
-    // Link
-    const linkMatch = remaining.match(/^(.*?)\[(.+?)\]\((.+?)\)(.*)$/s)
-    if (linkMatch) {
-      if (linkMatch[1]) parts.push(<span key={key++}>{renderInline(linkMatch[1])}</span>)
-      parts.push(
-        <a key={key++} href={linkMatch[3]} target="_blank" rel="noopener noreferrer" style={s.link}>
-          {linkMatch[2]}
-        </a>,
-      )
-      remaining = linkMatch[4]
-      continue
-    }
-
-    // Plain text
-    parts.push(<span key={key++}>{remaining}</span>)
-    break
   }
+
+  while (i < text.length) {
+    // Bold: **...**
+    if (text[i] === '*' && text[i + 1] === '*') {
+      const end = text.indexOf('**', i + 2)
+      if (end !== -1) {
+        flushPlain()
+        parts.push(<strong key={key++}>{renderInline(text.slice(i + 2, end))}</strong>)
+        i = end + 2
+        continue
+      }
+    }
+
+    // Italic: *...*  (but not **)
+    if (text[i] === '*' && text[i + 1] !== '*') {
+      const end = text.indexOf('*', i + 1)
+      if (end !== -1) {
+        flushPlain()
+        parts.push(<em key={key++}>{renderInline(text.slice(i + 1, end))}</em>)
+        i = end + 1
+        continue
+      }
+    }
+
+    // Inline code: `...`
+    if (text[i] === '`') {
+      const end = text.indexOf('`', i + 1)
+      if (end !== -1) {
+        flushPlain()
+        parts.push(
+          <code key={key++} style={s.inlineCode}>
+            {text.slice(i + 1, end)}
+          </code>,
+        )
+        i = end + 1
+        continue
+      }
+    }
+
+    // Link: [text](url)
+    if (text[i] === '[') {
+      const closeBracket = text.indexOf(']', i + 1)
+      if (closeBracket !== -1 && text[closeBracket + 1] === '(') {
+        const closeParen = text.indexOf(')', closeBracket + 2)
+        if (closeParen !== -1) {
+          flushPlain()
+          const linkText = text.slice(i + 1, closeBracket)
+          const linkUrl = text.slice(closeBracket + 2, closeParen)
+          parts.push(
+            <a key={key++} href={linkUrl} target="_blank" rel="noopener noreferrer" style={s.link}>
+              {linkText}
+            </a>,
+          )
+          i = closeParen + 1
+          continue
+        }
+      }
+    }
+
+    // Plain character
+    plain += text[i]
+    i++
+  }
+
+  flushPlain()
 
   return parts.length === 1 ? parts[0] : <>{parts}</>
 }
@@ -367,9 +392,8 @@ function ShareLinks({ post }: { post: BlogPost }) {
 // --- Styles ---
 
 const s: Record<string, React.CSSProperties> = {
-  page: { background: colors.bgSecondary, minHeight: '100vh', fontFamily: fonts.system },
-  container: { maxWidth: '800px', margin: '0 auto', padding: '3rem 2rem' },
-  listContainer: { maxWidth: '800px', margin: '0 auto', padding: '3rem 2rem' },
+  page: { ...pageWrapper },
+  container: { ...containerNarrow, padding: '3rem 2rem' },
   pageTitle: {
     fontSize: '2rem',
     fontWeight: 700,
@@ -382,11 +406,8 @@ const s: Record<string, React.CSSProperties> = {
     marginBottom: '2.5rem',
   },
   postCard: {
-    background: colors.bgCard,
-    borderRadius: radius,
+    ...cardBase,
     padding: '2rem',
-    boxShadow: shadows.md,
-    border: `1px solid ${colors.borderColor}`,
     marginBottom: '1.5rem',
     textDecoration: 'none' as const,
     display: 'block',
@@ -419,11 +440,8 @@ const s: Record<string, React.CSSProperties> = {
   },
   // Single post styles
   article: {
-    background: colors.bgCard,
-    borderRadius: radius,
+    ...cardBase,
     padding: '3rem',
-    boxShadow: shadows.md,
-    border: `1px solid ${colors.borderColor}`,
   },
   articleTitle: {
     fontSize: '2.2rem',
@@ -458,23 +476,10 @@ const s: Record<string, React.CSSProperties> = {
     margin: '2rem 0',
   },
   codeBlock: {
-    background: colors.bgDeep,
-    color: '#e2e8f0',
-    padding: '1.25rem',
-    borderRadius: radius,
-    fontSize: '0.9rem',
-    fontFamily: fonts.mono,
-    overflowX: 'auto' as const,
-    marginBottom: '1.25rem',
-    lineHeight: 1.5,
+    ...codeBlock,
   },
   inlineCode: {
-    background: colors.bgSecondary,
-    color: colors.accentBlue,
-    padding: '0.15rem 0.4rem',
-    borderRadius: '4px',
-    fontSize: '0.9em',
-    fontFamily: fonts.mono,
+    ...inlineCode,
   },
   link: {
     color: colors.accentBlue,
@@ -696,7 +701,7 @@ function BlogListing() {
   return (
     <div style={s.page}>
       <Header />
-      <div style={s.listContainer}>
+      <div style={s.container}>
         <h1 style={s.pageTitle}>Blog</h1>
         <p style={s.pageSubtitle}>
           Technical writing on knowledge coordination, context engineering, and AI-first developer tooling.
@@ -720,6 +725,8 @@ function BlogListing() {
 }
 
 function BlogPostView({ post }: { post: BlogPost }) {
+  const renderedContent = useMemo(() => renderContent(post.content), [post.content])
+
   useEffect(() => {
     document.title = `${post.title} \u2014 Forkzero`
     setMetaTag('description', post.excerpt)
@@ -744,7 +751,7 @@ function BlogPostView({ post }: { post: BlogPost }) {
             {' \u00b7 '}
             {post.author.name}
           </div>
-          {renderContent(post.content)}
+          {renderedContent}
           <SourceCards post={post} />
           <AuthorBio post={post} />
         </article>

@@ -1,5 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
 import { colors, fonts, shadows, radius } from '../tokens'
+import {
+  cardBase,
+  sectionTitle as sectionTitleBase,
+  containerNarrow,
+  containerWide,
+  codeBlock,
+  inlineCode,
+  LATTICE_LAYERS,
+  LATTICE_EDGES,
+} from '../styles'
 import { Header } from '../components/Header'
 import { Hero } from '../components/Hero'
 import { ProjectCard } from '../components/ProjectCard'
@@ -30,15 +40,11 @@ function useInView() {
 
 const valuePropsStyles: Record<string, React.CSSProperties> = {
   section: {
-    maxWidth: '1200px',
-    margin: '0 auto',
+    ...containerWide,
     padding: '3rem 2rem',
   },
   sectionTitle: {
-    fontSize: '1.5rem',
-    fontWeight: 600,
-    fontFamily: fonts.system,
-    color: colors.textPrimary,
+    ...sectionTitleBase,
     marginBottom: '1.5rem',
     textAlign: 'center' as const,
   },
@@ -48,11 +54,8 @@ const valuePropsStyles: Record<string, React.CSSProperties> = {
     gap: '1.5rem',
   },
   card: {
-    background: colors.bgCard,
-    borderRadius: radius,
+    ...cardBase,
     padding: '1.75rem',
-    boxShadow: shadows.md,
-    border: `1px solid ${colors.borderColor}`,
   },
   cardHeading: {
     fontSize: '1.15rem',
@@ -108,31 +111,31 @@ function ValueProps() {
 const traceNodes = [
   {
     type: 'Source',
-    color: colors.accentBlue,
+    color: LATTICE_LAYERS[0].color,
     id: 'SRC-REQUIREMENTS-DRIFT',
     title: 'Requirements Documentation Drifts From Implementation',
   },
   {
     type: 'Thesis',
-    color: colors.accentPurple,
+    color: LATTICE_LAYERS[1].color,
     id: 'THX-VERSION-AWARE',
     title: 'Traceability Must Be Version-Aware to Enable Drift Detection',
   },
   {
     type: 'Requirement',
-    color: colors.accentYellow,
+    color: LATTICE_LAYERS[2].color,
     id: 'REQ-CORE-005',
     title: 'Automatic Drift Detection',
   },
   {
     type: 'Implementation',
-    color: colors.accentGreen,
+    color: LATTICE_LAYERS[3].color,
     id: 'IMP-GRAPH-001',
     title: 'Graph Traversal and Drift Detection',
   },
 ]
 
-const traceEdges = ['supports', 'derives', 'satisfies']
+const traceEdges = [...LATTICE_EDGES]
 
 const howStyles: Record<string, React.CSSProperties> = {
   section: {
@@ -140,14 +143,10 @@ const howStyles: Record<string, React.CSSProperties> = {
     padding: '3rem 2rem',
   },
   container: {
-    maxWidth: '800px',
-    margin: '0 auto',
+    ...containerNarrow,
   },
   sectionTitle: {
-    fontSize: '1.5rem',
-    fontWeight: 600,
-    fontFamily: fonts.system,
-    color: colors.textPrimary,
+    ...sectionTitleBase,
     marginBottom: '1rem',
     textAlign: 'center' as const,
   },
@@ -167,15 +166,7 @@ const howStyles: Record<string, React.CSSProperties> = {
     marginBottom: '1.25rem',
   },
   codeBlock: {
-    background: colors.bgDeep,
-    color: '#e2e8f0',
-    padding: '1.25rem',
-    borderRadius: radius,
-    fontSize: '0.9rem',
-    fontFamily: fonts.mono,
-    overflowX: 'auto' as const,
-    marginBottom: '1.25rem',
-    lineHeight: 1.5,
+    ...codeBlock,
   },
   closing: {
     fontSize: '0.95rem',
@@ -195,13 +186,11 @@ const traceStyles: Record<string, React.CSSProperties> = {
     margin: '2rem 0',
   },
   card: {
+    ...cardBase,
     width: '100%',
     maxWidth: '520px',
-    background: colors.bgCard,
-    borderRadius: radius,
     padding: '1rem 1.25rem',
     boxShadow: shadows.sm,
-    border: `1px solid ${colors.borderColor}`,
   },
   cardHeader: {
     display: 'flex',
@@ -262,13 +251,8 @@ const traceStyles: Record<string, React.CSSProperties> = {
   },
 }
 
-const inlineCode: React.CSSProperties = {
-  background: 'rgba(255, 255, 255, 0.06)',
-  color: colors.accentBlue,
-  padding: '0.15rem 0.4rem',
-  borderRadius: '4px',
-  fontSize: '0.9em',
-  fontFamily: fonts.mono,
+const inlineCodeStyle: React.CSSProperties = {
+  ...inlineCode,
 }
 
 const driftStyles: Record<string, React.CSSProperties> = {
@@ -427,7 +411,7 @@ function HowItWorks() {
         <VerticalTrace inView={inView} />
         <p style={howStyles.body}>
           Every edge records the version it was bound to. When something changes,{' '}
-          <code style={inlineCode}>lattice drift</code> tells you what needs review:
+          <code style={inlineCodeStyle}>lattice drift</code> tells you what needs review:
         </p>
         <DriftBadge inView={inView} />
         <FeedbackArc inView={inView} />
@@ -452,17 +436,13 @@ function HowItWorks() {
 
 const featuredStyles: Record<string, React.CSSProperties> = {
   section: {
-    maxWidth: '800px',
-    margin: '0 auto',
+    ...containerNarrow,
     padding: '3rem 2rem',
   },
   card: {
+    ...cardBase,
     display: 'block',
-    background: colors.bgCard,
-    borderRadius: radius,
     padding: '2rem',
-    boxShadow: shadows.md,
-    border: `1px solid ${colors.borderColor}`,
     textDecoration: 'none',
     color: 'inherit',
     transition: 'box-shadow 0.2s, transform 0.2s',
@@ -522,15 +502,11 @@ function FeaturedArticle() {
 
 const projectsStyles: Record<string, React.CSSProperties> = {
   section: {
-    maxWidth: '1200px',
-    margin: '0 auto',
+    ...containerWide,
     padding: '3rem 2rem',
   },
   sectionTitle: {
-    fontSize: '1.5rem',
-    fontWeight: 600,
-    fontFamily: fonts.system,
-    color: colors.textPrimary,
+    ...sectionTitleBase,
     marginBottom: '1.5rem',
   },
   featuredGrid: {

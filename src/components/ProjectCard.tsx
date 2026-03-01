@@ -1,13 +1,11 @@
-import { colors, fonts, shadows, radius } from '../tokens'
+import { colors, fonts, shadows } from '../tokens'
+import { cardBase, hoverLiftHandlers } from '../styles'
 import type { Project } from '../data/projects'
 
 const styles = {
   card: {
-    background: colors.bgCard,
-    borderRadius: radius,
+    ...cardBase,
     padding: '1.5rem',
-    boxShadow: shadows.md,
-    border: `1px solid ${colors.borderColor}`,
     transition: 'transform 0.2s, box-shadow 0.2s',
     display: 'flex',
     flexDirection: 'column' as const,
@@ -75,17 +73,7 @@ const styles = {
 
 export function ProjectCard({ project }: { project: Project }) {
   return (
-    <div
-      style={styles.card}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-2px)'
-        e.currentTarget.style.boxShadow = shadows.lg
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)'
-        e.currentTarget.style.boxShadow = shadows.md
-      }}
-    >
+    <div style={styles.card} {...hoverLiftHandlers(shadows.md)}>
       <div style={styles.header}>
         <div>
           <h3 style={styles.name}>{project.name}</h3>

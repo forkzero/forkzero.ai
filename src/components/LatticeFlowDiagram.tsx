@@ -1,4 +1,5 @@
 import { colors, radius, fonts } from '../tokens'
+import { LATTICE_LAYERS, LATTICE_EDGES } from '../styles'
 
 const styles: Record<string, React.CSSProperties> = {
   diagramContainer: {
@@ -58,13 +59,8 @@ const styles: Record<string, React.CSSProperties> = {
   },
 }
 
-const nodes = [
-  { label: 'Sources', color: colors.accentBlue },
-  { label: 'Theses', color: colors.accentPurple },
-  { label: 'Requirements', color: colors.accentYellow },
-  { label: 'Implementations', color: colors.accentGreen },
-]
-const edges = ['supports', 'derives', 'satisfies']
+const nodes = LATTICE_LAYERS.map((layer) => ({ label: layer.label, color: layer.color }))
+const edges = [...LATTICE_EDGES]
 
 export function LatticeFlowDiagram() {
   return (

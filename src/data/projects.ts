@@ -1,3 +1,5 @@
+import { GITHUB_REPO_URL, LATTICE_DASHBOARD_URL } from '../constants'
+
 export interface Project {
   name: string
   tagline: string
@@ -18,8 +20,8 @@ export const projects: Project[] = [
     status: 'Active',
     statusColor: '#10b981',
     tech: ['Rust', 'MCP', 'YAML'],
-    url: 'https://github.com/forkzero/lattice',
-    readerUrl: 'https://forkzero.ai/reader?url=https://forkzero.github.io/lattice/lattice-data.json',
+    url: GITHUB_REPO_URL,
+    readerUrl: LATTICE_DASHBOARD_URL,
   },
   {
     name: 'Team of Rivals',

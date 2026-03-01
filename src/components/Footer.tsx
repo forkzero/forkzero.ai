@@ -1,4 +1,5 @@
 import { colors, fonts } from '../tokens'
+import { GITHUB_REPO_URL } from '../constants'
 
 const styles = {
   footer: {
@@ -21,7 +22,7 @@ export function Footer() {
     <footer style={styles.footer}>
       <p>
         &copy; {new Date().getFullYear()} Forkzero. Built with{' '}
-        <a href="https://github.com/forkzero/lattice" style={styles.link}>
+        <a href={GITHUB_REPO_URL} style={styles.link}>
           Lattice
         </a>
         .

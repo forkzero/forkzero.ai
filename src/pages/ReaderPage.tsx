@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
-import { colors, fonts, shadows, radius } from '../tokens'
+import { useEffect, useMemo, useState } from 'react'
+import { colors, fonts, radius } from '../tokens'
+import { pageWrapper, cardBase, containerWide, LATTICE_LAYERS } from '../styles'
 import { PoweredByHeader } from '../components/Header'
 import { Footer } from '../components/Footer'
 
@@ -69,11 +70,29 @@ interface Stats {
   p2Verified: number
 }
 
-function computeStats(nodes: LatticeNode[]): Stats {
-  const sources = nodes.filter((n) => n.type === 'source')
-  const theses = nodes.filter((n) => n.type === 'thesis')
-  const requirements = nodes.filter((n) => n.type === 'requirement')
-  const implementations = nodes.filter((n) => n.type === 'implementation')
+interface GroupedNodes {
+  sources: LatticeNode[]
+  theses: LatticeNode[]
+  requirements: LatticeNode[]
+  implementations: LatticeNode[]
+}
+
+function groupNodesByType(nodes: LatticeNode[]): GroupedNodes {
+  const sources: LatticeNode[] = []
+  const theses: LatticeNode[] = []
+  const requirements: LatticeNode[] = []
+  const implementations: LatticeNode[] = []
+  for (const n of nodes) {
+    if (n.type === 'source') sources.push(n)
+    else if (n.type === 'thesis') theses.push(n)
+    else if (n.type === 'requirement') requirements.push(n)
+    else if (n.type === 'implementation') implementations.push(n)
+  }
+  return { sources, theses, requirements, implementations }
+}
+
+function computeStats(grouped: GroupedNodes): Stats {
+  const { sources, theses, requirements, implementations } = grouped
 
   const implementedIds = new Set<string>()
   for (const impl of implementations) {
@@ -158,10 +177,8 @@ interface TraceThesis {
   requirements: TraceReq[]
 }
 
-function buildTraceability(nodes: LatticeNode[]): TraceThesis[] {
-  const theses = nodes.filter((n) => n.type === 'thesis')
-  const requirements = nodes.filter((n) => n.type === 'requirement')
-  const implementations = nodes.filter((n) => n.type === 'implementation')
+function buildTraceability(grouped: GroupedNodes): TraceThesis[] {
+  const { theses, requirements, implementations } = grouped
 
   const reqToImpls = new Map<string, { id: string; title: string }[]>()
   for (const impl of implementations) {
@@ -197,8 +214,8 @@ function buildTraceability(nodes: LatticeNode[]): TraceThesis[] {
 // --- Styles ---
 
 const s = {
-  page: { background: colors.bgSecondary, minHeight: '100vh', fontFamily: fonts.system },
-  container: { maxWidth: '1200px', margin: '0 auto', padding: '2rem' },
+  page: { ...pageWrapper },
+  container: { ...containerWide, padding: '2rem' },
   title: {
     fontSize: 'clamp(24px, 3vw, 36px)',
     fontWeight: 200,
@@ -216,11 +233,8 @@ const s = {
     marginBottom: '2rem',
   },
   statCard: {
-    background: colors.bgCard,
-    borderRadius: radius,
+    ...cardBase,
     padding: '1.5rem',
-    boxShadow: shadows.md,
-    border: `1px solid ${colors.borderColor}`,
     cursor: 'pointer',
     textDecoration: 'none' as const,
     color: 'inherit',
@@ -236,11 +250,8 @@ const s = {
   },
   statValue: { fontSize: '2rem', fontWeight: 700 },
   section: {
-    background: colors.bgCard,
-    borderRadius: radius,
+    ...cardBase,
     marginBottom: '1.5rem',
-    boxShadow: shadows.md,
-    border: `1px solid ${colors.borderColor}`,
     overflow: 'hidden',
   },
   sectionHeader: {
@@ -365,12 +376,9 @@ function Badge({ label }: { label: string }) {
   return <span style={{ ...s.badge, background: c.bg, color: c.fg }}>{label}</span>
 }
 
-const statColors: Record<string, string> = {
-  sources: colors.accentBlue,
-  theses: colors.accentPurple,
-  requirements: colors.accentYellow,
-  implementations: colors.accentGreen,
-}
+const statColors: Record<string, string> = Object.fromEntries(
+  LATTICE_LAYERS.map((layer) => [layer.label.toLowerCase(), layer.color]),
+)
 
 // --- Collapsible details (since <details> doesn't work well with React inline styles) ---
 
@@ -403,15 +411,11 @@ interface LatticeExport {
 }
 
 export function ReaderPage() {
+  const url = useMemo(() => new URLSearchParams(window.location.search).get('url'), [])
   const [data, setData] = useState<LatticeExport | null>(null)
-  const [error, setError] = useState<string | null>(() => {
-    const u = new URLSearchParams(window.location.search).get('url')
-    return u ? null : 'No URL provided. Use ?url=<json-url>'
-  })
+  const [error, setError] = useState<string | null>(() => (url ? null : 'No URL provided. Use ?url=<json-url>'))
   const [priorityFilter, setPriorityFilter] = useState('all')
   const [statusFilter, setStatusFilter] = useState('all')
-
-  const url = new URLSearchParams(window.location.search).get('url')
 
   useEffect(() => {
     if (!url) return
@@ -431,6 +435,10 @@ export function ReaderPage() {
       .catch((e) => setError(`Failed to load: ${e.message}`))
   }, [url])
 
+  const grouped = useMemo(() => (data ? groupNodesByType(data.nodes) : null), [data])
+  const stats = useMemo(() => (grouped ? computeStats(grouped) : null), [grouped])
+  const traceability = useMemo(() => (grouped ? buildTraceability(grouped) : null), [grouped])
+
   if (error) {
     return (
       <div style={s.page}>
@@ -445,7 +453,7 @@ export function ReaderPage() {
     )
   }
 
-  if (!data) {
+  if (!data || !grouped || !stats || !traceability) {
     return (
       <div style={s.page}>
         <PoweredByHeader />
@@ -454,13 +462,7 @@ export function ReaderPage() {
     )
   }
 
-  const nodes = data.nodes
-  const stats = computeStats(nodes)
-  const traceability = buildTraceability(nodes)
-  const sources = nodes.filter((n) => n.type === 'source')
-  const theses = nodes.filter((n) => n.type === 'thesis')
-  const requirements = nodes.filter((n) => n.type === 'requirement')
-  const implementations = nodes.filter((n) => n.type === 'implementation')
+  const { sources, theses, requirements, implementations } = grouped
 
   const filteredReqs = requirements.filter((r) => {
     const pri = r.priority?.toUpperCase() ?? ''

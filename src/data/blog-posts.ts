@@ -1,3 +1,5 @@
+import { INSTALL_CMD, LATTICE_DASHBOARD_URL, GITHUB_REPO_URL } from '../constants'
+
 export interface BlogAuthor {
   name: string
   bio: string
@@ -154,14 +156,14 @@ Think of it as the coordination layer underneath. RAG selects *from* knowledge; 
 
 \`\`\`bash
 # Install
-curl -fsSL https://forkzero.ai/lattice/install.sh | sh
+${INSTALL_CMD}
 
 # Initialize a lattice in your project
 lattice init
 \`\`\`
 
-- [Lattice on GitHub](https://github.com/forkzero/lattice)
-- [Live dashboard](https://forkzero.ai/reader?url=https://forkzero.github.io/lattice/lattice-data.json)
+- [Lattice on GitHub](${GITHUB_REPO_URL})
+- [Live dashboard](${LATTICE_DASHBOARD_URL})
 - [Forkzero](https://forkzero.ai)`,
   },
 ]

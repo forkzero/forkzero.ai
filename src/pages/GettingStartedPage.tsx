@@ -1,43 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { colors, fonts, shadows, radius, gradient } from '../tokens'
-import { INSTALL_CMD } from '../constants'
+import { INSTALL_CMD, GITHUB_REPO_URL, LATTICE_DASHBOARD_PATH } from '../constants'
+import {
+  codeBlock as codeBlockBase,
+  inlineCode,
+  pageWrapper,
+  cardBase,
+  sectionTitle as sectionTitleBase,
+  containerNarrow,
+  hoverLiftHandlers,
+} from '../styles'
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
-
-// --- Copy button helper ---
-
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false)
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    })
-  }
-
-  return (
-    <button
-      onClick={handleCopy}
-      style={{
-        position: 'absolute',
-        top: '0.5rem',
-        right: '0.5rem',
-        background: copied ? colors.accentGreen : 'rgba(255,255,255,0.1)',
-        color: copied ? '#ffffff' : 'rgba(255,255,255,0.7)',
-        border: 'none',
-        borderRadius: '4px',
-        padding: '0.3rem 0.6rem',
-        fontSize: '0.75rem',
-        fontFamily: fonts.system,
-        cursor: 'pointer',
-        transition: 'all 0.2s',
-      }}
-    >
-      {copied ? 'Copied!' : 'Copy'}
-    </button>
-  )
-}
+import { CopyButton } from '../components/CopyButton'
 
 // --- Code block with copy ---
 
@@ -180,7 +155,7 @@ function IntegrationCard({
         </span>
       ) : (
         <a
-          href="https://github.com/forkzero/lattice/issues"
+          href={`${GITHUB_REPO_URL}/issues`}
           target="_blank"
           rel="noopener noreferrer"
           style={{
@@ -210,9 +185,7 @@ function IntegrationCard({
 
 const s: Record<string, React.CSSProperties> = {
   page: {
-    background: colors.bgSecondary,
-    minHeight: '100vh',
-    fontFamily: fonts.system,
+    ...pageWrapper,
   },
 
   // Hero
@@ -243,18 +216,14 @@ const s: Record<string, React.CSSProperties> = {
 
   // Sections
   container: {
-    maxWidth: '800px',
-    margin: '0 auto',
+    ...containerNarrow,
     padding: '0 2rem',
   },
   section: {
     padding: '3rem 0',
   },
   sectionTitle: {
-    fontSize: '1.5rem',
-    fontWeight: 600,
-    fontFamily: fonts.system,
-    color: colors.textPrimary,
+    ...sectionTitleBase,
     marginBottom: '1rem',
   },
   sectionSubtitle: {
@@ -272,16 +241,9 @@ const s: Record<string, React.CSSProperties> = {
 
   // Code blocks
   codeBlock: {
-    background: colors.bgDeep,
-    color: '#e2e8f0',
-    padding: '1.25rem',
+    ...codeBlockBase,
     paddingTop: '1.75rem',
-    borderRadius: radius,
-    fontSize: '0.9rem',
-    fontFamily: fonts.mono,
-    overflowX: 'auto',
     marginBottom: '1rem',
-    lineHeight: 1.5,
     margin: 0,
   },
 
@@ -328,12 +290,7 @@ const s: Record<string, React.CSSProperties> = {
 
   // Inline code
   inlineCode: {
-    background: colors.bgSecondary,
-    color: colors.accentBlue,
-    padding: '0.15rem 0.4rem',
-    borderRadius: '4px',
-    fontSize: '0.9em',
-    fontFamily: fonts.mono,
+    ...inlineCode,
   },
 
   // Integration grid
@@ -346,11 +303,8 @@ const s: Record<string, React.CSSProperties> = {
 
   // Claude Code section card
   claudeCard: {
-    background: colors.bgCard,
-    borderRadius: radius,
+    ...cardBase,
     padding: '2rem',
-    boxShadow: shadows.md,
-    border: `1px solid ${colors.borderColor}`,
     borderTop: `3px solid ${colors.accentPurple}`,
     marginBottom: '1.5rem',
   },
@@ -445,8 +399,6 @@ export function GettingStartedPage() {
     document.title = 'Get Started with Lattice — Forkzero'
   }, [])
 
-  const installCmd = INSTALL_CMD
-
   return (
     <div style={s.page}>
       <Header />
@@ -468,9 +420,9 @@ export function GettingStartedPage() {
             Lattice ships as a single binary. Install it with one command on macOS or Linux:
           </p>
           <div style={{ ...s.installBox, position: 'relative' as const }}>
-            <CopyButton text={installCmd} />
+            <CopyButton text={INSTALL_CMD} />
             <pre style={s.installCode}>
-              <code>{installCmd}</code>
+              <code>{INSTALL_CMD}</code>
             </pre>
           </div>
           <p style={{ fontSize: '0.85rem', color: colors.textMuted, lineHeight: 1.6 }}>
@@ -710,18 +662,11 @@ lattice drift`}
 
           <div style={s.linkGrid}>
             <a
-              href="https://github.com/forkzero/lattice"
+              href={GITHUB_REPO_URL}
               target="_blank"
               rel="noopener noreferrer"
               style={s.linkCard}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = shadows.lg
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = shadows.sm
-              }}
+              {...hoverLiftHandlers(shadows.sm)}
             >
               <span style={s.linkIcon}>{'\u{1F4BB}'}</span>
               <div>
@@ -730,18 +675,7 @@ lattice drift`}
               </div>
             </a>
 
-            <a
-              href="/reader?url=https://forkzero.github.io/lattice/lattice-data.json"
-              style={s.linkCard}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = shadows.lg
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = shadows.sm
-              }}
-            >
+            <a href={LATTICE_DASHBOARD_PATH} style={s.linkCard} {...hoverLiftHandlers(shadows.sm)}>
               <span style={s.linkIcon}>{'\u{1F4CA}'}</span>
               <div>
                 <div style={s.linkTitle}>Live Dashboard</div>
@@ -749,18 +683,7 @@ lattice drift`}
               </div>
             </a>
 
-            <a
-              href="/blog"
-              style={s.linkCard}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = shadows.lg
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = shadows.sm
-              }}
-            >
+            <a href="/blog" style={s.linkCard} {...hoverLiftHandlers(shadows.sm)}>
               <span style={s.linkIcon}>{'\u{1F4DD}'}</span>
               <div>
                 <div style={s.linkTitle}>Blog</div>
@@ -769,18 +692,11 @@ lattice drift`}
             </a>
 
             <a
-              href="https://github.com/forkzero/lattice/discussions"
+              href={`${GITHUB_REPO_URL}/discussions`}
               target="_blank"
               rel="noopener noreferrer"
               style={s.linkCard}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)'
-                e.currentTarget.style.boxShadow = shadows.lg
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)'
-                e.currentTarget.style.boxShadow = shadows.sm
-              }}
+              {...hoverLiftHandlers(shadows.sm)}
             >
               <span style={s.linkIcon}>{'\u{1F4AC}'}</span>
               <div>
