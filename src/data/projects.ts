@@ -16,7 +16,7 @@ export const projects: Project[] = [
     name: 'Lattice',
     tagline: 'Knowledge coordination protocol',
     description:
-      'Connects research, strategy, requirements, and implementation into a traversable knowledge graph. Agents and humans trace any decision back to its source.',
+      'The knowledge coordination protocol. Four layers — sources, theses, requirements, implementations — connected by version-bound edges with automatic drift detection. CLI, MCP server, and Claude Code integration built in.',
     status: 'Active',
     statusColor: '#10b981',
     tech: ['Rust', 'MCP', 'YAML'],

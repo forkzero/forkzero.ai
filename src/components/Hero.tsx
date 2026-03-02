@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react'
 import { colors, fonts, gradient } from '@forkzero/ui'
-import { INSTALL_CMD, LATTICE_DASHBOARD_PATH } from '../constants'
+import { INSTALL_CMD, GITHUB_REPO_URL } from '../constants'
 
 const keyframesStyle = `
 @keyframes lattice-fade-slide-up {
@@ -109,7 +110,9 @@ const styles: Record<string, React.CSSProperties> = {
     boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
   },
   ctaSecondary: {
-    display: 'inline-block',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.5rem',
     padding: '0.75rem 2rem',
     background: 'transparent',
     color: '#ffffff',
@@ -120,6 +123,10 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '1rem',
     fontFamily: fonts.system,
     transition: 'transform 0.2s, border-color 0.2s',
+  },
+  starIcon: {
+    width: '16px',
+    height: '16px',
   },
   installHint: {
     display: 'inline-block',
@@ -201,7 +208,33 @@ function HeroCurves() {
   )
 }
 
+function useStarCount() {
+  const [count, setCount] = useState<number | null>(null)
+  useEffect(() => {
+    fetch('https://api.github.com/repos/forkzero/lattice')
+      .then((res) => res.json())
+      .then((data: { stargazers_count?: number }) => {
+        if (typeof data.stargazers_count === 'number') {
+          setCount(data.stargazers_count)
+        }
+      })
+      .catch(() => {
+        /* ignore — button still works without count */
+      })
+  }, [])
+  return count
+}
+
+function StarIcon() {
+  return (
+    <svg style={styles.starIcon} viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+      <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z" />
+    </svg>
+  )
+}
+
 export function Hero() {
+  const starCount = useStarCount()
   return (
     <section style={styles.hero}>
       <style>{keyframesStyle}</style>
@@ -240,16 +273,18 @@ export function Hero() {
         </div>
         <h1 style={styles.title}>Structure the knowledge behind what you build</h1>
         <p style={styles.subtitle}>
-          When you build with LLMs, research and reasoning vanish into chat logs. Lattice is a CLI that captures it —
-          connecting sources, strategy, requirements, and code into a Git-native knowledge graph that any collaborator,
-          human or agent, can pick up and build on.
+          AI agents write code fast &mdash; but the research, reasoning, and requirements behind that code vanish into
+          chat logs. Lattice is a CLI that captures it all: a Git-native knowledge graph where every requirement traces
+          back to the research that motivated it, and any collaborator &mdash; human or agent &mdash; can pick up where
+          the last one left off.
         </p>
         <div style={styles.ctaRow}>
           <a href="/getting-started" style={styles.ctaPrimary}>
             Get Started
           </a>
-          <a href={LATTICE_DASHBOARD_PATH} style={styles.ctaSecondary}>
-            See it live
+          <a href={GITHUB_REPO_URL} style={styles.ctaSecondary} target="_blank" rel="noopener noreferrer">
+            <StarIcon />
+            Star on GitHub{starCount !== null ? ` \u00b7 ${starCount}` : ''}
           </a>
         </div>
         <span style={styles.installHint}>{INSTALL_CMD}</span>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
 import {
   colors,
   fonts,
@@ -15,7 +15,7 @@ import {
   Header,
   Footer,
 } from '@forkzero/ui'
-import { GITHUB_ORG_URL, GITHUB_REPO_URL } from '../constants'
+import { GITHUB_ORG_URL, GITHUB_REPO_URL, SUBSCRIBE_API_URL } from '../constants'
 import { Hero } from '../components/Hero'
 import { ProjectCard } from '../components/ProjectCard'
 import { projects } from '../data/projects'
@@ -80,18 +80,18 @@ const valuePropsStyles: Record<string, React.CSSProperties> = {
 const valueProps = [
   {
     color: colors.accentBlue,
-    heading: 'Every decision traceable',
-    text: 'Requirements link to the theses and research that motivated them. Open the project in a year and know exactly why every choice was made.',
+    heading: "Stop losing the 'why'",
+    text: 'Six months from now, nobody will remember why you chose WebSockets over SSE. In Lattice, every requirement links to the thesis that motivated it, and every thesis links to the research behind it. Open the project in a year and the reasoning is right there.',
   },
   {
     color: colors.accentPurple,
-    heading: 'Requirements-first development',
-    text: 'Start from structured requirements, not ad-hoc prompts. Pair with TDD for a sound, repeatable process that agents can follow.',
+    heading: 'Requirements before code, not after',
+    text: 'In the agent era, code is cheap to regenerate \u2014 requirements are expensive to discover. Start from structured requirements, not ad-hoc prompts. Give your agent a spec to implement, not a vague instruction to interpret. When requirements change, drift detection tells you what code needs to catch up.',
   },
   {
     color: colors.accentGreen,
-    heading: 'Shared memory for humans and agents',
-    text: 'The lattice is the working memory for whoever comes next — a new teammate, a better LLM, or you in two years. Re-evaluate sources, test theses against a changed world, and onboard the next collaborator in seconds.',
+    heading: 'Onboard anyone in seconds \u2014 human or AI',
+    text: 'The lattice is the working memory for whoever comes next. A new teammate reads the knowledge graph and understands the project in minutes, not weeks. A new AI model gets the same structured context. No tribal knowledge. No onboarding docs that are already stale.',
   },
 ]
 
@@ -103,6 +103,74 @@ function ValueProps() {
           <div key={prop.heading} style={{ ...valuePropsStyles.card, borderTop: `3px solid ${prop.color}` }}>
             <h3 style={valuePropsStyles.cardHeading}>{prop.heading}</h3>
             <p style={valuePropsStyles.cardText}>{prop.text}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+// --- Who It's For ---
+
+const whoStyles: Record<string, React.CSSProperties> = {
+  section: {
+    ...containerWide,
+    padding: '3rem 2rem',
+  },
+  sectionTitle: {
+    ...sectionTitleBase,
+    marginBottom: '1.5rem',
+    textAlign: 'center' as const,
+  },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gap: '1.5rem',
+  },
+  card: {
+    ...cardBase,
+    padding: '1.75rem',
+  },
+  cardHeading: {
+    fontSize: '1.15rem',
+    fontWeight: 600,
+    fontFamily: fonts.system,
+    color: colors.textPrimary,
+    marginBottom: '0.5rem',
+  },
+  cardText: {
+    fontSize: '0.95rem',
+    fontFamily: fonts.system,
+    color: colors.textSecondary,
+    lineHeight: 1.65,
+    margin: 0,
+  },
+}
+
+const whoCards = [
+  {
+    heading: 'Developers building with AI agents',
+    text: "You use Claude, Cursor, or Copilot daily. You've noticed that agent output quality depends on input quality. Lattice gives your agent structured requirements instead of hoping it figures out what you meant.",
+  },
+  {
+    heading: 'Teams where decisions outlive sprints',
+    text: 'The person who made the architectural decision left six months ago. The design doc is in a Google Doc nobody can find. With Lattice, decisions live in Git \u2014 linked to the research that informed them, versioned and diffable like code.',
+  },
+  {
+    heading: "Anyone tired of 'why did we do it this way?'",
+    text: "You're staring at a requirement and don't know if it's still valid. The thesis it was based on might have been disproven by new research. Lattice's drift detection flags exactly this \u2014 automatically.",
+  },
+]
+
+function WhoItsFor() {
+  return (
+    <section style={whoStyles.section}>
+      <h2 style={whoStyles.sectionTitle}>Who it&rsquo;s for</h2>
+      <div style={whoStyles.grid}>
+        {whoCards.map((card) => (
+          <div key={card.heading} style={whoStyles.card}>
+            <h3 style={whoStyles.cardHeading}>{card.heading}</h3>
+            <p style={whoStyles.cardText}>{card.text}</p>
           </div>
         ))}
       </div>
@@ -409,8 +477,9 @@ function HowItWorks() {
       <div ref={ref} style={howStyles.container}>
         <h2 style={howStyles.sectionTitle}>How it works</h2>
         <p style={howStyles.intro}>
-          Lattice organizes knowledge into four layers &mdash; sources, theses, requirements, and implementations
-          &mdash; connected by version-bound edges. Here&rsquo;s a real trace from Lattice&rsquo;s own knowledge graph:
+          Knowledge flows through four layers &mdash; from research, to strategy, to specification, to code &mdash;
+          connected by version-bound edges. When something upstream changes, you know exactly what downstream needs
+          review. This is a real trace from Lattice&rsquo;s own knowledge graph:
         </p>
         <VerticalTrace inView={inView} />
         <p style={howStyles.body}>
@@ -428,9 +497,199 @@ function HowItWorks() {
 └── implementations/  # Code bindings`}</code>
         </pre>
         <p style={howStyles.closing}>
-          File-based. Git-native. No database, no separate state. The same version control that tracks your code tracks
-          your knowledge graph.
+          Plain YAML files in Git. No database, no SaaS dependency, no separate state to sync. The same version control
+          that tracks your code tracks the reasoning behind it.
         </p>
+      </div>
+    </section>
+  )
+}
+
+// --- What Makes It Different ---
+
+const diffStyles: Record<string, React.CSSProperties> = {
+  section: {
+    ...containerWide,
+    padding: '3rem 2rem',
+  },
+  sectionTitle: {
+    ...sectionTitleBase,
+    marginBottom: '1.5rem',
+    textAlign: 'center' as const,
+  },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gap: '1.5rem',
+  },
+  card: {
+    ...cardBase,
+    padding: '1.75rem',
+  },
+  cardHeading: {
+    fontSize: '1.15rem',
+    fontWeight: 600,
+    fontFamily: fonts.system,
+    color: colors.textPrimary,
+    marginBottom: '0.5rem',
+  },
+  cardText: {
+    fontSize: '0.95rem',
+    fontFamily: fonts.system,
+    color: colors.textSecondary,
+    lineHeight: 1.65,
+    margin: 0,
+  },
+}
+
+const diffCards = [
+  {
+    color: colors.accentBlue,
+    heading: 'Files, not databases',
+    text: 'Your knowledge graph lives in .lattice/ \u2014 YAML files tracked by Git. You get versioning, history, blame, branching, and diffs for free. No server to run, no state to sync.',
+  },
+  {
+    color: colors.accentPurple,
+    heading: 'Built for agents, readable by humans',
+    text: 'Every tool in this space was built for humans and retrofitted for agents. Lattice inverts that: structured and queryable for agents, with narrative exports for humans. The MCP server and CLI both speak JSON.',
+  },
+  {
+    color: colors.accentGreen,
+    heading: 'Knowledge flows both ways',
+    text: 'Most requirements tools push specs downward. Lattice captures feedback upward too \u2014 implementations reveal gaps in requirements, new research challenges old theses. Edge types like reveals_gap_in and challenges make this explicit.',
+  },
+]
+
+function WhatMakesItDifferent() {
+  return (
+    <section style={diffStyles.section}>
+      <h2 style={diffStyles.sectionTitle}>What makes it different</h2>
+      <div style={diffStyles.grid}>
+        {diffCards.map((card) => (
+          <div key={card.heading} style={{ ...diffStyles.card, borderLeft: `3px solid ${card.color}` }}>
+            <h3 style={diffStyles.cardHeading}>{card.heading}</h3>
+            <p style={diffStyles.cardText}>{card.text}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+// --- Email Capture ---
+
+const emailStyles: Record<string, React.CSSProperties> = {
+  section: {
+    background: colors.bgSecondary,
+    padding: '3rem 2rem',
+  },
+  container: {
+    ...containerNarrow,
+    textAlign: 'center' as const,
+  },
+  heading: {
+    ...sectionTitleBase,
+    marginBottom: '0.75rem',
+  },
+  subtext: {
+    fontSize: '1rem',
+    fontFamily: fonts.system,
+    color: colors.textSecondary,
+    lineHeight: 1.65,
+    marginBottom: '1.5rem',
+  },
+  form: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '0.5rem',
+    flexWrap: 'wrap' as const,
+    maxWidth: '480px',
+    margin: '0 auto',
+  },
+  input: {
+    flex: '1 1 240px',
+    padding: '0.75rem 1rem',
+    fontSize: '1rem',
+    fontFamily: fonts.system,
+    borderRadius: radius,
+    border: `1px solid ${colors.borderColor}`,
+    background: colors.bgPrimary,
+    color: colors.textPrimary,
+    outline: 'none',
+  },
+  button: {
+    padding: '0.75rem 1.5rem',
+    fontSize: '1rem',
+    fontWeight: 600,
+    fontFamily: fonts.system,
+    borderRadius: radius,
+    border: 'none',
+    background: colors.accentBlue,
+    color: colors.textOnAccent,
+    cursor: 'pointer',
+    transition: 'opacity 0.2s',
+  },
+  message: {
+    fontSize: '0.9rem',
+    fontFamily: fonts.system,
+    marginTop: '0.75rem',
+    lineHeight: 1.5,
+  },
+}
+
+function EmailCapture() {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault()
+    if (!email) return
+    setStatus('submitting')
+    fetch(SUBSCRIBE_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    })
+      .then((res) => {
+        if (res.ok) {
+          setStatus('success')
+          setEmail('')
+        } else {
+          setStatus('error')
+        }
+      })
+      .catch(() => setStatus('error'))
+  }
+
+  return (
+    <section style={emailStyles.section}>
+      <div style={emailStyles.container}>
+        <h2 style={emailStyles.heading}>Building with AI agents? Stay sharp.</h2>
+        <p style={emailStyles.subtext}>
+          We write about knowledge coordination, context engineering, and requirements-driven development. Occasional
+          emails &mdash; releases and technical writing only.
+        </p>
+        {status === 'success' ? (
+          <p style={{ ...emailStyles.message, color: colors.accentGreen }}>You&rsquo;re in.</p>
+        ) : (
+          <form style={emailStyles.form} onSubmit={handleSubmit}>
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              style={emailStyles.input}
+              aria-label="Email address"
+            />
+            <button type="submit" disabled={status === 'submitting'} style={emailStyles.button}>
+              {status === 'submitting' ? 'Subscribing\u2026' : 'Subscribe'}
+            </button>
+          </form>
+        )}
+        {status === 'error' && (
+          <p style={{ ...emailStyles.message, color: colors.accentRed }}>Something went wrong. Please try again.</p>
+        )}
       </div>
     </section>
   )
@@ -530,7 +789,7 @@ function Projects() {
   const [featured, ...secondary] = projects
   return (
     <section style={projectsStyles.section}>
-      <h2 style={projectsStyles.sectionTitle}>Projects</h2>
+      <h2 style={projectsStyles.sectionTitle}>Open Source</h2>
       {featured && (
         <div style={projectsStyles.featuredGrid}>
           <ProjectCard project={featured} />
@@ -560,9 +819,12 @@ export function HomePage() {
       <Header navLinks={NAV_LINKS} githubUrl={GITHUB_ORG_URL} />
       <Hero />
       <ValueProps />
+      <WhoItsFor />
       <HowItWorks />
+      <WhatMakesItDifferent />
       <FeaturedArticle />
       <Projects />
+      <EmailCapture />
       <Footer repoUrl={GITHUB_REPO_URL} />
     </>
   )
