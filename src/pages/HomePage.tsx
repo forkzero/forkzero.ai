@@ -814,6 +814,50 @@ const NAV_LINKS = [
 ]
 
 export function HomePage() {
+  useEffect(() => {
+    document.title = 'Forkzero — Knowledge Coordination for AI-Native Teams'
+
+    const setMetaTag = (name: string, content: string) => {
+      let el = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement | null
+      if (!el) {
+        el = document.createElement('meta')
+        el.name = name
+        document.head.appendChild(el)
+      }
+      el.content = content
+    }
+    const setOgTag = (property: string, content: string) => {
+      let el = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement | null
+      if (!el) {
+        el = document.createElement('meta')
+        el.setAttribute('property', property)
+        document.head.appendChild(el)
+      }
+      el.content = content
+    }
+
+    setMetaTag(
+      'description',
+      'Forkzero builds developer tools that connect research, strategy, requirements, and implementation into a traversable knowledge graph.',
+    )
+    setOgTag('og:title', 'Forkzero — Knowledge Coordination for AI-Native Teams')
+    setOgTag(
+      'og:description',
+      'Forkzero builds developer tools that connect research, strategy, requirements, and implementation into a traversable knowledge graph.',
+    )
+    setOgTag('og:type', 'website')
+    setOgTag('og:url', 'https://forkzero.ai/')
+    setOgTag('og:image', 'https://forkzero.ai/og-default.svg')
+    setOgTag('og:site_name', 'Forkzero')
+    setMetaTag('twitter:card', 'summary_large_image')
+    setMetaTag('twitter:title', 'Forkzero — Knowledge Coordination for AI-Native Teams')
+    setMetaTag(
+      'twitter:description',
+      'Forkzero builds developer tools that connect research, strategy, requirements, and implementation into a traversable knowledge graph.',
+    )
+    setMetaTag('twitter:image', 'https://forkzero.ai/og-default.svg')
+  }, [])
+
   return (
     <>
       <Header navLinks={NAV_LINKS} githubUrl={GITHUB_ORG_URL} />

@@ -73,6 +73,12 @@ for (const route of routes) {
     `<meta property="og:description" content="${escapeAttr(route.description)}" />`,
     `<meta property="og:type" content="${ogType}" />`,
     `<meta property="og:url" content="${route.canonical}" />`,
+    `<meta property="og:image" content="https://forkzero.ai/og-default.svg" />`,
+    `<meta property="og:site_name" content="Forkzero" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:title" content="${escapeAttr(route.title)}" />`,
+    `<meta name="twitter:description" content="${escapeAttr(route.description)}" />`,
+    `<meta name="twitter:image" content="https://forkzero.ai/og-default.svg" />`,
     `<link rel="canonical" href="${route.canonical}" />`,
   ].join('\n    ')
 
@@ -202,6 +208,11 @@ function buildJsonLd(route: RouteMeta): string {
       '@type': 'Organization',
       name: 'Forkzero',
       url: 'https://forkzero.ai',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://forkzero.ai/logo.svg',
+      },
+      sameAs: ['https://github.com/forkzero'],
       description:
         'Forkzero builds developer tools that connect research, strategy, requirements, and implementation into a traversable knowledge graph.',
     })
@@ -255,6 +266,7 @@ function buildJsonLd(route: RouteMeta): string {
         headline: post.title,
         description: post.excerpt,
         datePublished: post.date,
+        image: 'https://forkzero.ai/og-default.svg',
         author: {
           '@type': 'Person',
           name: post.author.name,
@@ -263,6 +275,10 @@ function buildJsonLd(route: RouteMeta): string {
           '@type': 'Organization',
           name: 'Forkzero',
           url: 'https://forkzero.ai',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://forkzero.ai/logo.svg',
+          },
         },
         mainEntityOfPage: route.canonical,
       })

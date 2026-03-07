@@ -731,6 +731,15 @@ function BlogListing() {
     )
     setOgTag('og:type', 'website')
     setOgTag('og:url', 'https://forkzero.ai/blog')
+    setOgTag('og:image', 'https://forkzero.ai/og-default.svg')
+    setOgTag('og:site_name', 'Forkzero')
+    setMetaTag('twitter:card', 'summary_large_image')
+    setMetaTag('twitter:title', 'Blog \u2014 Forkzero')
+    setMetaTag(
+      'twitter:description',
+      'Technical writing on knowledge coordination, context engineering, and AI-first developer tooling.',
+    )
+    setMetaTag('twitter:image', 'https://forkzero.ai/og-default.svg')
     setCanonical('https://forkzero.ai/blog')
   }, [])
 
@@ -770,6 +779,12 @@ function BlogPostView({ post }: { post: BlogPost }) {
     setOgTag('og:description', post.excerpt)
     setOgTag('og:type', 'article')
     setOgTag('og:url', `https://forkzero.ai/blog/${post.slug}`)
+    setOgTag('og:image', 'https://forkzero.ai/og-default.svg')
+    setOgTag('og:site_name', 'Forkzero')
+    setMetaTag('twitter:card', 'summary_large_image')
+    setMetaTag('twitter:title', post.title)
+    setMetaTag('twitter:description', post.excerpt)
+    setMetaTag('twitter:image', 'https://forkzero.ai/og-default.svg')
     setCanonical(`https://forkzero.ai/blog/${post.slug}`)
   }, [post])
 

@@ -429,6 +429,46 @@ const NAV_LINKS = [
 export function GettingStartedPage() {
   useEffect(() => {
     document.title = 'Get Started with Lattice — Forkzero'
+
+    const setMetaTag = (name: string, content: string) => {
+      let el = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement | null
+      if (!el) {
+        el = document.createElement('meta')
+        el.name = name
+        document.head.appendChild(el)
+      }
+      el.content = content
+    }
+    const setOgTag = (property: string, content: string) => {
+      let el = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement | null
+      if (!el) {
+        el = document.createElement('meta')
+        el.setAttribute('property', property)
+        document.head.appendChild(el)
+      }
+      el.content = content
+    }
+
+    setMetaTag(
+      'description',
+      'Install Lattice and start building a knowledge-coordinated codebase in under five minutes.',
+    )
+    setOgTag('og:title', 'Get Started with Lattice — Forkzero')
+    setOgTag(
+      'og:description',
+      'Install Lattice and start building a knowledge-coordinated codebase in under five minutes.',
+    )
+    setOgTag('og:type', 'website')
+    setOgTag('og:url', 'https://forkzero.ai/getting-started')
+    setOgTag('og:image', 'https://forkzero.ai/og-default.svg')
+    setOgTag('og:site_name', 'Forkzero')
+    setMetaTag('twitter:card', 'summary_large_image')
+    setMetaTag('twitter:title', 'Get Started with Lattice — Forkzero')
+    setMetaTag(
+      'twitter:description',
+      'Install Lattice and start building a knowledge-coordinated codebase in under five minutes.',
+    )
+    setMetaTag('twitter:image', 'https://forkzero.ai/og-default.svg')
   }, [])
 
   return (
