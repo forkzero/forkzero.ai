@@ -26,6 +26,11 @@ describe('renderInline', () => {
     const result = renderInline('visit [GitHub](https://github.com)')
     expect(result).toBeTruthy()
   })
+
+  it('renders images', () => {
+    const result = renderInline('![diagram](/blog/test.svg)')
+    expect(result).toBeTruthy()
+  })
 })
 
 describe('renderContent', () => {

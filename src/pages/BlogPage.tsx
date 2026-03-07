@@ -290,6 +290,29 @@ export function renderInline(text: string): React.ReactNode {
       }
     }
 
+    // Image: ![alt](src)
+    if (text[i] === '!' && text[i + 1] === '[') {
+      const closeBracket = text.indexOf(']', i + 2)
+      if (closeBracket !== -1 && text[closeBracket + 1] === '(') {
+        const closeParen = text.indexOf(')', closeBracket + 2)
+        if (closeParen !== -1) {
+          flushPlain()
+          const alt = text.slice(i + 2, closeBracket)
+          const src = text.slice(closeBracket + 2, closeParen)
+          parts.push(
+            <img
+              key={key++}
+              src={src}
+              alt={alt}
+              style={{ maxWidth: '100%', borderRadius: radius, display: 'block', margin: '1.5rem 0' }}
+            />,
+          )
+          i = closeParen + 1
+          continue
+        }
+      }
+    }
+
     // Link: [text](url)
     if (text[i] === '[') {
       const closeBracket = text.indexOf(']', i + 1)

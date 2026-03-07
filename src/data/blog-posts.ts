@@ -166,4 +166,145 @@ lattice init
 - [Live dashboard](${LATTICE_DASHBOARD_URL})
 - [Forkzero](https://forkzero.ai)`,
   },
+  {
+    id: 'post-002',
+    slug: 'knowledge-graph-search-engine',
+    title: 'Your Knowledge Graph Needs a Search Engine',
+    date: '2026-03-07',
+    author: {
+      name: 'George Moon',
+      bio: 'Building knowledge coordination tools for human-agent collaboration.',
+      github: 'https://github.com/georgemoon',
+      x: 'https://x.com/georgemoon',
+    },
+    excerpt:
+      "Lattice gives you traceability. But traceability assumes you know what you're looking for. QMD adds the missing piece: semantic search over your knowledge graph, running entirely on-device.",
+    discussionPrompt:
+      'How do you search your knowledge bases today? Structured queries, semantic search, or something else?',
+    sources: [
+      {
+        name: 'QMD',
+        author: 'Tobi Lutke',
+        description: 'An on-device search engine combining BM25, vector embeddings, and LLM re-ranking.',
+        url: 'https://github.com/tobi/qmd',
+      },
+      {
+        name: 'Lattice',
+        author: 'Forkzero',
+        description:
+          'A knowledge coordination protocol connecting research, strategy, requirements, and implementation.',
+        url: 'https://github.com/forkzero/lattice',
+      },
+    ],
+    content: `Lattice gives you traceability — a versioned graph from research to code. You can traverse it, check for drift, and give agents full context for any requirement.
+
+But traceability assumes you know what you're looking for. You know the requirement ID. You know which thesis to check. You can formulate the exact query.
+
+What about the question you *can't* quite formulate? "Something about token expiry that came up in that security review." "The research that made us rethink session handling." That's not a graph traversal — it's a search problem.
+
+## Two kinds of search
+
+Lattice search is structured. Query by ID, priority, category, or graph proximity. It's exact and fast:
+
+\`\`\`bash
+lattice search --query "auth" --priority P0
+lattice search --related-to REQ-AUTH-001
+\`\`\`
+
+But some questions are fuzzy. They're about concepts, associations, half-remembered context. Structured search can't help when you don't have the right keywords or don't know which node to start from.
+
+That's where semantic search comes in.
+
+## QMD: local hybrid search
+
+[QMD](https://github.com/tobi/qmd) is a local search engine by Tobi Lutke. It combines three retrieval strategies — **BM25 full-text search**, **vector embeddings**, and **LLM re-ranking** — all running on-device. No API calls, no cloud dependency.
+
+It ships with an MCP server, so agents can query it directly. 13k+ GitHub stars and actively maintained.
+
+The key insight: QMD indexes files using glob masks. Point it at any directory and it indexes what's there. Including YAML.
+
+## Zero-config integration
+
+QMD can index your \`.lattice/\` directory directly — no export step, no format conversion:
+
+\`\`\`bash
+# Add your lattice as a QMD collection
+qmd collection add .lattice/ --name lattice --mask "**/*.yaml"
+
+# Annotate each layer for better context
+qmd context add qmd://lattice/sources "Research backing strategic theses"
+qmd context add qmd://lattice/theses "Strategic claims derived from research"
+qmd context add qmd://lattice/requirements "Testable specifications"
+qmd context add qmd://lattice/implementations "Code bindings satisfying requirements"
+
+# Build the index
+qmd embed
+\`\`\`
+
+That's it. Your knowledge graph is now semantically searchable.
+
+## How it fits together
+
+![Lattice + QMD architecture: structured and semantic search converging in an agent workflow](/blog/qmd-lattice-integration.svg)
+
+Two paths from the same source of truth. Lattice provides structured traversal — by ID, metadata, and graph edges. QMD provides semantic discovery — fuzzy matching, conceptual similarity, cross-layer connections you didn't explicitly model.
+
+## Complementary, not competing
+
+These tools answer different questions from the same data:
+
+\`\`\`bash
+# Structured: exact, filtered
+lattice search --query "auth" --priority P0
+
+# Semantic: fuzzy, conceptual
+qmd query "how do we handle expired tokens"
+
+# Graph traversal: follow edges
+lattice search --related-to REQ-AUTH-001
+
+# Conceptual discovery: find related ideas
+qmd query "security implications of session management"
+\`\`\`
+
+Lattice search is for when you know what you're looking for. QMD is for when you know what you're *thinking about*.
+
+## Dual MCP for agents
+
+Both tools expose MCP servers. An agent configured with both gets the best of each:
+
+- **lattice_search** — structured graph queries, drift detection, version-bound edges
+- **qmd_search / qmd_query** — semantic discovery, fuzzy matching, cross-collection results
+
+Configure both in your \`.mcp.json\` and agents can choose the right tool for each sub-task. Need the exact spec for a requirement? Lattice. Need to find everything related to a concept? QMD.
+
+## What would make it even better
+
+The integration works today with no changes to either tool. But two enhancements would make it smoother:
+
+1. **\`lattice integrate qmd\`** — A convenience command that auto-configures the QMD collection, sets up context annotations per layer, and runs the initial embed. Replaces the six-line setup with one command.
+
+2. **Title comments in YAML** — If lattice added a \`# Title: ...\` comment header to YAML files, QMD's title extractor could use it for better chunking and display. Currently it falls back to filename for non-markdown files.
+
+Neither is required — but both would reduce friction.
+
+## Get started
+
+\`\`\`bash
+# Install Lattice
+${INSTALL_CMD}
+
+# Install QMD
+npm install -g @tobilu/qmd
+
+# Initialize and index
+lattice init
+qmd collection add .lattice/ --name lattice --mask "**/*.yaml"
+qmd embed
+\`\`\`
+
+- [Lattice on GitHub](${GITHUB_REPO_URL})
+- [QMD on GitHub](https://github.com/tobi/qmd)
+- [Live dashboard](${LATTICE_DASHBOARD_URL})`,
+  },
 ]
