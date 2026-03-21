@@ -11,7 +11,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs'
 import { join } from 'path'
 import { blogPosts } from '../src/data/blog-posts.js'
 import { projects } from '../src/data/projects.js'
-import { INSTALL_CMD, GITHUB_REPO_URL } from '../src/constants.js'
+import { INSTALL_CMD, GITHUB_REPO_URL, GITHUB_ORG_URL } from '../src/constants.js'
 
 const distDir = join(import.meta.dirname, '..', 'dist')
 const template = readFileSync(join(distDir, 'index.html'), 'utf-8')
@@ -145,6 +145,7 @@ const sitemapUrls: { loc: string; lastmod: string }[] = [
     loc: `https://forkzero.ai/blog/${post.slug}`,
     lastmod: post.date,
   })),
+  { loc: 'https://forkzero.ai/privacy', lastmod: today },
 ]
 
 const sitemapXml = [
@@ -180,6 +181,7 @@ function buildNoscript(route: RouteMeta): string | null {
         `</ul>`,
         `<h2>Projects</h2>`,
         `<ul>${projectList}</ul>`,
+        `<nav><p><a href="/getting-started">Get Started</a> · <a href="/blog">Blog</a> · <a href="/privacy">Privacy</a></p></nav>`,
       ].join(''),
     )
   }
@@ -248,7 +250,7 @@ function buildJsonLd(route: RouteMeta): string {
         '@type': 'ImageObject',
         url: 'https://forkzero.ai/logo.svg',
       },
-      sameAs: ['https://github.com/forkzero'],
+      sameAs: [GITHUB_ORG_URL],
       description:
         'Forkzero builds developer tools for AI-native teams. Lattice captures research, decisions, and requirements in a Git-native knowledge graph.',
     })
@@ -278,7 +280,7 @@ function buildJsonLd(route: RouteMeta): string {
   if (route.path === '/blog') {
     schemas.push({
       '@context': 'https://schema.org',
-      '@type': 'WebPage',
+      '@type': 'CollectionPage',
       name: 'Blog — Forkzero',
       description: route.description,
       url: route.canonical,

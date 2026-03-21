@@ -1,0 +1,35 @@
+# Forkzero
+
+> Forkzero builds developer tools for AI-native teams.
+
+## Lattice
+
+Lattice is a knowledge coordination protocol that captures the research, decisions, and requirements behind your code in a Git-native knowledge graph. Any collaborator — human or AI — picks up where the last one left off.
+
+- Open source, free to use
+- Plain YAML files in Git — no database, no SaaS dependency
+- Connects four layers: sources (research), theses (strategy), requirements (specs), implementations (code)
+- Automatic drift detection when upstream knowledge changes
+- Works on macOS, Linux, and Windows
+
+### Install
+
+curl -fsSL https://forkzero.ai/lattice/install.sh | sh
+
+### Key pages
+
+- Homepage: https://forkzero.ai
+- Getting Started: https://forkzero.ai/getting-started
+- Blog: https://forkzero.ai/blog
+- GitHub: https://github.com/forkzero/lattice
+- Live Dashboard: https://forkzero.ai/reader?url=https://forkzero.github.io/lattice/lattice-data.json
+
+## Other Projects
+
+- **Team of Rivals**: Multi-agent debate system (private beta)
+- **s3proxy**: Streaming S3 proxy for pre-signed URL workflows (production, v3.x)
+
+## Contact
+
+- GitHub: https://github.com/forkzero
+- Privacy: privacy@forkzero.ai
