@@ -269,18 +269,16 @@ export function Hero() {
       <div style={styles.content}>
         <div style={styles.brandMark}>
           <div style={styles.brandTitle}>Lattice</div>
-          <div style={styles.brandSubtitle}>Knowledge Coordination Protocol</div>
+          <div style={styles.brandSubtitle}>by Forkzero</div>
         </div>
-        <h1 style={styles.title}>Structure the knowledge behind what you build</h1>
+        <h1 style={styles.title}>Your agent writes the code. Who remembers why?</h1>
         <p style={styles.subtitle}>
-          AI agents write code fast &mdash; but the research, reasoning, and requirements behind that code vanish into
-          chat logs. Lattice is a CLI that captures it all: a Git-native knowledge graph where every requirement traces
-          back to the research that motivated it, and any collaborator &mdash; human or agent &mdash; can pick up where
-          the last one left off.
+          The research, reasoning, and requirements behind your code vanish into chat logs. Lattice captures them in a
+          Git-native knowledge graph &mdash; so any collaborator, human or AI, can pick up where the last one left off.
         </p>
         <div style={styles.ctaRow}>
           <a href="/getting-started" style={styles.ctaPrimary}>
-            Get Started
+            Install Lattice
           </a>
           <a href={GITHUB_REPO_URL} style={styles.ctaSecondary} target="_blank" rel="noopener noreferrer">
             <StarIcon />

@@ -40,6 +40,46 @@ function useInView() {
   return { ref, inView }
 }
 
+// --- Problem Section ---
+
+const problemStyles: Record<string, React.CSSProperties> = {
+  section: {
+    ...containerNarrow,
+    padding: '3rem 2rem',
+  },
+  sectionTitle: {
+    ...sectionTitleBase,
+    marginBottom: '1rem',
+    textAlign: 'center' as const,
+  },
+  body: {
+    fontSize: '1.05rem',
+    fontFamily: fonts.system,
+    color: colors.textSecondary,
+    lineHeight: 1.75,
+    textAlign: 'center' as const,
+    maxWidth: '640px',
+    margin: '0 auto',
+  },
+}
+
+function Problem() {
+  return (
+    <section style={problemStyles.section}>
+      <h2 style={problemStyles.sectionTitle}>The code is the easy part now</h2>
+      <p style={problemStyles.body}>
+        Your agent generated 2,000 lines of code last week. Can you explain why any of it was built that way? The
+        research is in a chat log. The architectural decisions are in someone&rsquo;s head. The requirements were never
+        written down &mdash; or they&rsquo;re in a Google Doc nobody can find.
+      </p>
+      <p style={{ ...problemStyles.body, marginTop: '1rem' }}>
+        Six months from now, a new teammate will ask &ldquo;why did we do it this way?&rdquo; and nobody will have an
+        answer. A new AI model will get the same vague context and make the same mistakes.
+      </p>
+    </section>
+  )
+}
+
 // --- Value Props ---
 
 const valuePropsStyles: Record<string, React.CSSProperties> = {
@@ -81,23 +121,24 @@ const valueProps = [
   {
     color: colors.accentBlue,
     heading: "Stop losing the 'why'",
-    text: 'Six months from now, nobody will remember why you chose WebSockets over SSE. In Lattice, every requirement links to the thesis that motivated it, and every thesis links to the research behind it. Open the project in a year and the reasoning is right there.',
+    text: 'Open any project a year later and the reasoning is right there. Every requirement links to the thesis that motivated it, and every thesis links to the research behind it.',
   },
   {
     color: colors.accentPurple,
     heading: 'Requirements before code, not after',
-    text: 'In the agent era, code is cheap to regenerate \u2014 requirements are expensive to discover. Start from structured requirements, not ad-hoc prompts. Give your agent a spec to implement, not a vague instruction to interpret. When requirements change, drift detection tells you what code needs to catch up.',
+    text: 'Code is cheap to regenerate \u2014 requirements are expensive to discover. Give your agent a spec to implement, not a vague instruction to interpret.',
   },
   {
     color: colors.accentGreen,
-    heading: 'Onboard anyone in seconds \u2014 human or AI',
-    text: 'The lattice is the working memory for whoever comes next. A new teammate reads the knowledge graph and understands the project in minutes, not weeks. A new AI model gets the same structured context. No tribal knowledge. No onboarding docs that are already stale.',
+    heading: 'Onboard anyone in minutes \u2014 human or AI',
+    text: 'No tribal knowledge. No stale onboarding docs. A new teammate \u2014 or a new AI model \u2014 reads the knowledge graph and understands the project structure, the decisions, and the reasoning behind them.',
   },
 ]
 
 function ValueProps() {
   return (
     <section style={valuePropsStyles.section}>
+      <h2 style={valuePropsStyles.sectionTitle}>Why Lattice?</h2>
       <div style={valuePropsStyles.grid}>
         {valueProps.map((prop) => (
           <div key={prop.heading} style={{ ...valuePropsStyles.card, borderTop: `3px solid ${prop.color}` }}>
@@ -112,65 +153,26 @@ function ValueProps() {
 
 // --- Who It's For ---
 
-const whoStyles: Record<string, React.CSSProperties> = {
-  section: {
-    ...containerWide,
-    padding: '3rem 2rem',
-  },
-  sectionTitle: {
-    ...sectionTitleBase,
-    marginBottom: '1.5rem',
-    textAlign: 'center' as const,
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '1.5rem',
-  },
-  card: {
-    ...cardBase,
-    padding: '1.75rem',
-  },
-  cardHeading: {
-    fontSize: '1.15rem',
-    fontWeight: 600,
-    fontFamily: fonts.system,
-    color: colors.textPrimary,
-    marginBottom: '0.5rem',
-  },
-  cardText: {
-    fontSize: '0.95rem',
-    fontFamily: fonts.system,
-    color: colors.textSecondary,
-    lineHeight: 1.65,
-    margin: 0,
-  },
-}
-
 const whoCards = [
   {
     heading: 'Developers building with AI agents',
-    text: "You use Claude, Cursor, or Copilot daily. You've noticed that agent output quality depends on input quality. Lattice gives your agent structured requirements instead of hoping it figures out what you meant.",
+    text: "You paste context into Claude or Cursor and hope it figures out what you meant. Sometimes it nails it. Sometimes it hallucinates an API that doesn't exist. Lattice gives your agent structured requirements \u2014 so it builds what you actually specified.",
   },
   {
     heading: 'Teams where decisions outlive sprints',
     text: 'The person who made the architectural decision left six months ago. The design doc is in a Google Doc nobody can find. With Lattice, decisions live in Git \u2014 linked to the research that informed them, versioned and diffable like code.',
   },
-  {
-    heading: "Anyone tired of 'why did we do it this way?'",
-    text: "You're staring at a requirement and don't know if it's still valid. The thesis it was based on might have been disproven by new research. Lattice's drift detection flags exactly this \u2014 automatically.",
-  },
 ]
 
 function WhoItsFor() {
   return (
-    <section style={whoStyles.section}>
-      <h2 style={whoStyles.sectionTitle}>Who it&rsquo;s for</h2>
-      <div style={whoStyles.grid}>
+    <section style={valuePropsStyles.section}>
+      <h2 style={valuePropsStyles.sectionTitle}>Who it&rsquo;s for</h2>
+      <div style={valuePropsStyles.grid}>
         {whoCards.map((card) => (
-          <div key={card.heading} style={whoStyles.card}>
-            <h3 style={whoStyles.cardHeading}>{card.heading}</h3>
-            <p style={whoStyles.cardText}>{card.text}</p>
+          <div key={card.heading} style={valuePropsStyles.card}>
+            <h3 style={valuePropsStyles.cardHeading}>{card.heading}</h3>
+            <p style={valuePropsStyles.cardText}>{card.text}</p>
           </div>
         ))}
       </div>
@@ -207,7 +209,7 @@ const traceNodes = [
   },
 ]
 
-const traceEdges = [...LATTICE_EDGES]
+const traceEdges = LATTICE_EDGES
 
 const howStyles: Record<string, React.CSSProperties> = {
   section: {
@@ -236,9 +238,6 @@ const howStyles: Record<string, React.CSSProperties> = {
     color: colors.textSecondary,
     lineHeight: 1.7,
     marginBottom: '1.25rem',
-  },
-  codeBlock: {
-    ...codeBlock,
   },
   closing: {
     fontSize: '0.95rem',
@@ -321,10 +320,6 @@ const traceStyles: Record<string, React.CSSProperties> = {
     color: colors.textMuted,
     lineHeight: 1,
   },
-}
-
-const inlineCodeStyle: React.CSSProperties = {
-  ...inlineCode,
 }
 
 const driftStyles: Record<string, React.CSSProperties> = {
@@ -477,18 +472,17 @@ function HowItWorks() {
       <div ref={ref} style={howStyles.container}>
         <h2 style={howStyles.sectionTitle}>How it works</h2>
         <p style={howStyles.intro}>
-          Knowledge flows through four layers &mdash; from research, to strategy, to specification, to code &mdash;
-          connected by version-bound edges. When something upstream changes, you know exactly what downstream needs
-          review. This is a real trace from Lattice&rsquo;s own knowledge graph:
+          Lattice connects four layers of knowledge &mdash; research, strategy, requirements, and code. Here&rsquo;s a
+          real trace from Lattice&rsquo;s own knowledge graph:
         </p>
         <VerticalTrace inView={inView} />
         <p style={howStyles.body}>
-          Every edge records the version it was bound to. When something changes,{' '}
-          <code style={inlineCodeStyle}>lattice drift</code> tells you what needs review:
+          Every edge records the version it was bound to. When something upstream changes,{' '}
+          <code style={inlineCode}>lattice drift</code> tells you exactly what downstream needs review:
         </p>
         <DriftBadge inView={inView} />
         <FeedbackArc inView={inView} />
-        <pre style={howStyles.codeBlock}>
+        <pre style={codeBlock}>
           <code>{`.lattice/
 ├── config.yaml
 ├── sources/          # Research backing theses
@@ -505,9 +499,9 @@ function HowItWorks() {
   )
 }
 
-// --- What Makes It Different ---
+// --- Before / After ---
 
-const diffStyles: Record<string, React.CSSProperties> = {
+const compareStyles: Record<string, React.CSSProperties> = {
   section: {
     ...containerWide,
     padding: '3rem 2rem',
@@ -517,60 +511,77 @@ const diffStyles: Record<string, React.CSSProperties> = {
     marginBottom: '1.5rem',
     textAlign: 'center' as const,
   },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-    gap: '1.5rem',
-  },
-  card: {
-    ...cardBase,
-    padding: '1.75rem',
-  },
-  cardHeading: {
-    fontSize: '1.15rem',
-    fontWeight: 600,
-    fontFamily: fonts.system,
-    color: colors.textPrimary,
-    marginBottom: '0.5rem',
-  },
-  cardText: {
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse' as const,
     fontSize: '0.95rem',
     fontFamily: fonts.system,
-    color: colors.textSecondary,
     lineHeight: 1.65,
-    margin: 0,
+  },
+  headerCell: {
+    padding: '0.75rem 1rem',
+    fontWeight: 600,
+    fontSize: '0.85rem',
+    letterSpacing: '0.04em',
+    textTransform: 'uppercase' as const,
+    borderBottom: `2px solid ${colors.borderColor}`,
+  },
+  cell: {
+    padding: '0.75rem 1rem',
+    borderBottom: `1px solid ${colors.borderColor}`,
+    verticalAlign: 'top' as const,
   },
 }
 
-const diffCards = [
+const compareHeaderWithout: React.CSSProperties = { ...compareStyles.headerCell, color: colors.textMuted }
+const compareHeaderWith: React.CSSProperties = { ...compareStyles.headerCell, color: colors.accentGreen }
+const compareCellWithout: React.CSSProperties = { ...compareStyles.cell, color: colors.textMuted }
+const compareCellWith: React.CSSProperties = { ...compareStyles.cell, color: colors.textSecondary }
+
+const compareRows = [
   {
-    color: colors.accentBlue,
-    heading: 'Files, not databases',
-    text: 'Your knowledge graph lives in .lattice/ \u2014 YAML files tracked by Git. You get versioning, history, blame, branching, and diffs for free. No server to run, no state to sync.',
+    without: 'Decisions live in a Google Doc nobody can find',
+    with: 'Decisions live in Git \u2014 linked, versioned, diffable',
   },
   {
-    color: colors.accentPurple,
-    heading: 'Built for agents, readable by humans',
-    text: 'Every tool in this space was built for humans and retrofitted for agents. Lattice inverts that: structured and queryable for agents, with narrative exports for humans. The MCP server and CLI both speak JSON.',
+    without: 'Agent gets vague context, hallucinates the rest',
+    with: 'Agent gets structured requirements, builds to spec',
   },
   {
-    color: colors.accentGreen,
-    heading: 'Knowledge flows both ways',
-    text: 'Most requirements tools push specs downward. Lattice captures feedback upward too \u2014 implementations reveal gaps in requirements, new research challenges old theses. Edge types like reveals_gap_in and challenges make this explicit.',
+    without: '\u201CWhy did we do it this way?\u201D \u2014 nobody knows',
+    with: 'lattice trace REQ-CORE-005 \u2014 full reasoning chain',
+  },
+  {
+    without: 'New hire spends weeks absorbing tribal knowledge',
+    with: 'New hire reads the knowledge graph in minutes',
+  },
+  {
+    without: 'Requirements rot silently',
+    with: 'lattice drift flags what\u2019s out of date',
   },
 ]
 
-function WhatMakesItDifferent() {
+function BeforeAfter() {
   return (
-    <section style={diffStyles.section}>
-      <h2 style={diffStyles.sectionTitle}>What makes it different</h2>
-      <div style={diffStyles.grid}>
-        {diffCards.map((card) => (
-          <div key={card.heading} style={{ ...diffStyles.card, borderLeft: `3px solid ${card.color}` }}>
-            <h3 style={diffStyles.cardHeading}>{card.heading}</h3>
-            <p style={diffStyles.cardText}>{card.text}</p>
-          </div>
-        ))}
+    <section style={compareStyles.section}>
+      <h2 style={compareStyles.sectionTitle}>Before and after Lattice</h2>
+      <div style={{ overflowX: 'auto' as const }}>
+        <table style={compareStyles.table}>
+          <thead>
+            <tr>
+              <th style={compareHeaderWithout}>Without Lattice</th>
+              <th style={compareHeaderWith}>With Lattice</th>
+            </tr>
+          </thead>
+          <tbody>
+            {compareRows.map((row, i) => (
+              <tr key={i}>
+                <td style={compareCellWithout}>{row.without}</td>
+                <td style={compareCellWith}>{row.with}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </section>
   )
@@ -815,7 +826,7 @@ const NAV_LINKS = [
 
 export function HomePage() {
   useEffect(() => {
-    document.title = 'Forkzero — Knowledge Coordination for AI-Native Teams'
+    document.title = 'Lattice by Forkzero — Knowledge Graph for AI-Native Teams'
 
     const setMetaTag = (name: string, content: string) => {
       let el = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement | null
@@ -836,25 +847,20 @@ export function HomePage() {
       el.content = content
     }
 
-    setMetaTag(
-      'description',
-      'Forkzero builds developer tools that connect research, strategy, requirements, and implementation into a traversable knowledge graph.',
-    )
-    setOgTag('og:title', 'Forkzero — Knowledge Coordination for AI-Native Teams')
-    setOgTag(
-      'og:description',
-      'Forkzero builds developer tools that connect research, strategy, requirements, and implementation into a traversable knowledge graph.',
-    )
+    const metaTitle = 'Lattice — Knowledge Graph for AI-Native Teams'
+    const metaDescription =
+      'Lattice captures the research, decisions, and requirements behind your code in a Git-native knowledge graph. Any collaborator — human or AI — picks up where the last one left off.'
+
+    setMetaTag('description', metaDescription)
+    setOgTag('og:title', metaTitle)
+    setOgTag('og:description', metaDescription)
     setOgTag('og:type', 'website')
     setOgTag('og:url', 'https://forkzero.ai/')
     setOgTag('og:image', 'https://forkzero.ai/og-default.svg')
     setOgTag('og:site_name', 'Forkzero')
     setMetaTag('twitter:card', 'summary_large_image')
-    setMetaTag('twitter:title', 'Forkzero — Knowledge Coordination for AI-Native Teams')
-    setMetaTag(
-      'twitter:description',
-      'Forkzero builds developer tools that connect research, strategy, requirements, and implementation into a traversable knowledge graph.',
-    )
+    setMetaTag('twitter:title', metaTitle)
+    setMetaTag('twitter:description', metaDescription)
     setMetaTag('twitter:image', 'https://forkzero.ai/og-default.svg')
   }, [])
 
@@ -862,13 +868,14 @@ export function HomePage() {
     <>
       <Header navLinks={NAV_LINKS} githubUrl={GITHUB_ORG_URL} />
       <Hero />
-      <ValueProps />
-      <WhoItsFor />
+      <Problem />
       <HowItWorks />
-      <WhatMakesItDifferent />
+      <ValueProps />
+      <BeforeAfter />
+      <WhoItsFor />
+      <EmailCapture />
       <FeaturedArticle />
       <Projects />
-      <EmailCapture />
       <Footer repoUrl={GITHUB_REPO_URL} />
     </>
   )
