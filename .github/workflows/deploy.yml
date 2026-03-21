@@ -58,6 +58,10 @@ jobs:
             --include "*.html" \
             --cache-control "public, max-age=300, s-maxage=86400"
 
+          # 404 page: short cache like HTML
+          aws s3 cp dist/404.html s3://forkzero-web-prod/404.html \
+            --cache-control "public, max-age=300, s-maxage=86400"
+
           # Invalidate CloudFront
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} \

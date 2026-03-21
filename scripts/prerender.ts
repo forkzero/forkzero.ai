@@ -112,6 +112,27 @@ for (const route of routes) {
   console.log(`Pre-rendered: ${route.path}`)
 }
 
+// --- Generate 404.html ---
+{
+  let html404 = template
+  html404 = html404.replace(/<title>.*?<\/title>/, '<title>Page not found — Forkzero</title>')
+  html404 = html404.replace(
+    /<meta name="description" content=".*?".*?\/?>/,
+    '<meta name="description" content="The page you are looking for does not exist." />',
+  )
+  const seoTags404 = [
+    '<meta name="robots" content="noindex" />',
+    '<meta property="og:title" content="Page not found — Forkzero" />',
+    '<meta property="og:type" content="website" />',
+    '<meta property="og:site_name" content="Forkzero" />',
+  ].join('\n    ')
+  html404 = html404.replace('</head>', `    ${seoTags404}\n  </head>`)
+  const noscript404 = `<noscript><div style="max-width:800px;margin:0 auto;padding:4rem 2rem;font-family:sans-serif;text-align:center"><h1>Page not found</h1><p>The page you're looking for doesn't exist or has been moved.</p><p><a href="/">Back to homepage</a></p></div></noscript>`
+  html404 = html404.replace('<div id="root"></div>', `<div id="root"></div>\n    ${noscript404}`)
+  writeFileSync(join(distDir, '404.html'), html404)
+  console.log('Generated: /404.html')
+}
+
 // --- Generate sitemap.xml ---
 // Note: <changefreq> and <priority> are ignored by Google and omitted per best practice.
 const today = new Date().toISOString().split('T')[0]

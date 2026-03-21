@@ -121,6 +121,35 @@ fi
 
 echo "    Policy ID: ${POLICY_ID}"
 
+# ---- Custom Error Response: proper 404 page ----
+echo ""
+echo "==> Configuring custom error response for 404s"
+echo ""
+echo "NOTE: CloudFront custom error responses must be set via the distribution"
+echo "config (not a standalone resource). Run the following to update it:"
+echo ""
+echo "  DIST_ID=your-distribution-id"
+echo ""
+echo '  # Get current config'
+echo '  aws cloudfront get-distribution-config --id $DIST_ID > /tmp/cf-config.json'
+echo '  ETAG=$(jq -r .ETag /tmp/cf-config.json)'
+echo ""
+echo '  # Extract DistributionConfig and add custom error response'
+echo '  jq ".DistributionConfig.CustomErrorResponses = {'
+echo '    \"Quantity\": 1,'
+echo '    \"Items\": [{'
+echo '      \"ErrorCode\": 404,'
+echo '      \"ResponsePagePath\": \"/404.html\",'
+echo '      \"ResponseCode\": \"404\",'
+echo '      \"ErrorCachingMinTTL\": 300'
+echo '    }]'
+echo '  } | .DistributionConfig" /tmp/cf-config.json > /tmp/cf-update.json'
+echo ""
+echo '  aws cloudfront update-distribution \'
+echo '    --id $DIST_ID \'
+echo '    --distribution-config file:///tmp/cf-update.json \'
+echo '    --if-match $ETAG'
+
 # ---- Instructions ----
 echo ""
 echo "==========================================================================="
@@ -131,12 +160,19 @@ echo "2. Edit the Default Cache Behavior:"
 echo "   a. Function associations → Viewer request → CloudFront Functions"
 echo "      → Select '${FUNCTION_NAME}'"
 echo "   b. Response headers policy → Select '${HEADERS_POLICY_NAME}'"
-echo "3. Save and wait for deployment to complete"
+echo "3. Configure Custom Error Response (Error Pages tab):"
+echo "   a. Error code: 404"
+echo "   b. Customize error response: Yes"
+echo "   c. Response page path: /404.html"
+echo "   d. HTTP response code: 404"
+echo "   e. Error caching minimum TTL: 300"
+echo "4. Save and wait for deployment to complete"
 echo ""
-echo "Or via CLI (replace DIST_ID and BEHAVIOR_CONFIG):"
+echo "Or via CLI (replace DIST_ID):"
 echo "  aws cloudfront get-distribution-config --id DIST_ID > dist-config.json"
 echo "  # Edit DefaultCacheBehavior to add:"
 echo "  #   FunctionAssociations with ${FUNCTION_ARN}"
 echo "  #   ResponseHeadersPolicyId: ${POLICY_ID}"
+echo "  # Edit CustomErrorResponses to add 404 → /404.html mapping"
 echo "  aws cloudfront update-distribution --id DIST_ID --distribution-config file://dist-config.json --if-match ETAG"
 echo "==========================================================================="

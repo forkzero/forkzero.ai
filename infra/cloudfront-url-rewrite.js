@@ -1,13 +1,15 @@
 /**
- * CloudFront Function (viewer-request): rewrite clean URLs to /index.html.
+ * CloudFront Function (viewer-request): rewrite clean URLs to /index.html
+ * and redirect trailing slashes to their canonical non-trailing form.
  *
  * Converts paths like /blog/my-post → /blog/my-post/index.html so that
  * S3 REST API origin resolves pre-rendered HTML files.
  *
+ * - Redirects trailing slashes: /blog/ → 301 → /blog
  * - Skips URIs that already have a file extension (.js, .css, .xml, etc.)
  * - Skips root "/" (handled by CloudFront Default Root Object)
- * - Non-pre-rendered routes still work: S3 returns 404 → CloudFront custom
- *   error response serves the SPA shell (/index.html with 200).
+ * - Non-pre-rendered routes: S3 returns 404 → CloudFront custom error
+ *   response serves /404.html with HTTP 404.
  *
  * Runtime: cloudfront-js-2.0
  */
@@ -25,10 +27,19 @@ function handler(event) {
     return request;
   }
 
-  // Strip trailing slash, then append /index.html
+  // Redirect trailing slash to non-trailing (301)
   if (uri.endsWith('/')) {
-    uri = uri.slice(0, -1);
+    return {
+      statusCode: 301,
+      statusDescription: 'Moved Permanently',
+      headers: {
+        location: { value: uri.slice(0, -1) },
+        'cache-control': { value: 'public, max-age=86400' },
+      },
+    };
   }
+
+  // Rewrite clean URL to /index.html for S3 lookup
   request.uri = uri + '/index.html';
 
   return request;
