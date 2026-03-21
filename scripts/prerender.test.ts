@@ -149,9 +149,9 @@ describe('pre-rendered blog listing', () => {
     }
   })
 
-  it('has WebPage JSON-LD', () => {
+  it('has CollectionPage JSON-LD', () => {
     const html = readFileSync(file, 'utf-8')
-    expect(html).toContain('"@type":"WebPage"')
+    expect(html).toContain('"@type":"CollectionPage"')
   })
 
   it('has BreadcrumbList JSON-LD', () => {
