@@ -182,32 +182,54 @@ function WhoItsFor() {
 
 // --- How It Works (Vertical Trace) ---
 
-const traceNodes = [
+interface TraceNode {
+  type: string
+  color: string
+  id: string
+  title: string
+}
+
+const traceSource: TraceNode = {
+  type: 'Source',
+  color: LATTICE_LAYERS[0].color,
+  id: 'SRC-ENDOWMENT',
+  title: 'Kahneman et al. 1990 \u2014 The Endowment Effect and Loss Aversion',
+}
+
+const traceThesis: TraceNode = {
+  type: 'Thesis',
+  color: LATTICE_LAYERS[1].color,
+  id: 'THX-FREE-TIER',
+  title: 'A Free Tier Creates Ownership That Drives Paid Conversion',
+}
+
+const traceRequirements: TraceNode[] = [
   {
-    type: 'Source',
-    color: LATTICE_LAYERS[0].color,
-    id: 'SRC-REQUIREMENTS-DRIFT',
-    title: 'Requirements Documentation Drifts From Implementation',
-  },
-  {
-    type: 'Thesis',
-    color: LATTICE_LAYERS[1].color,
-    id: 'THX-VERSION-AWARE',
-    title: 'Traceability Must Be Version-Aware to Enable Drift Detection',
+    type: 'Requirement',
+    color: LATTICE_LAYERS[2].color,
+    id: 'REQ-BILLING-002',
+    title: 'Freemium Plan With Usage Limits Per Tier',
   },
   {
     type: 'Requirement',
     color: LATTICE_LAYERS[2].color,
-    id: 'REQ-CORE-005',
-    title: 'Automatic Drift Detection',
+    id: 'REQ-ONBOARD-003',
+    title: 'Time-to-Value Under Five Minutes for New Users',
   },
   {
-    type: 'Implementation',
-    color: LATTICE_LAYERS[3].color,
-    id: 'IMP-GRAPH-001',
-    title: 'Graph Traversal and Drift Detection',
+    type: 'Requirement',
+    color: LATTICE_LAYERS[2].color,
+    id: 'REQ-UPGRADE-001',
+    title: 'Contextual Upgrade Prompts at Usage Boundaries',
   },
 ]
+
+const traceImplementation: TraceNode = {
+  type: 'Implementation',
+  color: LATTICE_LAYERS[3].color,
+  id: 'IMP-BILLING-001',
+  title: 'Plan Enforcement and In-App Upgrade Flow',
+}
 
 const traceEdges = LATTICE_EDGES
 
@@ -327,7 +349,7 @@ const driftStyles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'flex-start',
     gap: '0.6rem',
-    maxWidth: '520px',
+    maxWidth: '560px',
     margin: '1rem auto 0',
     background: `${colors.accentRed}0a`,
     border: `1px solid ${colors.accentRed}30`,
@@ -379,47 +401,106 @@ const feedbackStyles: Record<string, React.CSSProperties> = {
   },
 }
 
+function TraceCard({
+  node,
+  inView,
+  delay,
+  style,
+  footer,
+}: {
+  node: TraceNode
+  inView: boolean
+  delay: number
+  style?: React.CSSProperties
+  footer?: React.ReactNode
+}) {
+  return (
+    <div
+      style={{
+        ...traceStyles.card,
+        borderLeft: `4px solid ${node.color}`,
+        opacity: inView ? 1 : 0,
+        transform: inView ? 'none' : 'translateY(12px)',
+        transition: `opacity 0.5s ease ${delay}s, transform 0.5s ease ${delay}s`,
+        ...style,
+      }}
+    >
+      <div style={traceStyles.cardHeader}>
+        <span style={{ ...traceStyles.typePill, color: node.color, background: `${node.color}14` }}>{node.type}</span>
+        <span style={traceStyles.nodeId}>{node.id}</span>
+        <span style={traceStyles.version}>v1.0.0</span>
+      </div>
+      <p style={traceStyles.nodeTitle}>{node.title}</p>
+      {footer}
+    </div>
+  )
+}
+
+function TraceConnector({ label, inView, delay }: { label: string; inView: boolean; delay: number }) {
+  return (
+    <div
+      style={{
+        ...traceStyles.connector,
+        opacity: inView ? 1 : 0,
+        transition: `opacity 0.3s ease ${delay}s`,
+      }}
+    >
+      <div style={traceStyles.connectorLine} />
+      <span style={traceStyles.connectorLabel}>{label}</span>
+      <div style={traceStyles.connectorLine} />
+      <span style={traceStyles.connectorArrow}>{'\u25BC'}</span>
+    </div>
+  )
+}
+
+const implFiles = ['src/middleware/auth.ts', 'src/billing/plans.ts', 'src/components/UpgradePrompt.tsx']
+
 function VerticalTrace({ inView }: { inView: boolean }) {
   return (
     <div style={traceStyles.wrapper}>
-      {traceNodes.flatMap((node, i) => [
-        <div
-          key={node.id}
-          style={{
-            ...traceStyles.card,
-            borderLeft: `4px solid ${node.color}`,
-            opacity: inView ? 1 : 0,
-            transform: inView ? 'none' : 'translateY(12px)',
-            transition: `opacity 0.5s ease ${i * 0.2}s, transform 0.5s ease ${i * 0.2}s`,
-          }}
-        >
-          <div style={traceStyles.cardHeader}>
-            <span style={{ ...traceStyles.typePill, color: node.color, background: `${node.color}14` }}>
-              {node.type}
-            </span>
-            <span style={traceStyles.nodeId}>{node.id}</span>
-            <span style={traceStyles.version}>v1.0.0</span>
-          </div>
-          <p style={traceStyles.nodeTitle}>{node.title}</p>
-        </div>,
-        ...(i < traceEdges.length
-          ? [
-              <div
-                key={`edge-${i}`}
+      <TraceCard node={traceSource} inView={inView} delay={0} />
+      <TraceConnector label={traceEdges[0]} inView={inView} delay={0.1} />
+      <TraceCard node={traceThesis} inView={inView} delay={0.2} />
+      <TraceConnector label={traceEdges[1]} inView={inView} delay={0.3} />
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: '0.75rem',
+          width: '100%',
+          maxWidth: '720px',
+        }}
+      >
+        {traceRequirements.map((req, i) => (
+          <TraceCard key={req.id} node={req} inView={inView} delay={0.4 + i * 0.15} style={{ maxWidth: 'none' }} />
+        ))}
+      </div>
+      <TraceConnector label={traceEdges[2]} inView={inView} delay={0.85} />
+      <TraceCard
+        node={traceImplementation}
+        inView={inView}
+        delay={0.9}
+        footer={
+          <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+            {implFiles.map((f) => (
+              <span
+                key={f}
                 style={{
-                  ...traceStyles.connector,
-                  opacity: inView ? 1 : 0,
-                  transition: `opacity 0.3s ease ${i * 0.2 + 0.1}s`,
+                  fontFamily: fonts.mono,
+                  fontSize: '0.68rem',
+                  padding: '0.15rem 0.5rem',
+                  borderRadius: '100px',
+                  background: `${colors.accentGreen}12`,
+                  color: colors.accentGreen,
+                  border: `1px solid ${colors.accentGreen}30`,
                 }}
               >
-                <div style={traceStyles.connectorLine} />
-                <span style={traceStyles.connectorLabel}>{traceEdges[i]}</span>
-                <div style={traceStyles.connectorLine} />
-                <span style={traceStyles.connectorArrow}>{'\u25BC'}</span>
-              </div>,
-            ]
-          : []),
-      ])}
+                {f}
+              </span>
+            ))}
+          </div>
+        }
+      />
     </div>
   )
 }
@@ -436,8 +517,8 @@ function DriftBadge({ inView }: { inView: boolean }) {
     >
       <span style={driftStyles.icon}>{'\u26A0'}</span>
       <span>
-        drift detected &mdash; <strong>THX-VERSION-AWARE</strong> changed v1.0.0 &rarr; v1.1.0 &mdash;{' '}
-        <strong>REQ-CORE-005</strong> needs review
+        drift detected &mdash; <strong>THX-FREE-TIER</strong> changed v1.0.0 &rarr; v1.1.0 &mdash; 3 requirements need
+        review
       </span>
     </div>
   )
@@ -472,13 +553,15 @@ function HowItWorks() {
       <div ref={ref} style={howStyles.container}>
         <h2 style={howStyles.sectionTitle}>How it works</h2>
         <p style={howStyles.intro}>
-          Lattice connects four layers of knowledge &mdash; research, strategy, requirements, and code. Here&rsquo;s a
-          real trace from Lattice&rsquo;s own knowledge graph:
+          Lattice connects four layers of knowledge &mdash; research, strategy, requirements, and code.
+        </p>
+        <p style={{ ...howStyles.intro, fontStyle: 'italic', color: colors.textMuted }}>
+          Your team is deciding between freemium and paid-only. Here&rsquo;s how that decision flows through Lattice:
         </p>
         <VerticalTrace inView={inView} />
         <p style={howStyles.body}>
-          Every edge records the version it was bound to. When something upstream changes,{' '}
-          <code style={inlineCode}>lattice drift</code> tells you exactly what downstream needs review:
+          Six months later, your free tier is attracting the wrong users. You update the thesis &mdash;{' '}
+          <code style={inlineCode}>lattice drift</code> tells you exactly which requirements need review:
         </p>
         <DriftBadge inView={inView} />
         <FeedbackArc inView={inView} />
