@@ -856,12 +856,12 @@ export function HomePage() {
     setOgTag('og:description', metaDescription)
     setOgTag('og:type', 'website')
     setOgTag('og:url', 'https://forkzero.ai/')
-    setOgTag('og:image', 'https://forkzero.ai/og-default.svg')
+    setOgTag('og:image', 'https://forkzero.ai/og-default.png')
     setOgTag('og:site_name', 'Forkzero')
     setMetaTag('twitter:card', 'summary_large_image')
     setMetaTag('twitter:title', metaTitle)
     setMetaTag('twitter:description', metaDescription)
-    setMetaTag('twitter:image', 'https://forkzero.ai/og-default.svg')
+    setMetaTag('twitter:image', 'https://forkzero.ai/og-default.png')
   }, [])
 
   return (
@@ -876,7 +876,7 @@ export function HomePage() {
       <EmailCapture />
       <FeaturedArticle />
       <Projects />
-      <Footer repoUrl={GITHUB_REPO_URL} />
+      <Footer repoUrl={GITHUB_REPO_URL} links={[{ label: 'Privacy', href: '/privacy' }]} />
     </>
   )
 }

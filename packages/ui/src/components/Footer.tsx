@@ -5,6 +5,7 @@ export interface FooterProps {
   repoUrl?: string
   repoLabel?: string
   orgName?: string
+  links?: { label: string; href: string }[]
 }
 
 const styles = {
@@ -23,7 +24,7 @@ const styles = {
   },
 }
 
-export function Footer({ repoUrl, repoLabel, orgName }: FooterProps) {
+export function Footer({ repoUrl, repoLabel, orgName, links }: FooterProps) {
   injectGlobalStyles()
   return (
     <footer style={styles.footer} data-fzui>
@@ -41,6 +42,18 @@ export function Footer({ repoUrl, repoLabel, orgName }: FooterProps) {
           <>Built with {repoLabel ?? 'Lattice'}.</>
         )}
       </p>
+      {links && links.length > 0 && (
+        <p>
+          {links.map((link, i) => (
+            <span key={link.href}>
+              {i > 0 && ' · '}
+              <a href={link.href} style={styles.link}>
+                {link.label}
+              </a>
+            </span>
+          ))}
+        </p>
+      )}
     </footer>
   )
 }

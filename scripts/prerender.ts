@@ -38,16 +38,22 @@ const routes: RouteMeta[] = [
   })),
   {
     path: '/getting-started',
-    title: 'Getting Started — Forkzero',
+    title: 'Get Started with Lattice — Forkzero',
     description: 'Install Lattice and start building a knowledge-coordinated codebase in under five minutes.',
     canonical: 'https://forkzero.ai/getting-started',
+  },
+  {
+    path: '/privacy',
+    title: 'Privacy Policy — Forkzero',
+    description: 'Forkzero privacy policy. How we handle your data.',
+    canonical: 'https://forkzero.ai/privacy',
   },
   // Homepage last — it overwrites dist/index.html (template is already in memory)
   {
     path: '/',
-    title: 'Forkzero — Knowledge Coordination for AI-Native Teams',
+    title: 'Lattice by Forkzero — Knowledge Graph for AI-Native Teams',
     description:
-      'Forkzero builds developer tools that connect research, strategy, requirements, and implementation into a traversable knowledge graph.',
+      'Lattice captures the research, decisions, and requirements behind your code in a Git-native knowledge graph. Any collaborator — human or AI — picks up where the last one left off.',
     canonical: 'https://forkzero.ai/',
   },
 ]
@@ -73,12 +79,12 @@ for (const route of routes) {
     `<meta property="og:description" content="${escapeAttr(route.description)}" />`,
     `<meta property="og:type" content="${ogType}" />`,
     `<meta property="og:url" content="${route.canonical}" />`,
-    `<meta property="og:image" content="https://forkzero.ai/og-default.svg" />`,
+    `<meta property="og:image" content="https://forkzero.ai/og-default.png" />`,
     `<meta property="og:site_name" content="Forkzero" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${escapeAttr(route.title)}" />`,
     `<meta name="twitter:description" content="${escapeAttr(route.description)}" />`,
-    `<meta name="twitter:image" content="https://forkzero.ai/og-default.svg" />`,
+    `<meta name="twitter:image" content="https://forkzero.ai/og-default.png" />`,
     `<link rel="canonical" href="${route.canonical}" />`,
   ].join('\n    ')
 
@@ -108,10 +114,12 @@ for (const route of routes) {
 
 // --- Generate sitemap.xml ---
 // Note: <changefreq> and <priority> are ignored by Google and omitted per best practice.
-const sitemapUrls: { loc: string; lastmod?: string }[] = [
-  { loc: 'https://forkzero.ai/' },
-  { loc: 'https://forkzero.ai/getting-started' },
-  { loc: 'https://forkzero.ai/blog' },
+const today = new Date().toISOString().split('T')[0]
+const latestPostDate = blogPosts.length > 0 ? blogPosts[0].date : today
+const sitemapUrls: { loc: string; lastmod: string }[] = [
+  { loc: 'https://forkzero.ai/', lastmod: today },
+  { loc: 'https://forkzero.ai/getting-started', lastmod: today },
+  { loc: 'https://forkzero.ai/blog', lastmod: latestPostDate },
   ...blogPosts.map((post) => ({
     loc: `https://forkzero.ai/blog/${post.slug}`,
     lastmod: post.date,
@@ -121,10 +129,7 @@ const sitemapUrls: { loc: string; lastmod?: string }[] = [
 const sitemapXml = [
   '<?xml version="1.0" encoding="UTF-8"?>',
   '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-  ...sitemapUrls.map((u) => {
-    const lastmod = u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : ''
-    return `  <url>\n    <loc>${u.loc}</loc>${lastmod}\n  </url>`
-  }),
+  ...sitemapUrls.map((u) => `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${u.lastmod}</lastmod>\n  </url>`),
   '</urlset>',
   '',
 ].join('\n')
@@ -144,13 +149,13 @@ function buildNoscript(route: RouteMeta): string | null {
       .join('\n')
     return wrap(
       [
-        `<h1>Forkzero — Knowledge Coordination for AI-Native Teams</h1>`,
-        `<p>Connect research, strategy, requirements, and implementation into a traversable knowledge graph.</p>`,
-        `<h2>Why Forkzero</h2>`,
+        `<h1>Your agent writes the code. Who remembers why?</h1>`,
+        `<p>The research, reasoning, and requirements behind your code vanish into chat logs. Lattice captures them in a Git-native knowledge graph — so any collaborator, human or AI, can pick up where the last one left off.</p>`,
+        `<h2>Why Lattice?</h2>`,
         `<ul>`,
-        `<li>Every decision traces back to its source</li>`,
-        `<li>Agents and humans share the same knowledge layer</li>`,
-        `<li>Context stays structured, not scattered</li>`,
+        `<li>Stop losing the &quot;why&quot; — every requirement traces back to the research that motivated it</li>`,
+        `<li>Requirements before code, not after — give your agent a spec to implement</li>`,
+        `<li>Onboard anyone in minutes — human or AI</li>`,
         `</ul>`,
         `<h2>Projects</h2>`,
         `<ul>${projectList}</ul>`,
@@ -179,6 +184,16 @@ function buildNoscript(route: RouteMeta): string | null {
       .map((p) => `<article><h2><a href="/blog/${p.slug}">${esc(p.title)}</a></h2><p>${esc(p.excerpt)}</p></article>`)
       .join('\n')
     return wrap(`<h1>Blog</h1>${listHtml}`)
+  }
+
+  if (route.path === '/privacy') {
+    return wrap(
+      [
+        `<h1>Privacy Policy</h1>`,
+        `<p>If you subscribe to our mailing list, we collect your email address. We do not use cookies, tracking pixels, or third-party analytics. Lattice is open-source software that runs entirely on your machine and does not collect telemetry.</p>`,
+        `<p>Contact: privacy@forkzero.ai</p>`,
+      ].join(''),
+    )
   }
 
   // Blog post
@@ -214,7 +229,7 @@ function buildJsonLd(route: RouteMeta): string {
       },
       sameAs: ['https://github.com/forkzero'],
       description:
-        'Forkzero builds developer tools that connect research, strategy, requirements, and implementation into a traversable knowledge graph.',
+        'Forkzero builds developer tools for AI-native teams. Lattice captures research, decisions, and requirements in a Git-native knowledge graph.',
     })
     schemas.push({
       '@context': 'https://schema.org',
@@ -266,10 +281,12 @@ function buildJsonLd(route: RouteMeta): string {
         headline: post.title,
         description: post.excerpt,
         datePublished: post.date,
-        image: 'https://forkzero.ai/og-default.svg',
+        dateModified: post.date,
+        image: 'https://forkzero.ai/og-default.png',
         author: {
           '@type': 'Person',
           name: post.author.name,
+          ...(post.author.github ? { url: post.author.github } : {}),
         },
         publisher: {
           '@type': 'Organization',
@@ -318,6 +335,24 @@ function buildJsonLd(route: RouteMeta): string {
           name: 'Getting Started',
           item: 'https://forkzero.ai/getting-started',
         },
+      ],
+    })
+  }
+
+  if (route.path === '/privacy') {
+    schemas.push({
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'Privacy Policy — Forkzero',
+      description: route.description,
+      url: route.canonical,
+    })
+    schemas.push({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://forkzero.ai/' },
+        { '@type': 'ListItem', position: 2, name: 'Privacy Policy', item: 'https://forkzero.ai/privacy' },
       ],
     })
   }

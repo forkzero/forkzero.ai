@@ -731,7 +731,7 @@ function BlogListing() {
     )
     setOgTag('og:type', 'website')
     setOgTag('og:url', 'https://forkzero.ai/blog')
-    setOgTag('og:image', 'https://forkzero.ai/og-default.svg')
+    setOgTag('og:image', 'https://forkzero.ai/og-default.png')
     setOgTag('og:site_name', 'Forkzero')
     setMetaTag('twitter:card', 'summary_large_image')
     setMetaTag('twitter:title', 'Blog \u2014 Forkzero')
@@ -739,7 +739,7 @@ function BlogListing() {
       'twitter:description',
       'Technical writing on knowledge coordination, context engineering, and AI-first developer tooling.',
     )
-    setMetaTag('twitter:image', 'https://forkzero.ai/og-default.svg')
+    setMetaTag('twitter:image', 'https://forkzero.ai/og-default.png')
     setCanonical('https://forkzero.ai/blog')
   }, [])
 
@@ -764,7 +764,7 @@ function BlogListing() {
           </a>
         ))}
       </div>
-      <Footer repoUrl={GITHUB_REPO_URL} />
+      <Footer repoUrl={GITHUB_REPO_URL} links={[{ label: 'Privacy', href: '/privacy' }]} />
     </div>
   )
 }
@@ -779,12 +779,12 @@ function BlogPostView({ post }: { post: BlogPost }) {
     setOgTag('og:description', post.excerpt)
     setOgTag('og:type', 'article')
     setOgTag('og:url', `https://forkzero.ai/blog/${post.slug}`)
-    setOgTag('og:image', 'https://forkzero.ai/og-default.svg')
+    setOgTag('og:image', 'https://forkzero.ai/og-default.png')
     setOgTag('og:site_name', 'Forkzero')
     setMetaTag('twitter:card', 'summary_large_image')
     setMetaTag('twitter:title', post.title)
     setMetaTag('twitter:description', post.excerpt)
-    setMetaTag('twitter:image', 'https://forkzero.ai/og-default.svg')
+    setMetaTag('twitter:image', 'https://forkzero.ai/og-default.png')
     setCanonical(`https://forkzero.ai/blog/${post.slug}`)
   }, [post])
 
@@ -813,7 +813,7 @@ function BlogPostView({ post }: { post: BlogPost }) {
           <BlogComments slug={post.slug} />
         </div>
       </div>
-      <Footer repoUrl={GITHUB_REPO_URL} />
+      <Footer repoUrl={GITHUB_REPO_URL} links={[{ label: 'Privacy', href: '/privacy' }]} />
     </div>
   )
 }
@@ -833,7 +833,7 @@ function BlogNotFound() {
           Back to blog
         </a>
       </div>
-      <Footer repoUrl={GITHUB_REPO_URL} />
+      <Footer repoUrl={GITHUB_REPO_URL} links={[{ label: 'Privacy', href: '/privacy' }]} />
     </div>
   )
 }

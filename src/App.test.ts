@@ -35,6 +35,14 @@ describe('parseRoute', () => {
     expect(parseRoute('/design-system/')).toEqual({ page: 'design-system' })
   })
 
+  it('returns privacy for /privacy', () => {
+    expect(parseRoute('/privacy')).toEqual({ page: 'privacy' })
+  })
+
+  it('returns privacy for /privacy/ with trailing slash', () => {
+    expect(parseRoute('/privacy/')).toEqual({ page: 'privacy' })
+  })
+
   it('returns blog listing for /blog', () => {
     expect(parseRoute('/blog')).toEqual({ page: 'blog' })
   })

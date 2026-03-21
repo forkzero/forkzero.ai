@@ -460,7 +460,7 @@ export function GettingStartedPage() {
     )
     setOgTag('og:type', 'website')
     setOgTag('og:url', 'https://forkzero.ai/getting-started')
-    setOgTag('og:image', 'https://forkzero.ai/og-default.svg')
+    setOgTag('og:image', 'https://forkzero.ai/og-default.png')
     setOgTag('og:site_name', 'Forkzero')
     setMetaTag('twitter:card', 'summary_large_image')
     setMetaTag('twitter:title', 'Get Started with Lattice — Forkzero')
@@ -468,7 +468,7 @@ export function GettingStartedPage() {
       'twitter:description',
       'Install Lattice and start building a knowledge-coordinated codebase in under five minutes.',
     )
-    setMetaTag('twitter:image', 'https://forkzero.ai/og-default.svg')
+    setMetaTag('twitter:image', 'https://forkzero.ai/og-default.png')
   }, [])
 
   return (
@@ -773,7 +773,7 @@ lattice drift`}
         </section>
       </div>
 
-      <Footer repoUrl={GITHUB_REPO_URL} />
+      <Footer repoUrl={GITHUB_REPO_URL} links={[{ label: 'Privacy', href: '/privacy' }]} />
     </div>
   )
 }

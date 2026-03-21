@@ -18,7 +18,7 @@ describe('pre-rendered homepage', () => {
 
   it('has correct title', () => {
     const html = readFileSync(file, 'utf-8')
-    expect(html).toContain('<title>Forkzero — Knowledge Coordination for AI-Native Teams</title>')
+    expect(html).toContain('<title>Lattice by Forkzero — Knowledge Graph for AI-Native Teams</title>')
   })
 
   it('has meta description', () => {
@@ -72,7 +72,7 @@ describe('pre-rendered getting-started', () => {
 
   it('has correct title', () => {
     const html = readFileSync(file, 'utf-8')
-    expect(html).toContain('<title>Getting Started — Forkzero</title>')
+    expect(html).toContain('<title>Get Started with Lattice — Forkzero</title>')
   })
 
   it('has meta description', () => {
