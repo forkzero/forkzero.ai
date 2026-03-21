@@ -12,6 +12,7 @@
     "preview": "vite preview",
     "test": "vitest run --coverage",
     "test:fast": "vitest run",
+    "test:smoke": "vitest run --config vitest.smoke.config.ts",
     "test:watch": "vitest",
     "lint": "eslint src scripts packages/ui/src",
     "lint:fix": "eslint src scripts packages/ui/src --fix",

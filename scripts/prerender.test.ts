@@ -44,6 +44,14 @@ describe('pre-rendered homepage', () => {
     expect(html).toContain('knowledge graph')
   })
 
+  it('has noscript navigation links', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('<nav>')
+    expect(html).toContain('href="/getting-started"')
+    expect(html).toContain('href="/blog"')
+    expect(html).toContain('href="/privacy"')
+  })
+
   it('has Organization JSON-LD', () => {
     const html = readFileSync(file, 'utf-8')
     expect(html).toContain('application/ld+json')
@@ -102,6 +110,47 @@ describe('pre-rendered getting-started', () => {
     const html = readFileSync(file, 'utf-8')
     expect(html).toContain('"@type":"BreadcrumbList"')
     expect(html).toContain('Getting Started')
+  })
+})
+
+describe('pre-rendered reader', () => {
+  const file = join(distDir, 'reader', 'index.html')
+
+  it('exists', () => {
+    expect(existsSync(file)).toBe(true)
+  })
+
+  it('has correct title', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('<title>Lattice Dashboard — Forkzero</title>')
+  })
+
+  it('has meta description', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('<meta name="description"')
+    expect(html).toContain('Interactive viewer')
+  })
+
+  it('has og:type website', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('og:type" content="website"')
+  })
+
+  it('has noscript fallback', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('<noscript>')
+    expect(html).toContain('Lattice Dashboard')
+  })
+
+  it('has WebPage JSON-LD', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('"@type":"WebPage"')
+  })
+
+  it('has BreadcrumbList JSON-LD', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('"@type":"BreadcrumbList"')
+    expect(html).toContain('Dashboard')
   })
 })
 
@@ -214,5 +263,57 @@ describe('pre-rendered blog post', () => {
     const html = readFileSync(file, 'utf-8')
     expect(html).toContain('"@type":"BreadcrumbList"')
     expect(html).toContain('"position":3')
+  })
+})
+
+describe('sitemap.xml', () => {
+  const file = join(distDir, 'sitemap.xml')
+
+  it('exists', () => {
+    expect(existsSync(file)).toBe(true)
+  })
+
+  it('contains all pages', () => {
+    const xml = readFileSync(file, 'utf-8')
+    expect(xml).toContain('https://forkzero.ai/')
+    expect(xml).toContain('https://forkzero.ai/getting-started')
+    expect(xml).toContain('https://forkzero.ai/blog')
+    expect(xml).toContain('https://forkzero.ai/privacy')
+  })
+
+  it('contains all blog posts', () => {
+    const xml = readFileSync(file, 'utf-8')
+    for (const post of blogPosts) {
+      expect(xml).toContain(`https://forkzero.ai/blog/${post.slug}`)
+    }
+  })
+
+  it('has lastmod dates', () => {
+    const xml = readFileSync(file, 'utf-8')
+    expect(xml).toMatch(/<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/)
+  })
+})
+
+describe('404.html', () => {
+  const file = join(distDir, '404.html')
+
+  it('exists', () => {
+    expect(existsSync(file)).toBe(true)
+  })
+
+  it('has noindex meta tag', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('<meta name="robots" content="noindex"')
+  })
+
+  it('has correct title', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('<title>Page not found — Forkzero</title>')
+  })
+
+  it('has noscript fallback with link to homepage', () => {
+    const html = readFileSync(file, 'utf-8')
+    expect(html).toContain('<noscript>')
+    expect(html).toContain('href="/"')
   })
 })

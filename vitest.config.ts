@@ -2,6 +2,8 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
+    exclude: ['**/node_modules/**', '**/smoke.test.*'],
+    reporters: ['default', ['junit', { outputFile: 'test-results/unit.xml' }]],
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
