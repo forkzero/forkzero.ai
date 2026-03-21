@@ -2,30 +2,48 @@
 set -euo pipefail
 
 # ===========================================================================
-# One-time CloudFront setup script for forkzero.ai
-# Creates/updates: URL rewrite function + security response headers policy
+# CloudFront setup script for forkzero.ai
+#
+# Creates/updates and associates:
+#   1. CloudFront Function for URL rewriting + trailing-slash redirects
+#   2. Response Headers Policy (security headers)
+#   3. Custom error responses (404 → /404.html, 403 → SPA fallback)
 #
 # Prerequisites:
 #   - AWS CLI v2 configured with appropriate credentials
 #   - jq installed
 #
 # Usage:
-#   chmod +x infra/setup-cloudfront.sh
-#   ./infra/setup-cloudfront.sh
-#
-# After running, manually associate the function and headers policy with
-# your CloudFront distribution's default cache behavior.
+#   ./infra/setup-cloudfront.sh              # auto-detect distribution
+#   DIST_ID=E1QZI... ./infra/setup-cloudfront.sh  # explicit distribution ID
 # ===========================================================================
 
 FUNCTION_NAME="forkzero-url-rewrite"
 FUNCTION_FILE="$(dirname "$0")/cloudfront-url-rewrite.js"
 HEADERS_POLICY_NAME="forkzero-security-headers"
+DOMAIN="forkzero.ai"
+
+# ---- Resolve distribution ID ----
+
+if [ -z "${DIST_ID:-}" ]; then
+  echo "==> Looking up CloudFront distribution for ${DOMAIN}..."
+  DIST_ID=$(aws cloudfront list-distributions \
+    --query "DistributionList.Items[?Aliases.Items[?@=='${DOMAIN}']].Id | [0]" \
+    --output text)
+  if [ -z "${DIST_ID}" ] || [ "${DIST_ID}" = "None" ]; then
+    echo "ERROR: No CloudFront distribution found for ${DOMAIN}" >&2
+    exit 1
+  fi
+fi
+echo "    Distribution: ${DIST_ID}"
 
 # ---- CloudFront Function: URL rewrite ----
+echo ""
 echo "==> Creating/updating CloudFront Function: ${FUNCTION_NAME}"
 
-# Check if the function already exists
-EXISTING=$(aws cloudfront list-functions --query "FunctionList.Items[?Name=='${FUNCTION_NAME}'].Name" --output text 2>/dev/null || true)
+EXISTING=$(aws cloudfront list-functions \
+  --query "FunctionList.Items[?Name=='${FUNCTION_NAME}'].Name" \
+  --output text 2>/dev/null || true)
 
 if [ -z "${EXISTING}" ]; then
   echo "    Creating new function..."
@@ -49,7 +67,8 @@ aws cloudfront publish-function \
   --name "${FUNCTION_NAME}" \
   --if-match "${ETAG}"
 
-FUNCTION_ARN=$(aws cloudfront describe-function --name "${FUNCTION_NAME}" --query 'FunctionSummary.FunctionMetadata.FunctionARN' --output text)
+FUNCTION_ARN=$(aws cloudfront describe-function --name "${FUNCTION_NAME}" \
+  --query 'FunctionSummary.FunctionMetadata.FunctionARN' --output text)
 echo "    Published: ${FUNCTION_ARN}"
 
 # ---- Response Headers Policy: security headers ----
@@ -98,7 +117,6 @@ POLICY_CONFIG=$(cat <<'POLICY_JSON'
 POLICY_JSON
 )
 
-# Check if the policy already exists
 EXISTING_POLICY_ID=$(aws cloudfront list-response-headers-policies \
   --query "ResponseHeadersPolicyList.Items[?ResponseHeadersPolicy.ResponseHeadersPolicyConfig.Name=='${HEADERS_POLICY_NAME}'].ResponseHeadersPolicy.Id" \
   --output text 2>/dev/null || true)
@@ -121,58 +139,59 @@ fi
 
 echo "    Policy ID: ${POLICY_ID}"
 
-# ---- Custom Error Response: proper 404 page ----
+# ---- Associate everything with the distribution ----
 echo ""
-echo "==> Configuring custom error response for 404s"
-echo ""
-echo "NOTE: CloudFront custom error responses must be set via the distribution"
-echo "config (not a standalone resource). Run the following to update it:"
-echo ""
-echo "  DIST_ID=your-distribution-id"
-echo ""
-echo '  # Get current config'
-echo '  aws cloudfront get-distribution-config --id $DIST_ID > /tmp/cf-config.json'
-echo '  ETAG=$(jq -r .ETag /tmp/cf-config.json)'
-echo ""
-echo '  # Extract DistributionConfig and add custom error response'
-echo '  jq ".DistributionConfig.CustomErrorResponses = {'
-echo '    \"Quantity\": 1,'
-echo '    \"Items\": [{'
-echo '      \"ErrorCode\": 404,'
-echo '      \"ResponsePagePath\": \"/404.html\",'
-echo '      \"ResponseCode\": \"404\",'
-echo '      \"ErrorCachingMinTTL\": 300'
-echo '    }]'
-echo '  } | .DistributionConfig" /tmp/cf-config.json > /tmp/cf-update.json'
-echo ""
-echo '  aws cloudfront update-distribution \'
-echo '    --id $DIST_ID \'
-echo '    --distribution-config file:///tmp/cf-update.json \'
-echo '    --if-match $ETAG'
+echo "==> Updating distribution ${DIST_ID}..."
 
-# ---- Instructions ----
+# Fetch current config
+TMPDIR=$(mktemp -d)
+trap 'rm -rf "${TMPDIR}"' EXIT
+
+aws cloudfront get-distribution-config --id "${DIST_ID}" > "${TMPDIR}/config.json"
+DIST_ETAG=$(jq -r '.ETag' "${TMPDIR}/config.json")
+
+# Build updated config with jq:
+#   - Set function association on default cache behavior
+#   - Set response headers policy on default cache behavior
+#   - Set custom error responses (403 → SPA fallback, 404 → /404.html)
+jq --arg fn_arn "${FUNCTION_ARN}" --arg policy_id "${POLICY_ID}" '
+  .DistributionConfig
+  | .DefaultCacheBehavior.FunctionAssociations = {
+      "Quantity": 1,
+      "Items": [{
+        "FunctionARN": $fn_arn,
+        "EventType": "viewer-request"
+      }]
+    }
+  | .DefaultCacheBehavior.ResponseHeadersPolicyId = $policy_id
+  | .CustomErrorResponses = {
+      "Quantity": 2,
+      "Items": [
+        {
+          "ErrorCode": 403,
+          "ResponsePagePath": "/404.html",
+          "ResponseCode": "404",
+          "ErrorCachingMinTTL": 300
+        },
+        {
+          "ErrorCode": 404,
+          "ResponsePagePath": "/404.html",
+          "ResponseCode": "404",
+          "ErrorCachingMinTTL": 300
+        }
+      ]
+    }
+' "${TMPDIR}/config.json" > "${TMPDIR}/update.json"
+
+aws cloudfront update-distribution \
+  --id "${DIST_ID}" \
+  --distribution-config "file://${TMPDIR}/update.json" \
+  --if-match "${DIST_ETAG}" \
+  --query 'Distribution.Status' \
+  --output text
+
 echo ""
-echo "==========================================================================="
-echo "NEXT STEPS — Associate with your CloudFront distribution:"
-echo ""
-echo "1. Open the CloudFront console → Distributions → your distribution"
-echo "2. Edit the Default Cache Behavior:"
-echo "   a. Function associations → Viewer request → CloudFront Functions"
-echo "      → Select '${FUNCTION_NAME}'"
-echo "   b. Response headers policy → Select '${HEADERS_POLICY_NAME}'"
-echo "3. Configure Custom Error Response (Error Pages tab):"
-echo "   a. Error code: 404"
-echo "   b. Customize error response: Yes"
-echo "   c. Response page path: /404.html"
-echo "   d. HTTP response code: 404"
-echo "   e. Error caching minimum TTL: 300"
-echo "4. Save and wait for deployment to complete"
-echo ""
-echo "Or via CLI (replace DIST_ID):"
-echo "  aws cloudfront get-distribution-config --id DIST_ID > dist-config.json"
-echo "  # Edit DefaultCacheBehavior to add:"
-echo "  #   FunctionAssociations with ${FUNCTION_ARN}"
-echo "  #   ResponseHeadersPolicyId: ${POLICY_ID}"
-echo "  # Edit CustomErrorResponses to add 404 → /404.html mapping"
-echo "  aws cloudfront update-distribution --id DIST_ID --distribution-config file://dist-config.json --if-match ETAG"
-echo "==========================================================================="
+echo "==> Done. Distribution is deploying — changes propagate in ~2-5 minutes."
+echo "    Function:        ${FUNCTION_ARN}"
+echo "    Headers Policy:  ${POLICY_ID}"
+echo "    Error Responses: 403→/404.html (404), 404→/404.html (404)"

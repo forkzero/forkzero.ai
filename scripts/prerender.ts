@@ -43,6 +43,13 @@ const routes: RouteMeta[] = [
     canonical: 'https://forkzero.ai/getting-started',
   },
   {
+    path: '/reader',
+    title: 'Lattice Dashboard — Forkzero',
+    description:
+      'Interactive viewer for Lattice knowledge graphs. Explore sources, theses, requirements, and implementations.',
+    canonical: 'https://forkzero.ai/reader',
+  },
+  {
     path: '/privacy',
     title: 'Privacy Policy — Forkzero',
     description: 'Forkzero privacy policy. How we handle your data.',
@@ -209,6 +216,12 @@ function buildNoscript(route: RouteMeta): string | null {
     return wrap(`<h1>Blog</h1>${listHtml}`)
   }
 
+  if (route.path === '/reader') {
+    return wrap(
+      `<h1>Lattice Dashboard</h1><p>Interactive viewer for Lattice knowledge graphs. Requires JavaScript to run.</p><p><a href="/">Back to homepage</a></p>`,
+    )
+  }
+
   if (route.path === '/privacy') {
     return wrap(
       [
@@ -358,6 +371,24 @@ function buildJsonLd(route: RouteMeta): string {
           name: 'Getting Started',
           item: 'https://forkzero.ai/getting-started',
         },
+      ],
+    })
+  }
+
+  if (route.path === '/reader') {
+    schemas.push({
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: 'Lattice Dashboard — Forkzero',
+      description: route.description,
+      url: route.canonical,
+    })
+    schemas.push({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://forkzero.ai/' },
+        { '@type': 'ListItem', position: 2, name: 'Dashboard', item: 'https://forkzero.ai/reader' },
       ],
     })
   }
