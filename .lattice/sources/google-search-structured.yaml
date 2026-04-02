@@ -1,0 +1,13 @@
+id: SRC-GOOGLE-SEARCH-STRUCTURED
+type: source
+title: 'Google Search Central: structured data guidelines'
+body: Google's requirements for structured data markup including JSON-LD format preference, required fields for BlogPosting (headline, image, datePublished, author), and rich result eligibility criteria.
+status: active
+version: 1.0.0
+created_at: 2026-03-01T19:29:08.143376+00:00
+created_by: agent:claude-2026-03-01
+requested_by: George Moon <george.moon@gmail.com>
+meta:
+  url: https://developers.google.com/search/docs/appearance/structured-data/intro-structured-data
+  reliability: industry
+  retrieved_at: 2026-03-01

@@ -1,0 +1,16 @@
+id: THX-BEYOND-CODE
+type: thesis
+title: Lattice applies beyond codebases to any knowledge system where decisions trace back to evidence
+body: The core value of Lattice — versioned edges between decisions with drift detection — is not specific to software development. Any domain where knowledge accumulates, decisions reference prior evidence, and upstream changes should flag downstream work for review benefits from the same graph model. Agent memory, research workflows, compliance documentation, and product strategy all share this pattern.
+status: active
+version: 1.0.0
+created_at: 2026-04-02T13:05:53.437456+00:00
+created_by: human:george
+requested_by: George Moon <george.moon@gmail.com>
+meta:
+  category: value_prop
+  confidence: 0.8
+edges:
+  supported_by:
+  - target: SRC-AGENT-MEMORY-ANALOGY
+    version: 1.0.0

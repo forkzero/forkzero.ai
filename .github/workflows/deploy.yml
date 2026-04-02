@@ -66,3 +66,14 @@ jobs:
           aws cloudfront create-invalidation \
             --distribution-id ${{ secrets.CF_DISTRIBUTION_ID }} \
             --paths "/*"
+
+      - name: Wait for CloudFront propagation
+        run: sleep 30
+
+      - name: Smoke tests
+        run: npm run test:smoke
+
+      - name: Test summary
+        if: always()
+        run: |
+          node scripts/test-summary.mjs --md >> $GITHUB_STEP_SUMMARY || true

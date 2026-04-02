@@ -10,6 +10,7 @@
 
 import { describe, it, expect } from 'vitest'
 import { blogPosts } from '../src/data/blog-posts.js'
+import { SUBSCRIBE_API_URL } from '../src/constants.js'
 
 const BASE = process.env.SITE_URL ?? 'https://forkzero.ai'
 
@@ -152,5 +153,86 @@ describe('static assets', () => {
     const res = await head(`${match![0]}`)
     expect(res.status).toBe(200)
     expect(res.headers.get('cache-control')).toContain('immutable')
+  })
+})
+
+// --- Subscribe API ---
+
+async function postSubscribe(body: unknown, headers?: Record<string, string>) {
+  const res = await fetch(SUBSCRIBE_API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...headers },
+    body: JSON.stringify(body),
+  })
+  const text = await res.text()
+  let json: Record<string, unknown> = {}
+  try {
+    json = JSON.parse(text)
+  } catch {
+    // non-JSON response
+  }
+  return { res, json }
+}
+
+describe('subscribe API — security', () => {
+  it('rejects requests without Origin header', async () => {
+    const { res, json } = await postSubscribe({ email: 'no-origin@test.com' })
+    expect(res.status).toBe(403)
+    expect(json.error).toBe('Forbidden')
+  })
+
+  it('rejects requests with wrong Origin', async () => {
+    const { res, json } = await postSubscribe({ email: 'wrong-origin@test.com' }, { Origin: 'https://evil.com' })
+    expect(res.status).toBe(403)
+    expect(json.error).toBe('Forbidden')
+  })
+
+  it('rejects oversized body', async () => {
+    const { res, json } = await postSubscribe({ email: 'a'.repeat(2000) + '@x.com' }, { Origin: 'https://forkzero.ai' })
+    expect(res.status).toBe(413)
+    expect(json.error).toBe('Request too large')
+  })
+
+  it('rejects invalid email', async () => {
+    const { res, json } = await postSubscribe({ email: 'not-an-email' }, { Origin: 'https://forkzero.ai' })
+    expect(res.status).toBe(400)
+    expect(json.error).toContain('email')
+  })
+
+  it('silently discards honeypot submissions', async () => {
+    const { res, json } = await postSubscribe(
+      { email: 'honeypot-test@test.com', website: 'http://spam.com' },
+      { Origin: 'https://forkzero.ai' },
+    )
+    expect(res.status).toBe(200)
+    expect(json.ok).toBe(true)
+  })
+})
+
+describe('subscribe API — happy path', () => {
+  it('accepts valid subscription', async () => {
+    const { res, json } = await postSubscribe(
+      { email: `smoke-test-${Date.now()}@forkzero.ai` },
+      { Origin: 'https://forkzero.ai' },
+    )
+    expect(res.status).toBe(200)
+    expect(json.ok).toBe(true)
+  })
+
+  it('handles duplicate gracefully', async () => {
+    const email = `dupe-test-${Date.now()}@forkzero.ai`
+    const headers = { Origin: 'https://forkzero.ai' }
+    await postSubscribe({ email }, headers)
+    const { res, json } = await postSubscribe({ email }, headers)
+    expect(res.status).toBe(200)
+    expect(json.ok).toBe(true)
+  })
+
+  it('returns CORS headers', async () => {
+    const { res } = await postSubscribe(
+      { email: `cors-test-${Date.now()}@forkzero.ai` },
+      { Origin: 'https://forkzero.ai' },
+    )
+    expect(res.headers.get('access-control-allow-origin')).toBe('https://forkzero.ai')
   })
 })

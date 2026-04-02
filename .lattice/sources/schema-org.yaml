@@ -1,0 +1,13 @@
+id: SRC-SCHEMA-ORG
+type: source
+title: Schema.org structured data documentation
+body: 'Reference for JSON-LD schema types used in pre-rendering: Organization, WebSite, SoftwareApplication, BlogPosting, WebPage, BreadcrumbList. Defines required and recommended properties for Google rich result eligibility.'
+status: active
+version: 1.0.0
+created_at: 2026-03-01T19:29:03.269356+00:00
+created_by: agent:claude-2026-03-01
+requested_by: George Moon <george.moon@gmail.com>
+meta:
+  url: https://schema.org
+  reliability: industry
+  retrieved_at: 2026-03-01

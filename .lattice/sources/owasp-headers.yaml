@@ -1,0 +1,13 @@
+id: SRC-OWASP-HEADERS
+type: source
+title: OWASP Secure Headers Project
+body: 'Security header recommendations: Strict-Transport-Security with preload, X-Frame-Options DENY, X-Content-Type-Options nosniff, Referrer-Policy strict-origin-when-cross-origin, Permissions-Policy. CSP deferred due to inline styles and third-party dependencies.'
+status: active
+version: 1.0.0
+created_at: 2026-03-01T19:29:18.158186+00:00
+created_by: agent:claude-2026-03-01
+requested_by: George Moon <george.moon@gmail.com>
+meta:
+  url: https://owasp.org/www-project-secure-headers/
+  reliability: industry
+  retrieved_at: 2026-03-01

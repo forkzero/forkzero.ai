@@ -1,0 +1,12 @@
+id: SRC-SEO-AUDIT-001
+type: source
+title: SEO audit findings for forkzero.ai (2026-03-21)
+body: 'Full SEO audit covering technical, on-page, content quality, and AI search readiness. Critical findings: OG image SVG not rendered by social platforms, pre-rendered meta tags mismatched React components, no privacy policy, soft 404s returning HTTP 200, trailing slash duplicate content. High findings: no About page, no llms.txt, thin content (2 blog posts), no documentation section, missing dateModified in BlogPosting schema.'
+status: active
+version: 1.0.0
+created_at: 2026-03-21T18:08:09.832050+00:00
+created_by: unknown
+requested_by: George Moon <george.moon@gmail.com>
+meta:
+  reliability: unverified
+  retrieved_at: 2026-03-21

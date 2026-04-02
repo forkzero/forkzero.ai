@@ -45,6 +45,11 @@ jobs:
       - name: Test with coverage
         run: npm test
 
+      - name: Test summary
+        if: always()
+        run: |
+          node scripts/test-summary.mjs --md >> $GITHUB_STEP_SUMMARY || true
+
   validate-lattice:
     name: Validate Lattice Structure
     runs-on: ubuntu-latest

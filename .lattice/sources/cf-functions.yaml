@@ -1,0 +1,13 @@
+id: SRC-CF-FUNCTIONS
+type: source
+title: AWS CloudFront Functions documentation
+body: Reference for CloudFront Functions (viewer-request event type, cloudfront-js-2.0 runtime). Used to implement clean URL rewriting for S3 REST API origin, which does not natively resolve /path to /path/index.html.
+status: active
+version: 1.0.0
+created_at: 2026-03-01T19:29:13.112009+00:00
+created_by: agent:claude-2026-03-01
+requested_by: George Moon <george.moon@gmail.com>
+meta:
+  url: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-functions.html
+  reliability: industry
+  retrieved_at: 2026-03-01
