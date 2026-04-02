@@ -10,4 +10,4 @@ export const LATTICE_DASHBOARD_URL = 'https://forkzero.ai' + LATTICE_DASHBOARD_P
 export const GITHUB_ORG_URL = 'https://github.com/forkzero'
 export const GITHUB_REPO_URL = 'https://github.com/forkzero/lattice'
 
-export const SUBSCRIBE_API_URL = 'https://app.forkzero.ai/api/subscribe'
+export const SUBSCRIBE_API_URL = 'https://nuvrqt4zu1.execute-api.us-east-1.amazonaws.com'

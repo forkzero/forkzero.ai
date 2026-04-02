@@ -12,6 +12,7 @@ import {
 } from '@forkzero/ui'
 import { GITHUB_ORG_URL, GITHUB_REPO_URL } from '../constants'
 import { BlogComments } from '../components/BlogComments'
+import { EmailCapture } from '../components/EmailCapture'
 import { LatticeFlowDiagram } from '../components/LatticeFlowDiagram'
 import { blogPosts, type BlogPost } from '../data/blog-posts'
 
@@ -425,6 +426,66 @@ function ShareLinks({ post }: { post: BlogPost }) {
   )
 }
 
+// --- Reading time ---
+
+function readingTime(content: string): number {
+  const words = content.split(/\s+/).length
+  return Math.max(1, Math.ceil(words / 230))
+}
+
+// --- Related posts ---
+
+function RelatedPosts({ currentSlug }: { currentSlug: string }) {
+  const others = blogPosts.filter((p) => p.slug !== currentSlug).slice(0, 2)
+  if (others.length === 0) return null
+  return (
+    <div style={s.relatedSection}>
+      <h3 style={s.relatedHeading}>More from the blog</h3>
+      <div style={s.relatedGrid}>
+        {others.map((post) => (
+          <a key={post.id} href={`/blog/${post.slug}`} style={s.relatedCard}>
+            <span style={s.relatedTitle}>{post.title}</span>
+            <span style={s.relatedMeta}>
+              {new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              {' \u00b7 '}
+              {readingTime(post.content)} min read
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// --- Prev/next navigation ---
+
+function PostNavigation({ currentSlug }: { currentSlug: string }) {
+  const idx = blogPosts.findIndex((p) => p.slug === currentSlug)
+  const newer = idx > 0 ? blogPosts[idx - 1] : null
+  const older = idx < blogPosts.length - 1 ? blogPosts[idx + 1] : null
+  if (!newer && !older) return null
+  return (
+    <div style={s.postNav}>
+      {older ? (
+        <a href={`/blog/${older.slug}`} style={s.postNavLink}>
+          <span style={s.postNavLabel}>&larr; Older</span>
+          <span style={s.postNavTitle}>{older.title}</span>
+        </a>
+      ) : (
+        <div />
+      )}
+      {newer ? (
+        <a href={`/blog/${newer.slug}`} style={{ ...s.postNavLink, textAlign: 'right' as const }}>
+          <span style={s.postNavLabel}>Newer &rarr;</span>
+          <span style={s.postNavTitle}>{newer.title}</span>
+        </a>
+      ) : (
+        <div />
+      )}
+    </div>
+  )
+}
+
 // --- Styles ---
 
 const s: Record<string, React.CSSProperties> = {
@@ -713,6 +774,78 @@ const s: Record<string, React.CSSProperties> = {
   commentsSection: {
     marginTop: '2rem',
   },
+
+  // Email capture
+  emailSection: {
+    marginTop: '2rem',
+    padding: '1.5rem',
+    background: 'rgba(255, 255, 255, 0.03)',
+    border: `1px solid ${colors.borderColor}`,
+    borderRadius: radius,
+  },
+
+  // Related posts
+  relatedSection: {
+    marginTop: '2rem',
+  },
+  relatedHeading: {
+    fontSize: '1rem',
+    fontWeight: 600,
+    color: colors.textPrimary,
+    marginBottom: '0.75rem',
+  },
+  relatedGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+    gap: '0.75rem',
+  },
+  relatedCard: {
+    ...cardBase,
+    padding: '1rem 1.25rem',
+    textDecoration: 'none',
+    color: 'inherit',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '0.35rem',
+    transition: 'border-color 0.2s',
+  },
+  relatedTitle: {
+    fontSize: '0.95rem',
+    fontWeight: 600,
+    color: colors.textPrimary,
+    lineHeight: 1.35,
+  },
+  relatedMeta: {
+    fontSize: '0.78rem',
+    color: colors.textMuted,
+  },
+
+  // Prev/next navigation
+  postNav: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '1rem',
+    marginTop: '2rem',
+    paddingTop: '1.5rem',
+    borderTop: `1px solid ${colors.borderColor}`,
+  },
+  postNavLink: {
+    textDecoration: 'none',
+    display: 'flex',
+    flexDirection: 'column' as const,
+    gap: '0.25rem',
+  },
+  postNavLabel: {
+    fontSize: '0.78rem',
+    color: colors.textMuted,
+    fontWeight: 500,
+  },
+  postNavTitle: {
+    fontSize: '0.9rem',
+    color: colors.accentBlue,
+    fontWeight: 500,
+    lineHeight: 1.35,
+  },
 }
 
 // --- Components ---
@@ -745,7 +878,11 @@ function BlogListing() {
 
   return (
     <div style={s.page}>
-      <Header navLinks={NAV_LINKS} githubUrl={GITHUB_ORG_URL} />
+      <Header
+        navLinks={NAV_LINKS}
+        githubUrl={GITHUB_ORG_URL}
+        ctaLink={{ label: 'Get Started', href: '/getting-started' }}
+      />
       <div style={s.container}>
         <h1 style={s.pageTitle}>Blog</h1>
         <p style={s.pageSubtitle}>
@@ -758,6 +895,8 @@ function BlogListing() {
               {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               {' \u00b7 '}
               {post.author.name}
+              {' \u00b7 '}
+              {readingTime(post.content)} min read
             </div>
             <p style={s.postExcerpt}>{post.excerpt}</p>
             <span style={s.readMore}>Read more &rarr;</span>
@@ -790,7 +929,11 @@ function BlogPostView({ post }: { post: BlogPost }) {
 
   return (
     <div style={s.page}>
-      <Header navLinks={NAV_LINKS} githubUrl={GITHUB_ORG_URL} />
+      <Header
+        navLinks={NAV_LINKS}
+        githubUrl={GITHUB_ORG_URL}
+        ctaLink={{ label: 'Get Started', href: '/getting-started' }}
+      />
       <div style={s.container}>
         <a href="/blog" style={s.backLink}>
           &larr; All posts
@@ -801,6 +944,8 @@ function BlogPostView({ post }: { post: BlogPost }) {
             {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             {' \u00b7 '}
             {post.author.name}
+            {' \u00b7 '}
+            {readingTime(post.content)} min read
           </div>
           {renderedContent}
           <SourceCards post={post} />
@@ -808,10 +953,17 @@ function BlogPostView({ post }: { post: BlogPost }) {
         </article>
 
         {post.discussionPrompt && <DiscussionCTA prompt={post.discussionPrompt} />}
+        <EmailCapture
+          heading="Enjoyed this post? Stay sharp."
+          subtext="Occasional emails on knowledge coordination, context engineering, and requirements-driven development."
+          style={s.emailSection}
+        />
         <ShareLinks post={post} />
+        <RelatedPosts currentSlug={post.slug} />
         <div style={s.commentsSection}>
           <BlogComments slug={post.slug} />
         </div>
+        <PostNavigation currentSlug={post.slug} />
       </div>
       <Footer repoUrl={GITHUB_REPO_URL} links={[{ label: 'Privacy', href: '/privacy' }]} />
     </div>
@@ -825,7 +977,11 @@ function BlogNotFound() {
 
   return (
     <div style={s.page}>
-      <Header navLinks={NAV_LINKS} githubUrl={GITHUB_ORG_URL} />
+      <Header
+        navLinks={NAV_LINKS}
+        githubUrl={GITHUB_ORG_URL}
+        ctaLink={{ label: 'Get Started', href: '/getting-started' }}
+      />
       <div style={{ ...s.container, textAlign: 'center' as const, paddingTop: '4rem' }}>
         <h1 style={s.pageTitle}>Post not found</h1>
         <p style={{ color: colors.textMuted, marginBottom: '2rem' }}>The blog post you're looking for doesn't exist.</p>

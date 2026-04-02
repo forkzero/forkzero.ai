@@ -59,7 +59,11 @@ export function PrivacyPage() {
 
   return (
     <>
-      <Header navLinks={NAV_LINKS} githubUrl={GITHUB_ORG_URL} />
+      <Header
+        navLinks={NAV_LINKS}
+        githubUrl={GITHUB_ORG_URL}
+        ctaLink={{ label: 'Get Started', href: '/getting-started' }}
+      />
       <main style={styles.page}>
         <h1 style={styles.title}>Privacy Policy</h1>
         <p style={styles.updated}>Last updated: March 21, 2026</p>

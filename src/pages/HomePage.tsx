@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type FormEvent } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   colors,
   fonts,
@@ -15,7 +15,8 @@ import {
   Header,
   Footer,
 } from '@forkzero/ui'
-import { GITHUB_ORG_URL, GITHUB_REPO_URL, SUBSCRIBE_API_URL } from '../constants'
+import { GITHUB_ORG_URL, GITHUB_REPO_URL } from '../constants'
+import { EmailCapture } from '../components/EmailCapture'
 import { Hero } from '../components/Hero'
 import { ProjectCard } from '../components/ProjectCard'
 import { projects } from '../data/projects'
@@ -672,7 +673,7 @@ function BeforeAfter() {
 
 // --- Email Capture ---
 
-const emailStyles: Record<string, React.CSSProperties> = {
+const emailSectionStyles: Record<string, React.CSSProperties> = {
   section: {
     background: colors.bgSecondary,
     padding: '3rem 2rem',
@@ -681,110 +682,46 @@ const emailStyles: Record<string, React.CSSProperties> = {
     ...containerNarrow,
     textAlign: 'center' as const,
   },
-  heading: {
-    ...sectionTitleBase,
-    marginBottom: '0.75rem',
-  },
-  subtext: {
-    fontSize: '1rem',
-    fontFamily: fonts.system,
-    color: colors.textSecondary,
-    lineHeight: 1.65,
-    marginBottom: '1.5rem',
-  },
-  form: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '0.5rem',
-    flexWrap: 'wrap' as const,
-    maxWidth: '480px',
-    margin: '0 auto',
-  },
-  input: {
-    flex: '1 1 240px',
-    padding: '0.75rem 1rem',
-    fontSize: '1rem',
-    fontFamily: fonts.system,
-    borderRadius: radius,
-    border: `1px solid ${colors.borderColor}`,
-    background: colors.bgPrimary,
-    color: colors.textPrimary,
-    outline: 'none',
-  },
-  button: {
-    padding: '0.75rem 1.5rem',
-    fontSize: '1rem',
-    fontWeight: 600,
-    fontFamily: fonts.system,
-    borderRadius: radius,
-    border: 'none',
-    background: colors.accentBlue,
-    color: colors.textOnAccent,
-    cursor: 'pointer',
-    transition: 'opacity 0.2s',
-  },
-  message: {
-    fontSize: '0.9rem',
-    fontFamily: fonts.system,
-    marginTop: '0.75rem',
-    lineHeight: 1.5,
-  },
 }
 
-function EmailCapture() {
-  const [email, setEmail] = useState('')
-  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault()
-    if (!email) return
-    setStatus('submitting')
-    fetch(SUBSCRIBE_API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    })
-      .then((res) => {
-        if (res.ok) {
-          setStatus('success')
-          setEmail('')
-        } else {
-          setStatus('error')
-        }
-      })
-      .catch(() => setStatus('error'))
-  }
-
+function HomeEmailCapture() {
   return (
-    <section style={emailStyles.section}>
-      <div style={emailStyles.container}>
-        <h2 style={emailStyles.heading}>Building with AI agents? Stay sharp.</h2>
-        <p style={emailStyles.subtext}>
-          We write about knowledge coordination, context engineering, and requirements-driven development. Occasional
-          emails &mdash; releases and technical writing only.
-        </p>
-        {status === 'success' ? (
-          <p style={{ ...emailStyles.message, color: colors.accentGreen }}>You&rsquo;re in.</p>
-        ) : (
-          <form style={emailStyles.form} onSubmit={handleSubmit}>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={emailStyles.input}
-              aria-label="Email address"
-            />
-            <button type="submit" disabled={status === 'submitting'} style={emailStyles.button}>
-              {status === 'submitting' ? 'Subscribing\u2026' : 'Subscribe'}
-            </button>
-          </form>
-        )}
-        {status === 'error' && (
-          <p style={{ ...emailStyles.message, color: colors.accentRed }}>Something went wrong. Please try again.</p>
-        )}
-      </div>
+    <section style={emailSectionStyles.section}>
+      <EmailCapture
+        heading="Building with AI agents? Stay sharp."
+        subtext="We write about knowledge coordination, context engineering, and requirements-driven development. Occasional emails — releases and technical writing only."
+        style={emailSectionStyles.container}
+        formStyle={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '0.5rem',
+          flexWrap: 'wrap',
+          maxWidth: '480px',
+          margin: '0 auto',
+        }}
+        inputStyle={{
+          flex: '1 1 240px',
+          padding: '0.75rem 1rem',
+          fontSize: '1rem',
+          fontFamily: fonts.system,
+          borderRadius: radius,
+          border: `1px solid ${colors.borderColor}`,
+          background: colors.bgPrimary,
+          color: colors.textPrimary,
+          outline: 'none',
+        }}
+        buttonStyle={{
+          padding: '0.75rem 1.5rem',
+          fontSize: '1rem',
+          fontWeight: 600,
+          fontFamily: fonts.system,
+          borderRadius: radius,
+          border: 'none',
+          background: colors.accentBlue,
+          color: colors.textOnAccent,
+          cursor: 'pointer',
+        }}
+      />
     </section>
   )
 }
@@ -949,14 +886,18 @@ export function HomePage() {
 
   return (
     <>
-      <Header navLinks={NAV_LINKS} githubUrl={GITHUB_ORG_URL} />
+      <Header
+        navLinks={NAV_LINKS}
+        githubUrl={GITHUB_ORG_URL}
+        ctaLink={{ label: 'Get Started', href: '/getting-started' }}
+      />
       <Hero />
       <Problem />
       <HowItWorks />
       <ValueProps />
       <BeforeAfter />
       <WhoItsFor />
-      <EmailCapture />
+      <HomeEmailCapture />
       <FeaturedArticle />
       <Projects />
       <Footer repoUrl={GITHUB_REPO_URL} links={[{ label: 'Privacy', href: '/privacy' }]} />

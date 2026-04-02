@@ -473,7 +473,11 @@ export function GettingStartedPage() {
 
   return (
     <div style={s.page}>
-      <Header navLinks={NAV_LINKS} githubUrl={GITHUB_ORG_URL} />
+      <Header
+        navLinks={NAV_LINKS}
+        githubUrl={GITHUB_ORG_URL}
+        ctaLink={{ label: 'Get Started', href: '/getting-started' }}
+      />
 
       {/* Hero */}
       <section style={s.hero}>

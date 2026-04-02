@@ -226,7 +226,8 @@ describe('pre-rendered blog post', () => {
     const html = readFileSync(file, 'utf-8')
     expect(html).toContain('<meta name="description"')
     // Check a portion of the excerpt is present (attr-escaped)
-    expect(html).toContain('Context engineering is the term of the moment')
+    const excerptSnippet = post.excerpt.slice(0, 40)
+    expect(html).toContain(excerptSnippet)
   })
 
   it('has og:type article', () => {
@@ -248,9 +249,13 @@ describe('pre-rendered blog post', () => {
 
   it('noscript contains post headings', () => {
     const html = readFileSync(file, 'utf-8')
-    expect(html).toContain('The standard framing')
-    expect(html).toContain('The missing layer')
-    expect(html).toContain('Knowledge as a graph problem')
+    // Extract h2 headings from the post content
+    const headings = post.content.match(/^## .+/gm)
+    expect(headings).not.toBeNull()
+    // Check the first few headings appear in the noscript output
+    for (const h of headings!.slice(0, 3)) {
+      expect(html).toContain(h.slice(3)) // strip "## " prefix
+    }
   })
 
   it('has BlogPosting JSON-LD', () => {
