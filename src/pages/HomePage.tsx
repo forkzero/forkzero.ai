@@ -839,10 +839,7 @@ function Projects() {
 
 // --- Page ---
 
-const NAV_LINKS = [
-  { label: 'Get Started', href: '/getting-started' },
-  { label: 'Blog', href: '/blog' },
-]
+const NAV_LINKS = [{ label: 'Blog', href: '/blog' }]
 
 export function HomePage() {
   useEffect(() => {

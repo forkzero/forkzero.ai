@@ -24,9 +24,195 @@ export interface BlogPost {
   content: string
   discussionPrompt?: string
   sources?: BlogSource[]
+  ogImage?: string
 }
 
 export const blogPosts: BlogPost[] = [
+  {
+    id: 'post-005',
+    slug: 'comprehension-debt-is-an-infrastructure-problem',
+    title: 'Comprehension Debt Is an Infrastructure Problem',
+    date: '2026-04-26',
+    author: {
+      name: 'George Moon',
+      bio: 'Building knowledge coordination tools for human-agent collaboration.',
+      github: 'https://github.com/georgemoon',
+      x: 'https://x.com/georgemoon',
+    },
+    excerpt:
+      "Comprehension debt finally has a name: the gap between code that exists and code anyone understands. Better specs don't close it. Versioned edges between specs, evidence, and code do.",
+    discussionPrompt: "What's a decision in your codebase nobody on your team can explain anymore?",
+    ogImage: '/blog/comprehension-debt-og.png',
+    sources: [
+      {
+        name: 'Comprehension Debt',
+        author: 'Addy Osmani',
+        description:
+          'Coined the term in March 2026; argues comprehension debt is the gap between how much code exists and how much any human understands.',
+        url: 'https://addyosmani.com/blog/comprehension-debt/',
+      },
+      {
+        name: 'Comprehension Debt: The Hidden Cost of AI-Generated Code',
+        author: "O'Reilly Radar",
+        description:
+          'Amplifies Osmani; cites the Anthropic skill-formation study showing 17% lower comprehension scores for AI-assisted developers.',
+        url: 'https://www.oreilly.com/radar/comprehension-debt-the-hidden-cost-of-ai-generated-code/',
+      },
+      {
+        name: 'Comprehension Debt in GenAI-Assisted Software Engineering Projects',
+        author: 'arXiv 2604.13277',
+        description:
+          'Academic treatment of how AI-assisted development creates comprehension debt distinct from technical debt.',
+        url: 'https://arxiv.org/abs/2604.13277',
+      },
+      {
+        name: 'Beyond Comprehension Debt: Why Context Architecture Is the Real AI Moat',
+        author: 'MPT Solutions',
+        description: 'Argues context debt is an infrastructure failure, not an inevitable consequence of AI adoption.',
+        url: 'https://www.mpt.solutions/beyond-comprehension-debt-why-context-architecture-is-the-real-ai-moat/',
+      },
+      {
+        name: '2026 Agentic Coding Trends Report',
+        author: 'Anthropic',
+        description:
+          'Frames the shift from single agents to multi-agent teams running on horizons of hours to days; intent as the missing orchestration layer.',
+        url: 'https://resources.anthropic.com/2026-agentic-coding-trends-report',
+      },
+    ],
+    content: `Three weeks ago, Addy Osmani named something we'd all been feeling: **comprehension debt**. The growing gap between how much code exists in a system and how much of it any human genuinely understands.
+
+The term landed because it's true. An Anthropic skill-formation study found engineers using AI assistance scored **17% lower** on a follow-up comprehension quiz (50% vs 67%) than a control group, despite finishing the task in about the same time. The code shipped. The understanding didn't.
+
+The instinct is to fix this with better specs. Write down what you're building. Make the agent read it. Done.
+
+It's not done. Specs are necessary but they aren't the infrastructure. Comprehension debt isn't a documentation problem. It's a coordination problem. The difference matters.
+
+## What comprehension debt actually is
+
+Osmani's framing is precise: comprehension debt lives in **shared mental models**, not in code artifacts. Technical debt is about *code smells*: duplication, tight coupling, dead branches. Comprehension debt is about **knowledge smells**: the moment a developer's mental model decouples from the code's logic.
+
+The accumulation is invisible. Code review approves PRs that look fine. Tests pass. Another item enters the queue. The organizational assumption that reviewed code is understood code quietly becomes false.
+
+Six months later somebody asks "why did we build it this way?" and the honest answer is: the agent did, the reviewer was busy, the spec didn't say, and now nobody knows whether changing it will break something three layers downstream.
+
+That's not a code problem. The code is fine. It compiles. It runs. The problem is that the **chain of reasoning from evidence to decision to implementation is broken**.
+
+## Why specs alone don't close the gap
+
+Spec-driven development has critical mass. GitHub's Spec Kit has crossed 72k stars. AWS built Kiro as a spec-first IDE. OpenSpec, Tessl, BMAD, and twenty-five other frameworks all converge on the same idea: write the spec first, then have the agent build to it.
+
+This is real progress. It beats prompting an agent with one-line tickets and hoping.
+
+But spec-driven tools optimize for one moment in time: the moment you hand a spec to an agent. They don't answer the questions that matter when the spec was written six months ago by a teammate who left, the research it referenced has been updated twice, and three downstream specs were derived from it before any of that happened.
+
+Specifically, doc-based spec tools don't tell you:
+
+- **What evidence supports this spec?** Not "what's in the prompt." What's the actual research, the prior decision, the customer interview that led here?
+- **What other work depends on this?** If I change this spec, which downstream specs are now built on stale assumptions?
+- **Has the evidence changed?** If the research that justified this spec was updated, who needs to know?
+
+These are graph questions. Specs are nodes. They aren't enough on their own. You need the **edges between specs, evidence, and code**, and those edges need versions.
+
+## The missing layer
+
+![Specs as documents vs specs as a graph: three disconnected spec.md files on the left, four versioned nodes connected by edges on the right with a drift indicator on a stale thesis edge](/blog/specs-as-docs-vs-graph.svg)
+
+Lattice is the graph layer underneath spec-driven development. Where Spec Kit manages spec documents, Lattice manages the relationships:
+
+\`\`\`
+Sources (research, papers, decisions, customer feedback)
+    ↓ supports
+Theses (strategic claims)
+    ↓ derives
+Requirements (testable specifications)
+    ↓ satisfied by
+Implementations (code)
+\`\`\`
+
+Every edge records the version of both endpoints at the moment it was bound. When an upstream node changes, downstream edges bound to the old version surface as drift: work that may now be built on outdated assumptions.
+
+| | Spec Kit / Kiro / OpenSpec | Lattice |
+|---|:---:|:---:|
+| Manages spec documents | ✓ | ✓ |
+| Links specs to research | | ✓ |
+| Version-bound edges | | ✓ |
+| Drift detection | | ✓ |
+| Bidirectional feedback (code → spec) | | ✓ |
+| Git-native | ✓ | ✓ |
+
+These aren't competitors. Lattice complements them. You can keep your specs in Spec Kit format and still let Lattice track the edges between them, the research underneath them, and the code on top.
+
+## What it looks like
+
+An agent is assigned to update the billing flow. Before writing any code, it queries the graph:
+
+\`\`\`bash
+# What exactly is the requirement?
+lattice get REQ-BILLING-014
+
+# Why does this requirement exist?
+lattice search --related-to REQ-BILLING-014
+
+# Has anything upstream changed since this was written?
+lattice drift
+\`\`\`
+
+That third command is the one comprehension debt needs. If the thesis behind REQ-BILLING-014 was edited last month because early data showed the original pricing assumption was wrong, \`lattice drift\` flags it. The agent (and the human reviewing the PR) sees that this work is built on a thesis that has shifted, and gets a chance to verify before shipping.
+
+When the implementation lands, the graph closes the loop:
+
+\`\`\`bash
+lattice verify IMP-BILLING-FLOW-002 satisfies REQ-BILLING-014 --tests-pass --coverage 0.91
+\`\`\`
+
+That edge is the **receipt**. It binds a specific version of the implementation to a specific version of the requirement, with evidence. Three months later when somebody asks "does this still do what we said it does?" the answer doesn't depend on anyone remembering.
+
+And when the implementation reveals the spec was wrong, \`lattice refine\` pushes the gap back upstream:
+
+\`\`\`bash
+lattice refine REQ-BILLING-014 --gap-type design_decision --title 'Refund grace period not specified' --implementation IMP-BILLING-FLOW-002
+\`\`\`
+
+That's the bidirectional feedback most spec systems lack. Code teaches the spec. The graph remembers.
+
+## The compounding cost
+
+Here's why this matters more every quarter, not less.
+
+Anthropic's 2026 Agentic Coding Trends Report describes agent task horizons stretching from minutes to **days and weeks**. Multi-agent teams running in parallel on the same codebase. Engineers shifting from writing code to orchestrating systems that write it.
+
+Every one of those trends multiplies comprehension debt:
+
+- **Longer horizons** mean agents make more decisions per session that no human ever reviewed in real time.
+- **Multi-agent parallelism** means five agents resolving the same ambiguity five different ways.
+- **Orchestration** means humans further from the code, more reliant on whatever institutional knowledge actually got captured.
+
+Without infrastructure that captures intent and tracks drift, the costs compound fast. With it, the infrastructure does the remembering. Humans do the judgment.
+
+One recent piece pushed back on the inevitability framing: *"Context debt isn't an inevitable consequence of AI adoption. It's an infrastructure failure. A failure to build systems that capture, maintain, and surface the institutional knowledge that makes code comprehensible and architecturally coherent."*
+
+The moat framing is right. Teams that build this infrastructure now will pull ahead. Teams that don't will keep accumulating an invisible tax until something downstream breaks and nobody can explain why.
+
+## Where to start
+
+If you're already running spec-driven development, you have the spec nodes. You just need the edges.
+
+\`\`\`bash
+# Install Lattice
+${INSTALL_CMD}
+
+# Initialize the graph in your project
+lattice init --skill
+\`\`\`
+
+\`lattice init --skill\` installs the Claude Code skill so agents can query and update the graph natively. From there, the workflow is incremental: capture the next decision as a source, link it to a thesis, derive requirements, verify implementations. The graph grows as you work.
+
+Comprehension debt has a name. Now it needs infrastructure.
+
+- [Lattice on GitHub](${GITHUB_REPO_URL})
+- [Live dashboard](${LATTICE_DASHBOARD_URL})
+- [Forkzero](https://forkzero.ai)`,
+  },
   {
     id: 'post-004',
     slug: 'your-agent-memory-is-a-junk-drawer',

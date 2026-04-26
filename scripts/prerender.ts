@@ -21,6 +21,7 @@ interface RouteMeta {
   title: string
   description: string
   canonical: string
+  ogImage?: string
 }
 
 const routes: RouteMeta[] = [
@@ -35,6 +36,7 @@ const routes: RouteMeta[] = [
     title: `${post.title} — Forkzero`,
     description: post.excerpt,
     canonical: `https://forkzero.ai/blog/${post.slug}`,
+    ogImage: post.ogImage,
   })),
   {
     path: '/getting-started',
@@ -80,18 +82,21 @@ for (const route of routes) {
   // og:type — 'article' only for /blog/{slug}, 'website' for everything else
   const ogType = /^\/blog\/.+/.test(route.path) ? 'article' : 'website'
 
+  // og:image — per-route override, otherwise site default
+  const ogImageUrl = `https://forkzero.ai${route.ogImage ?? '/og-default.png'}`
+
   // Add OG tags and canonical
   const seoTags = [
     `<meta property="og:title" content="${escapeAttr(route.title)}" />`,
     `<meta property="og:description" content="${escapeAttr(route.description)}" />`,
     `<meta property="og:type" content="${ogType}" />`,
     `<meta property="og:url" content="${route.canonical}" />`,
-    `<meta property="og:image" content="https://forkzero.ai/og-default.png" />`,
+    `<meta property="og:image" content="${ogImageUrl}" />`,
     `<meta property="og:site_name" content="Forkzero" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${escapeAttr(route.title)}" />`,
     `<meta name="twitter:description" content="${escapeAttr(route.description)}" />`,
-    `<meta name="twitter:image" content="https://forkzero.ai/og-default.png" />`,
+    `<meta name="twitter:image" content="${ogImageUrl}" />`,
     `<link rel="canonical" href="${route.canonical}" />`,
   ].join('\n    ')
 

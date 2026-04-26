@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="hsl(220,40%,15%)" stroke-width="0.5"/>
+    </pattern>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1.5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="hsl(220,40%,10%)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Top accent line -->
+  <rect x="0" y="0" width="1200" height="4" fill="hsl(180,100%,50%)"/>
+
+  <!-- Brand mark top-left -->
+  <text x="60" y="62" font-family="system-ui,-apple-system,sans-serif" font-size="14" font-weight="600" letter-spacing="3" fill="hsl(180,100%,50%)">FORKZERO · LATTICE</text>
+
+  <!-- Small graph visualization top-right: connected nodes with versioned edges -->
+  <g transform="translate(1020,40)" opacity="0.8">
+    <!-- Three nodes -->
+    <circle cx="0" cy="20" r="6" fill="hsl(180,100%,50%)" filter="url(#glow)"/>
+    <circle cx="60" cy="0" r="6" fill="hsl(180,100%,50%)" filter="url(#glow)"/>
+    <circle cx="120" cy="20" r="6" fill="hsl(180,100%,50%)" filter="url(#glow)"/>
+    <!-- Edges -->
+    <line x1="6" y1="20" x2="54" y2="2" stroke="hsl(180,100%,50%)" stroke-width="1.5" opacity="0.5"/>
+    <line x1="66" y1="2" x2="114" y2="20" stroke="hsl(180,100%,50%)" stroke-width="1.5" opacity="0.5"/>
+  </g>
+
+  <!-- Title line 1 -->
+  <text x="600" y="270" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-size="86" font-weight="700" fill="hsl(220,80%,95%)">Comprehension Debt</text>
+
+  <!-- Title line 2 -->
+  <text x="600" y="345" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-size="50" font-weight="400" fill="hsl(220,80%,95%)" opacity="0.85">is an infrastructure problem</text>
+
+  <!-- Tagline lines -->
+  <text x="600" y="450" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-size="24" font-weight="400" fill="hsl(220,20%,65%)">Better specs don't close the gap.</text>
+  <text x="600" y="485" text-anchor="middle" font-family="system-ui,-apple-system,sans-serif" font-size="24" font-weight="400" fill="hsl(220,20%,65%)">Versioned edges do.</text>
+
+  <!-- URL -->
+  <text x="600" y="565" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,monospace" font-size="16" fill="hsl(180,100%,50%)" opacity="0.75">forkzero.ai/blog</text>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="626" width="1200" height="4" fill="hsl(180,100%,50%)"/>
+</svg>

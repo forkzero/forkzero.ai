@@ -16,10 +16,7 @@ import { EmailCapture } from '../components/EmailCapture'
 import { LatticeFlowDiagram } from '../components/LatticeFlowDiagram'
 import { blogPosts, type BlogPost } from '../data/blog-posts'
 
-const NAV_LINKS = [
-  { label: 'Get Started', href: '/getting-started' },
-  { label: 'Blog', href: '/blog' },
-]
+const NAV_LINKS = [{ label: 'Blog', href: '/blog' }]
 
 // --- SEO helpers ---
 
