@@ -1,11 +1,24 @@
-.PHONY: ci install format lint typecheck build build-ui test smoke-test test-all clean pre-commit pre-push help
+.PHONY: ci install format format-check lint typecheck build build-ui test smoke-test test-all clean pre-commit pre-push lattice-fresh help
 
-# Pre-commit gate: fast checks (format + lint)
-pre-commit: format lint
+# Pre-commit gate: fast checks (format check + lint + lattice health strict)
+pre-commit: format-check lint
+	@if command -v lattice >/dev/null 2>&1 && lattice health --help 2>&1 | grep -q strict; then \
+		lattice health --strict --check; \
+	else \
+		echo "Note: lattice health skipped (install lattice >=0.2.2 to enable)"; \
+	fi
 	@echo "Pre-commit checks passed."
 
-# Pre-push gate: full checks (format + lint + typecheck + test + build)
-pre-push: pre-commit typecheck test build
+# Lattice staleness gate: hard-fail if .lattice is >72h behind code (push/CI altitude).
+lattice-fresh:
+	@if command -v lattice >/dev/null 2>&1; then \
+		lattice freshness --check || { echo "Lattice is stale (>72h behind code). Update .lattice before pushing."; exit 1; }; \
+	else \
+		echo "Note: lattice freshness skipped (lattice not installed)"; \
+	fi
+
+# Pre-push gate: full checks (format + lint + lattice freshness + typecheck + test + build)
+pre-push: pre-commit lattice-fresh typecheck test build
 	@echo "Pre-push checks passed."
 
 # Full CI (same as pre-push with clean install)
@@ -15,7 +28,12 @@ ci: install format lint typecheck build test
 install:
 	npm ci
 
+# Auto-fix formatting
 format:
+	npm run format
+
+# Check formatting without modifying files (used by pre-commit)
+format-check:
 	npm run format:check
 
 lint:
