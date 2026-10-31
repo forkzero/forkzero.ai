@@ -1,9 +1,9 @@
 id: IMP-WEB-012
 type: implementation
 title: Per-post OG images, comprehension-debt post, and getting-started adoption link
-body: 'Added per-post ogImage field to BlogPost and plumbed through prerender (defaults to og-default.png). Shipped post-005 (comprehension-debt-is-an-infrastructure-problem) with custom OG card (1200x630 PNG), inline specs-as-docs-vs-graph diagram, and an editorial pass across all four blog posts (post-001, post-003, post-004, post-005) to reduce AI-speak patterns: removed em-dashes from body prose (keeping standard quote attribution), softened X-not-Y pivots, flattened staccato one-sentence paragraphs, dropped vague AI verbs, and removed mirror-callback closers. Removed duplicate ''Get Started'' nav link across HomePage, BlogPage, and GettingStartedPage (keeping only the CTA button). Added Adoption Guide link card on Getting Started pointing to forkzero/lattice docs/ADOPTION.md. Bumped GitHub Actions versions (checkout/setup-node to v6, upload-pages-artifact/deploy-pages to v5) to run on Node.js 24.'
+body: 'Full-site editorial pass to reduce AI-speak and em-dashes. Covers: (1) blog posts 001-005 (removed X-not-Y pivots, staccato kickers, mirror-callback closers, vague AI verbs, em-dashes); (2) HomePage Problem, Value Props, Who-It''s-For, How-It-Works, Before/After, EmailCapture (removed ''Stay sharp'' cheesiness, em-dashes, flattened staccato); (3) Hero subtitle em-dash; (4) GettingStartedPage tip box (''The power of Lattice'' preamble); (5) PrivacyPage body em-dash. Also shipped: per-post ogImage field plumbed through prerender; comprehension-debt-og.png + specs-as-docs-vs-graph.svg; removed duplicate ''Get Started'' nav link across pages (keeping only the CTA button); Adoption Guide link card on Getting Started pointing to forkzero/lattice docs/ADOPTION.md; GitHub Actions bumped to Node.js 24 (checkout/setup-node to v6, upload-pages-artifact/deploy-pages to v5).'
 status: active
-version: 1.0.2
+version: 1.0.3
 created_at: 2026-10-31T20:26:24.248575+00:00
 created_by: agent:claude-opus-4-7
 requested_by: George Moon <george.moon@gmail.com>

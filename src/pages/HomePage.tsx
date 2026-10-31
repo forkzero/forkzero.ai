@@ -70,8 +70,8 @@ function Problem() {
       <h2 style={problemStyles.sectionTitle}>The code is the easy part now</h2>
       <p style={problemStyles.body}>
         Your agent generated 2,000 lines of code last week. Can you explain why any of it was built that way? The
-        research is in a chat log. The architectural decisions are in someone&rsquo;s head. The requirements were never
-        written down &mdash; or they&rsquo;re in a Google Doc nobody can find.
+        research is in a chat log, the architectural decisions are in someone&rsquo;s head, and the requirements were
+        never written down (or they&rsquo;re in a Google Doc nobody can find).
       </p>
       <p style={{ ...problemStyles.body, marginTop: '1rem' }}>
         Six months from now, a new teammate will ask &ldquo;why did we do it this way?&rdquo; and nobody will have an
@@ -127,12 +127,12 @@ const valueProps = [
   {
     color: colors.accentPurple,
     heading: 'Requirements before code, not after',
-    text: 'Code is cheap to regenerate \u2014 requirements are expensive to discover. Give your agent a spec to implement, not a vague instruction to interpret.',
+    text: 'Code is cheap to regenerate. Requirements are expensive to discover. Give your agent a spec to implement rather than a vague instruction to interpret.',
   },
   {
     color: colors.accentGreen,
-    heading: 'Onboard anyone in minutes \u2014 human or AI',
-    text: 'No tribal knowledge. No stale onboarding docs. A new teammate \u2014 or a new AI model \u2014 reads the knowledge graph and understands the project structure, the decisions, and the reasoning behind them.',
+    heading: 'Onboard anyone in minutes, human or AI',
+    text: 'No tribal knowledge, no stale onboarding docs. A new teammate (or a new AI model) reads the knowledge graph and understands the project structure, the decisions, and the reasoning behind them.',
   },
 ]
 
@@ -157,11 +157,11 @@ function ValueProps() {
 const whoCards = [
   {
     heading: 'Developers building with AI agents',
-    text: "You paste context into Claude or Cursor and hope it figures out what you meant. Sometimes it nails it. Sometimes it hallucinates an API that doesn't exist. Lattice gives your agent structured requirements \u2014 so it builds what you actually specified.",
+    text: "You paste context into Claude or Cursor and hope it figures out what you meant. Sometimes it does; sometimes it hallucinates an API that doesn't exist. Lattice gives your agent structured requirements, so it builds what you actually specified.",
   },
   {
     heading: 'Teams where decisions outlive sprints',
-    text: 'The person who made the architectural decision left six months ago. The design doc is in a Google Doc nobody can find. With Lattice, decisions live in Git \u2014 linked to the research that informed them, versioned and diffable like code.',
+    text: 'The person who made the architectural decision left six months ago. The design doc is in a Google Doc nobody can find. With Lattice, decisions live in Git, linked to the research that informed them, versioned and diffable like code.',
   },
 ]
 
@@ -554,14 +554,14 @@ function HowItWorks() {
       <div ref={ref} style={howStyles.container}>
         <h2 style={howStyles.sectionTitle}>How it works</h2>
         <p style={howStyles.intro}>
-          Lattice connects four layers of knowledge &mdash; research, strategy, requirements, and code.
+          Lattice connects four layers of knowledge: research, strategy, requirements, and code.
         </p>
         <p style={{ ...howStyles.intro, fontStyle: 'italic', color: colors.textMuted }}>
           Your team is deciding between freemium and paid-only. Here&rsquo;s how that decision flows through Lattice:
         </p>
         <VerticalTrace inView={inView} />
         <p style={howStyles.body}>
-          Six months later, your free tier is attracting the wrong users. You update the thesis &mdash;{' '}
+          Six months later, your free tier is attracting the wrong users. You update the thesis, and{' '}
           <code style={inlineCode}>lattice drift</code> tells you exactly which requirements need review:
         </p>
         <DriftBadge inView={inView} />
@@ -625,15 +625,15 @@ const compareCellWith: React.CSSProperties = { ...compareStyles.cell, color: col
 const compareRows = [
   {
     without: 'Decisions live in a Google Doc nobody can find',
-    with: 'Decisions live in Git \u2014 linked, versioned, diffable',
+    with: 'Decisions live in Git: linked, versioned, diffable',
   },
   {
     without: 'Agent gets vague context, hallucinates the rest',
     with: 'Agent gets structured requirements, builds to spec',
   },
   {
-    without: '\u201CWhy did we do it this way?\u201D \u2014 nobody knows',
-    with: 'lattice trace REQ-CORE-005 \u2014 full reasoning chain',
+    without: '\u201CWhy did we do it this way?\u201D and nobody knows',
+    with: 'lattice trace REQ-CORE-005 returns the full reasoning chain',
   },
   {
     without: 'New hire spends weeks absorbing tribal knowledge',
@@ -688,8 +688,8 @@ function HomeEmailCapture() {
   return (
     <section style={emailSectionStyles.section}>
       <EmailCapture
-        heading="Building with AI agents? Stay sharp."
-        subtext="We write about knowledge coordination, context engineering, and requirements-driven development. Occasional emails — releases and technical writing only."
+        heading="Building with AI agents?"
+        subtext="We write about knowledge coordination, context engineering, and requirements-driven development. Occasional emails covering releases and technical writing."
         style={emailSectionStyles.container}
         formStyle={{
           display: 'flex',
@@ -866,7 +866,7 @@ export function HomePage() {
 
     const metaTitle = 'Lattice — Knowledge Graph for AI-Native Teams'
     const metaDescription =
-      'Lattice captures the research, decisions, and requirements behind your code in a Git-native knowledge graph. Any collaborator — human or AI — picks up where the last one left off.'
+      'Lattice captures the research, decisions, and requirements behind your code in a Git-native knowledge graph. Any collaborator (human or AI) picks up where the last one left off.'
 
     setMetaTag('description', metaDescription)
     setOgTag('og:title', metaTitle)

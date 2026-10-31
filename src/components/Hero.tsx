@@ -52,7 +52,10 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: 'clamp(28px, 4vw, 44px)',
     fontWeight: 200,
     fontFamily: "'Outfit', sans-serif",
-    letterSpacing: '0.45em',
+    letterSpacing: 'clamp(0.22em, 3.5vw, 0.45em)',
+    // trailing letter-spacing adds phantom width on the right; pull it back so
+    // the wordmark stays optically centered and never grazes the viewport edge
+    textIndent: 'clamp(0.22em, 3.5vw, 0.45em)',
     textTransform: 'uppercase' as const,
     margin: 0,
     lineHeight: 1,
@@ -73,11 +76,15 @@ const styles: Record<string, React.CSSProperties> = {
     animation: 'lattice-fade-in 1.5s ease-out 0.6s both',
   },
   title: {
-    fontSize: '3rem',
+    fontSize: 'clamp(1.85rem, 6vw, 3rem)',
     fontWeight: 700,
     fontFamily: fonts.system,
     marginBottom: '1rem',
     lineHeight: 1.2,
+    maxWidth: '820px',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    overflowWrap: 'break-word' as const,
   },
   subtitle: {
     fontSize: '1.15rem',
@@ -130,13 +137,16 @@ const styles: Record<string, React.CSSProperties> = {
   },
   installHint: {
     display: 'inline-block',
+    maxWidth: '100%',
     background: 'rgba(0,0,0,0.2)',
     borderRadius: '100px',
     padding: '0.4rem 1.25rem',
     fontFamily: fonts.mono,
-    fontSize: '0.85rem',
+    fontSize: 'clamp(0.72rem, 3vw, 0.85rem)',
     opacity: 0.85,
     letterSpacing: '0.01em',
+    // let the install URL break rather than push the page wider than the viewport
+    overflowWrap: 'anywhere' as const,
   },
 }
 
@@ -274,7 +284,7 @@ export function Hero() {
         <h1 style={styles.title}>Your agent writes the code. Who remembers why?</h1>
         <p style={styles.subtitle}>
           The research, reasoning, and requirements behind your code vanish into chat logs. Lattice captures them in a
-          Git-native knowledge graph &mdash; so any collaborator, human or AI, can pick up where the last one left off.
+          Git-native knowledge graph, so any collaborator (human or AI) can pick up where the last one left off.
         </p>
         <div style={styles.ctaRow}>
           <a href="/getting-started" style={styles.ctaPrimary}>

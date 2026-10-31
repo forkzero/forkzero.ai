@@ -669,9 +669,9 @@ lattice drift`}
           <div style={s.tipBox}>
             <div style={s.tipTitle}>Workflow</div>
             <p style={s.tipText}>
-              The power of Lattice with Claude Code is that your agent's reasoning becomes persistent and traceable.
-              Instead of losing research and decisions in chat logs, everything is captured in your Git-tracked
-              knowledge graph. The next agent, or the next human, can pick up right where you left off.
+              With Lattice, your agent's reasoning becomes persistent and traceable. Instead of losing research and
+              decisions in chat logs, everything is captured in your Git-tracked knowledge graph. The next agent, or the
+              next human, can pick up right where you left off.
             </p>
           </div>
         </section>

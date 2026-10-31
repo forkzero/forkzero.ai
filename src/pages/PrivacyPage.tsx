@@ -76,7 +76,7 @@ export function PrivacyPage() {
 
         <h2 style={styles.heading}>How we use your email</h2>
         <p style={styles.body}>
-          We use your email address solely to send you occasional updates about Forkzero products &mdash; releases and
+          We use your email address solely to send you occasional updates about Forkzero products: releases and
           technical writing. We will never sell, rent, or share your email address with third parties.
         </p>
 
