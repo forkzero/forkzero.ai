@@ -219,7 +219,7 @@ lattice init --skill
       x: 'https://x.com/georgemoon',
     },
     excerpt:
-      "AI agent memory systems store preferences as flat files with no relationships. When context changes, nothing flags stale memories for review. We noticed this while building our own site \u2014 and realized it's the same problem Lattice solves for code.",
+      "AI agent memory systems store preferences as flat files with no relationships. When context changes, nothing flags stale memories for review. We ran into this building our own site, and realized it's the same problem Lattice solves for code.",
     discussionPrompt: 'What knowledge systems outside of code do you wish had version tracking and drift detection?',
     sources: [
       {
@@ -230,9 +230,9 @@ lattice init --skill
         url: 'https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/memory',
       },
     ],
-    content: `We were building the Forkzero marketing site with Claude Code when we saved a preference: "never run ad-hoc AWS commands \u2014 always script infrastructure changes."
+    content: `We were building the Forkzero marketing site with Claude Code when we saved a preference: "never run ad-hoc AWS commands, always script infrastructure changes."
 
-Claude stored it as a markdown file. A name, a type, a rule, a reason, and a scope. Simple. Useful. And missing everything that would make it trustworthy over time.
+Claude stored it as a markdown file with a name, a type, a rule, a reason, and a scope. Useful for the next conversation. Missing most of what would make it trustworthy over time.
 
 ## What's in the file
 
@@ -244,7 +244,7 @@ The memory captures a rule and a rationale. It works for the next conversation. 
 
 - **No connection to related decisions.** This preference affects how we build infrastructure, which relates to deployment strategy, which relates to CI/CD design. Those relationships don't exist in the memory system.
 
-- **No version.** The memory was written once. If our infrastructure approach changes \u2014 maybe we move to Terraform and ad-hoc scripts become irrelevant \u2014 nothing flags this memory as stale.
+- **No version.** The memory was written once. If our infrastructure approach changes (maybe we move to Terraform and ad-hoc scripts become irrelevant), nothing flags this memory as stale.
 
 - **No drift detection.** If a related memory changes ("we now use CDK for all infrastructure"), this memory should be reviewed. But there are no edges between memories, so there's no way to know.
 
@@ -260,11 +260,11 @@ This is the same problem we built Lattice to solve for codebases. Replace "memor
 | No staleness detection | Drift detection flags outdated edges |
 | One rule per file | One rule per node, connected to the chain of reasoning |
 
-If we had modeled that preference in Lattice, the trace would look like this: a source capturing the incident, a thesis that all infra changes must be scripted, and two requirements \u2014 "never run ad-hoc CLI commands" and "all setup scripts must be idempotent" \u2014 both derived from that thesis.
+If we had modeled that preference in Lattice, the trace would look like this: a source capturing the incident, a thesis that all infra changes must be scripted, and two requirements ("never run ad-hoc CLI commands" and "all setup scripts must be idempotent") both derived from that thesis.
 
-Now if the thesis changes \u2014 we adopt Terraform and the "scripts" thesis becomes "IaC modules" \u2014 both requirements flag for review. The preference doesn't silently rot.
+Now if the thesis changes (say, we adopt Terraform and the "scripts" thesis becomes "IaC modules"), both requirements flag for review. The preference doesn't silently rot.
 
-## This isn't just about agents
+## The same pattern shows up outside code
 
 Every knowledge system that accumulates decisions over time has this problem:
 
@@ -274,15 +274,13 @@ Every knowledge system that accumulates decisions over time has this problem:
 
 - **Product strategy.** Market research informs positioning, which derives feature priorities. When the market shifts, which features are building on stale assumptions?
 
-These are all graph problems. Decisions form chains from evidence to action. The chains have versions. When links go stale, downstream work needs to know.
+These are all graph problems. Decisions form chains from evidence to action, those chains have versions, and when links go stale downstream work needs to know.
 
 ## The missing layer
 
-Most knowledge tools optimize for storage and retrieval. Notion stores pages. Confluence stores docs. Agent memory stores preferences. RAG retrieves similar text.
+Most knowledge tools optimize for storage and retrieval. Notion stores pages, Confluence stores docs, agent memory stores preferences, RAG retrieves similar text. None of them track **why a decision was made, what evidence supports it, and whether that evidence is still current.**
 
-None of them track **why a decision was made, what evidence supports it, and whether that evidence is still current.**
-
-That's not a documentation problem. It's a coordination problem. And it's the problem Lattice was built to solve \u2014 whether the knowledge lives in a codebase, an agent's memory, or a team's decision log.
+That's a coordination problem, not a documentation one, and it's what Lattice was built to solve, whether the knowledge lives in a codebase, an agent's memory, or a team's decision log.
 
 ## Get started
 
@@ -324,13 +322,13 @@ ${INSTALL_CMD}
     ],
     content: `Your agent passed lint. The tests are green. The PR looks reasonable. And it's completely wrong.
 
-Not wrong in the way a junior developer is wrong \u2014 broken syntax, missing imports, off-by-one errors. Wrong in a way that's harder to catch: the code is locally valid but globally misguided.
+Not wrong the way a junior developer is wrong, with broken syntax, missing imports, off-by-one errors. Wrong in a way that's harder to catch: the code is locally valid but globally misguided.
 
-This is the failure mode that matters now. And most teams don't have a system for preventing it.
+This is a failure mode most teams don't have a system for preventing.
 
 ## The shape of agent mistakes
 
-When a human developer makes a mistake, it's usually obvious. The build breaks. The tests fail. A reviewer catches the logic error. Traditional tooling \u2014 compilers, linters, type checkers \u2014 exists to catch these failures.
+When a human developer makes a mistake, it's usually obvious. The build breaks, the tests fail, or a reviewer catches the logic error. Traditional tooling (compilers, linters, type checkers) exists to catch these failures.
 
 Agent mistakes look different. Matt Rickard calls them "locally valid mistakes":
 
@@ -341,15 +339,15 @@ You've seen this if you've worked with agents for any length of time. The patter
 
 - **Disabling tests instead of fixing root causes.** The agent encounters a failing test. Instead of understanding why it fails, it comments out the assertion or rewrites the test to pass against the new (wrong) behavior.
 
-- **Reusing patterns mindlessly.** The agent finds an existing pattern in the codebase and replicates it \u2014 even when the new context requires a different approach. It copies the authentication middleware pattern for a public endpoint.
+- **Reusing patterns mindlessly.** The agent finds an existing pattern in the codebase and replicates it, even when the new context requires a different approach. It copies the authentication middleware pattern for a public endpoint.
 
-- **Preserving old behavior while adding parallel paths.** Asked to change how notifications work, the agent adds a new notification system alongside the old one. Both now run. Neither is what you wanted.
+- **Preserving old behavior while adding parallel paths.** Asked to change how notifications work, the agent adds a new notification system alongside the old one. Both run, neither is what you wanted.
 
 - **Making the same decision repeatedly.** Finite context windows mean the agent re-encounters the same ambiguity on every run and resolves it differently each time.
 
 ## The root cause
 
-These aren't intelligence failures. The agent is capable of writing correct code for any of these tasks. The problem is what Rickard calls **underconstrained execution**: too much freedom at the point where the agent has to act.
+The agent is capable of writing correct code for any of these tasks. What's missing is what Rickard calls **underconstrained execution**: too much freedom at the point where the agent has to act.
 
 Think about what an agent typically receives when tasked with a feature: a one-line description in a ticket, maybe a few sentences of context, and access to the codebase. From this, it must infer:
 
@@ -358,23 +356,21 @@ Think about what an agent typically receives when tasked with a feature: a one-l
 - What constraints exist from prior decisions
 - Which parts of the codebase are relevant precedent and which are legacy
 
-A senior engineer fills these gaps from experience and institutional knowledge. An agent fills them from pattern matching against whatever is in the context window. When the context is thin, the agent invents plausible-sounding answers. The code compiles. The tests pass. The PR looks clean.
+A senior engineer fills these gaps from experience and institutional knowledge. An agent fills them from pattern matching against whatever is in the context window. When the context is thin, the agent invents plausible-sounding answers and the code compiles, the tests pass, the PR looks clean.
 
-Six months later someone asks "why did we build it this way?" and nobody knows \u2014 because the reasoning was never recorded, and the agent that wrote the code had none to begin with.
+Six months later someone asks "why did we build it this way?" and nobody knows, because the reasoning was never recorded and the agent that wrote the code had none to begin with.
 
 ## Better prompts won't fix this
 
-The instinct is to write more detailed prompts. Longer task descriptions. More context in the system message. This helps at the margins but doesn't solve the structural problem.
+The common fix is to write more detailed prompts, longer task descriptions, more context in the system message. That helps at the margins but doesn't solve the structural problem.
 
-Prompts are ephemeral. They exist for one conversation, one task, one context window. The reasoning behind a decision outlives the prompt that triggered it. Next week, a different agent \u2014 or the same agent with a fresh context \u2014 faces the same ambiguity and has nothing to work from.
+Prompts are ephemeral. They exist for one conversation, one task, one context window. The reasoning behind a decision outlives the prompt that triggered it. Next week a different agent, or the same agent with a fresh context, faces the same ambiguity and has nothing to work from.
 
-The fix isn't more words in the prompt. It's structured knowledge that persists across sessions, connects decisions to evidence, and flags when upstream assumptions change.
+What's needed is structured knowledge that persists across sessions, connects decisions to evidence, and flags when upstream assumptions change.
 
 ## Constraining intent, not just behavior
 
-Tests constrain behavior \u2014 they verify the code does what it does correctly. Linters constrain style. Type checkers constrain structure.
-
-None of these constrain **intent**. They can't tell you whether the agent is solving the right problem. They catch execution errors, not reasoning errors.
+Tests constrain behavior: they verify the code does what it does correctly. Linters constrain style. Type checkers constrain structure. What none of them constrain is **intent**: whether the agent is solving the right problem. They catch execution errors, not reasoning errors.
 
 What's missing is an upstream layer:
 
@@ -383,36 +379,36 @@ What's missing is an upstream layer:
 - **What are the concrete requirements?** Not "add auth" but "JWT tokens with per-tenant signing keys, refresh token rotation, and rate limiting per plan."
 - **Has anything changed?** If the original research is outdated or the strategic thesis has shifted, which requirements need review?
 
-This is a knowledge graph problem. Decisions form a chain from evidence to strategy to specification to code. When you capture that chain with versioned relationships, agents can traverse it \u2014 and you can detect when links in the chain go stale.
+This is a knowledge graph problem. Decisions form a chain from evidence to strategy to specification to code. Capture that chain with versioned relationships and agents can traverse it, and you can detect when links in the chain go stale.
 
 ## What this looks like in practice
 
 An agent is assigned to implement a billing feature. Instead of working from a one-line ticket, it reads a structured spec:
 
 \`\`\`bash
-# Get the requirement \u2014 what exactly needs to be built
+# Get the requirement: what exactly needs to be built
 lattice get REQ-BILLING-002
 
-# Traverse upstream \u2014 why does this requirement exist?
+# Traverse upstream: why does this requirement exist?
 lattice search --related-to REQ-BILLING-002
 
-# Check for drift \u2014 has anything changed since this was written?
+# Check for drift: has anything changed since this was written?
 lattice drift
 \`\`\`
 
 The requirement links to a thesis about usage-based pricing. The thesis links to research comparing pricing models for developer tools. Every link records the version it was bound to.
 
-If the pricing thesis changed last week \u2014 maybe early data showed usage-based pricing churns small accounts \u2014 \`lattice drift\` flags the three requirements derived from it. The agent knows to check before building on a potentially outdated assumption.
+If the pricing thesis changed last week (say, early data showed usage-based pricing churns small accounts), \`lattice drift\` flags the three requirements derived from it. The agent knows to check before building on a potentially outdated assumption.
 
-The agent still writes the code. But now it's writing code against a spec that traces back to evidence, not against a guess derived from pattern matching.
+The agent still writes the code, but now it's writing code against a spec that traces back to evidence, not against a guess derived from pattern matching.
 
 ## The difference
 
-Without structured specs, you're relying on the agent to infer intent from code and comments. It will infer *something* \u2014 and it will be locally valid. The code will compile. The tests will pass.
+Without structured specs, you're relying on the agent to infer intent from code and comments. It will infer *something* that is locally valid; the code will compile and the tests will pass.
 
-With structured specs, you've constrained intent before execution begins. The agent builds to a contract, not a hunch. And when the reasoning behind that contract changes, the system tells you which downstream work needs review.
+With structured specs, you've constrained intent before execution begins. The agent builds to a contract, and when the reasoning behind that contract changes, the system tells you which downstream work needs review.
 
-Your agent doesn't have a skills problem. It has a context problem. Give it structured knowledge and it builds what you actually need.
+The agent is capable enough. What it's missing is context. Give it structured knowledge and it builds what you actually need.
 
 ## Get started
 
@@ -440,7 +436,7 @@ lattice init --skill
       x: 'https://x.com/georgemoon',
     },
     excerpt:
-      'Context engineering is the term of the moment. But most approaches focus on runtime — what fills the context window for each LLM call. The missing piece is upstream: where does the knowledge come from, and is it still valid?',
+      'Context engineering is everywhere right now, but most approaches focus on runtime: what fills the context window for each LLM call. The missing piece is upstream: where does the knowledge come from, and is it still valid?',
     discussionPrompt:
       "What's your experience with context engineering? Are your agents working from structured knowledge or just RAG?",
     sources: [
@@ -472,7 +468,7 @@ lattice init --skill
       {
         name: 'Context Engineering for AI Agents',
         author: 'Manus',
-        description: 'Lessons from production — KV-cache hit rate as the most important metric.',
+        description: 'Lessons from production: KV-cache hit rate as the most important metric.',
         url: 'https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus',
       },
       {
@@ -482,9 +478,9 @@ lattice init --skill
         url: 'https://www.gartner.com/en/articles/context-engineering',
       },
     ],
-    content: `Context engineering is the term of the moment. Andrej Karpathy, Tobi Lutke, and Gartner all agree: it has replaced prompt engineering as the core discipline for building with LLMs.
+    content: `Context engineering is everywhere right now. Andrej Karpathy, Tobi Lutke, and Gartner all agree: it has replaced prompt engineering as the core discipline for building with LLMs.
 
-But most of the conversation focuses on runtime — what fills the context window for each call. There's a missing layer underneath.
+Most of the conversation focuses on runtime, meaning what fills the context window for each call. There's a missing layer underneath that one.
 
 ## The standard framing
 
@@ -495,9 +491,7 @@ Harrison Chase at LangChain organized context engineering into four strategies: 
 
 Manus reported that KV-cache hit rate is their most important metric in production.
 
-These are useful frameworks. They describe the mechanics of filling a context window well. But they share an assumption: that the knowledge you're selecting from is already organized, versioned, and traceable.
-
-Usually, it isn't.
+These are useful frameworks. They describe the mechanics of filling a context window well. But they share an assumption: that the knowledge you're selecting from is already organized, versioned, and traceable. Usually, it isn't.
 
 ## The missing layer
 
@@ -510,11 +504,11 @@ Consider what an agent actually needs when implementing a feature:
 - What research supports that thesis?
 - Has anything changed since the requirement was written?
 
-This is knowledge coordination, not information retrieval. The relationships between decisions matter as much as the decisions themselves. And when knowledge changes — a source is updated, a thesis is challenged — downstream decisions need to be flagged, not silently ignored.
+This is knowledge coordination, not information retrieval. The relationships between decisions matter as much as the decisions themselves. When a source is updated or a thesis is challenged, downstream decisions need to be flagged for review instead of silently ignored.
 
 ## Knowledge as a graph problem
 
-This is the problem Lattice solves. It's a knowledge coordination protocol that connects research, strategy, requirements, and implementation into a traversable, version-aware graph.
+Lattice is a knowledge coordination protocol that connects research, strategy, requirements, and implementation into a traversable, version-aware graph.
 
 <!-- diagram:lattice-flow -->
 
@@ -524,17 +518,17 @@ This is the problem Lattice solves. It's a knowledge coordination protocol that 
 - An implementation *satisfies* a requirement
 
 :::insight
-Every edge records the version of both source and target. When a node changes, edges bound to the old version are flagged as potentially stale. This is drift detection — and it's something no vector store provides.
+Every edge records the version of both source and target. When a node changes, edges bound to the old version are flagged as potentially stale. This is drift detection, which no vector store provides.
 :::
 
 ## In practice
 
 An agent is tasked with implementing \`REQ-AUTH-001\`. Instead of searching a codebase blindly, it queries the Lattice graph:
 
-1. **Get the requirement** — title, body, acceptance criteria, priority
-2. **Traverse to the thesis** — understand *why* this requirement exists
-3. **Read the source** — access the original research that motivated the thesis
-4. **Check for drift** — are any edges bound to outdated versions?
+1. **Get the requirement**: title, body, acceptance criteria, priority
+2. **Traverse to the thesis**: understand *why* this requirement exists
+3. **Read the source**: access the original research that motivated the thesis
+4. **Check for drift**: are any edges bound to outdated versions?
 
 The agent now has full traceability from research to code. If the underlying source has been updated since the requirement was written, drift detection flags it before the agent builds on stale assumptions.
 
@@ -548,7 +542,7 @@ Runtime context engineering answers: **"What should fill this context window rig
 
 Lattice answers: **"What is the structured knowledge that informs those decisions, and is it still valid?"**
 
-Think of it as the coordination layer underneath. RAG selects *from* knowledge; Lattice ensures that knowledge is organized, versioned, and traceable. The four strategies Chase describes — write, select, compress, isolate — all work better when the underlying knowledge has structure.
+Think of it as the coordination layer underneath. RAG selects *from* knowledge; Lattice ensures that knowledge is organized, versioned, and traceable. The four strategies Chase describes (write, select, compress, isolate) all work better when the underlying knowledge has structure.
 
 > Context engineering is "the art of providing all the context for the task to be plausibly solvable by the LLM." Lattice makes that context trustworthy.
 > — Tobi Lutke
@@ -597,11 +591,11 @@ lattice init
         url: 'https://github.com/forkzero/lattice',
       },
     ],
-    content: `Lattice gives you traceability — a versioned graph from research to code. You can traverse it, check for drift, and give agents full context for any requirement.
+    content: `Lattice gives you traceability: a versioned graph from research to code. You can traverse it, check for drift, and give agents full context for any requirement.
 
 But traceability assumes you know what you're looking for. You know the requirement ID. You know which thesis to check. You can formulate the exact query.
 
-What about the question you *can't* quite formulate? "Something about token expiry that came up in that security review." "The research that made us rethink session handling." That's not a graph traversal — it's a search problem.
+What about the question you *can't* quite formulate? "Something about token expiry that came up in that security review." "The research that made us rethink session handling." That's not a graph traversal, it's a search problem.
 
 ## Two kinds of search
 
@@ -618,7 +612,7 @@ That's where semantic search comes in.
 
 ## QMD: local hybrid search
 
-[QMD](https://github.com/tobi/qmd) is a local search engine by Tobi Lutke. It combines three retrieval strategies — **BM25 full-text search**, **vector embeddings**, and **LLM re-ranking** — all running on-device. No API calls, no cloud dependency.
+[QMD](https://github.com/tobi/qmd) is a local search engine by Tobi Lutke. It combines three retrieval strategies (**BM25 full-text search**, **vector embeddings**, and **LLM re-ranking**) all running on-device. No API calls, no cloud dependency.
 
 It ships with an MCP server, so agents can query it directly. 13k+ GitHub stars and actively maintained.
 
@@ -626,7 +620,7 @@ The key insight: QMD indexes files using glob masks. Point it at any directory a
 
 ## Zero-config integration
 
-QMD can index your \`.lattice/\` directory directly — no export step, no format conversion:
+QMD can index your \`.lattice/\` directory directly, with no export step and no format conversion:
 
 \`\`\`bash
 # Add your lattice as a QMD collection
@@ -648,7 +642,7 @@ That's it. Your knowledge graph is now semantically searchable.
 
 ![Lattice + QMD architecture: structured and semantic search converging in an agent workflow](/blog/qmd-lattice-integration.svg)
 
-Two paths from the same source of truth. Lattice provides structured traversal — by ID, metadata, and graph edges. QMD provides semantic discovery — fuzzy matching, conceptual similarity, cross-layer connections you didn't explicitly model.
+Two paths from the same source of truth. Lattice provides structured traversal by ID, metadata, and graph edges. QMD provides semantic discovery: fuzzy matching, conceptual similarity, cross-layer connections you didn't explicitly model.
 
 ## Complementary, not competing
 
@@ -674,8 +668,8 @@ Lattice search is for when you know what you're looking for. QMD is for when you
 
 Both tools expose MCP servers. An agent configured with both gets the best of each:
 
-- **lattice_search** — structured graph queries, drift detection, version-bound edges
-- **qmd_search / qmd_query** — semantic discovery, fuzzy matching, cross-collection results
+- **lattice_search**: structured graph queries, drift detection, version-bound edges
+- **qmd_search / qmd_query**: semantic discovery, fuzzy matching, cross-collection results
 
 Configure both in your \`.mcp.json\` and agents can choose the right tool for each sub-task. Need the exact spec for a requirement? Lattice. Need to find everything related to a concept? QMD.
 
@@ -683,11 +677,11 @@ Configure both in your \`.mcp.json\` and agents can choose the right tool for ea
 
 The integration works today with no changes to either tool. But two enhancements would make it smoother:
 
-1. **\`lattice integrate qmd\`** — A convenience command that auto-configures the QMD collection, sets up context annotations per layer, and runs the initial embed. Replaces the six-line setup with one command.
+1. **\`lattice integrate qmd\`**: a convenience command that auto-configures the QMD collection, sets up context annotations per layer, and runs the initial embed. Replaces the six-line setup with one command.
 
-2. **Title comments in YAML** — If lattice added a \`# Title: ...\` comment header to YAML files, QMD's title extractor could use it for better chunking and display. Currently it falls back to filename for non-markdown files.
+2. **Title comments in YAML**: if lattice added a \`# Title: ...\` comment header to YAML files, QMD's title extractor could use it for better chunking and display. Currently it falls back to filename for non-markdown files.
 
-Neither is required — but both would reduce friction.
+Neither is required, but both would reduce friction.
 
 ## Get started
 
