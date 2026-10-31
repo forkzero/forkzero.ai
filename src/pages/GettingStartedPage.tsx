@@ -421,10 +421,7 @@ const s: Record<string, React.CSSProperties> = {
 
 // --- Page ---
 
-const NAV_LINKS = [
-  { label: 'Get Started', href: '/getting-started' },
-  { label: 'Blog', href: '/blog' },
-]
+const NAV_LINKS = [{ label: 'Blog', href: '/blog' }]
 
 export function GettingStartedPage() {
   useEffect(() => {
@@ -737,6 +734,19 @@ lattice drift`}
           <p style={s.sectionSubtitle}>Explore the project, read the source, and join the community:</p>
 
           <div style={s.linkGrid}>
+            <HoverLiftLink
+              href={`${GITHUB_REPO_URL}/blob/main/docs/ADOPTION.md`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={s.linkCard}
+            >
+              <span style={s.linkIcon}>{'\u{1F4D8}'}</span>
+              <div>
+                <div style={s.linkTitle}>Adoption Guide</div>
+                <div style={s.linkDesc}>CI gate, pre-commit, commit convention</div>
+              </div>
+            </HoverLiftLink>
+
             <HoverLiftLink href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer" style={s.linkCard}>
               <span style={s.linkIcon}>{'\u{1F4BB}'}</span>
               <div>
