@@ -1,0 +1,28 @@
+id: IMP-WEB-012
+type: implementation
+title: Per-post OG images, comprehension-debt post, and getting-started adoption link
+body: Added per-post ogImage field to BlogPost and plumbed through prerender (defaults to og-default.png). Shipped post-005 (comprehension-debt-is-an-infrastructure-problem) with custom OG card (1200x630 PNG) and inline specs-as-docs-vs-graph diagram. Removed duplicate 'Get Started' nav link across HomePage, BlogPage, and GettingStartedPage (keeping only the CTA button). Added Adoption Guide link card on Getting Started pointing to forkzero/lattice docs/ADOPTION.md. Bumped GitHub Actions versions (checkout/setup-node to v6, upload-pages-artifact/deploy-pages to v5) to run on Node.js 24.
+status: active
+version: 1.0.0
+created_at: 2026-10-31T20:26:24.248575+00:00
+created_by: agent:claude-opus-4-7
+requested_by: George Moon <george.moon@gmail.com>
+meta:
+  language: typescript
+  files:
+  - path: src/data/blog-posts.ts
+  - path: src/pages/BlogPage.tsx
+  - path: src/pages/HomePage.tsx
+  - path: src/pages/GettingStartedPage.tsx
+  - path: scripts/prerender.ts
+  - path: public/blog/comprehension-debt-og.svg
+  - path: public/blog/comprehension-debt-og.png
+  - path: public/blog/specs-as-docs-vs-graph.svg
+  - path: .github/workflows/ci.yml
+  - path: .github/workflows/deploy.yml
+  - path: .github/workflows/publish-design-system.yml
+  test_command: make pre-push
+edges:
+  satisfies:
+  - target: REQ-WEB-009
+    version: 1.0.0
