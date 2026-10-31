@@ -79,29 +79,27 @@ export const blogPosts: BlogPost[] = [
         url: 'https://resources.anthropic.com/2026-agentic-coding-trends-report',
       },
     ],
-    content: `Three weeks ago, Addy Osmani named something we'd all been feeling: **comprehension debt**. The growing gap between how much code exists in a system and how much of it any human genuinely understands.
+    content: `Addy Osmani recently coined a term for a problem engineering teams keep running into: **comprehension debt**. The growing gap between how much code exists in a system and how much any human actually understands.
 
-The term landed because it's true. An Anthropic skill-formation study found engineers using AI assistance scored **17% lower** on a follow-up comprehension quiz (50% vs 67%) than a control group, despite finishing the task in about the same time. The code shipped. The understanding didn't.
+An Anthropic skill-formation study found engineers using AI assistance scored **17% lower** on a follow-up comprehension quiz (50% vs 67%) than a control group, despite finishing the task in about the same time.
 
-The instinct is to fix this with better specs. Write down what you're building. Make the agent read it. Done.
-
-It's not done. Specs are necessary but they aren't the infrastructure. Comprehension debt isn't a documentation problem. It's a coordination problem. The difference matters.
+The usual fix is better specs: write down what you build, make the agent read it. That helps. It doesn't fix the problem, though, because comprehension debt lives between the specs, not inside any one of them.
 
 ## What comprehension debt actually is
 
-Osmani's framing is precise: comprehension debt lives in **shared mental models**, not in code artifacts. Technical debt is about *code smells*: duplication, tight coupling, dead branches. Comprehension debt is about **knowledge smells**: the moment a developer's mental model decouples from the code's logic.
+Comprehension debt lives in **shared mental models**, not in code artifacts. Technical debt is about *code smells* like duplication, tight coupling, or dead branches. Comprehension debt is about **knowledge smells**: the moment a developer's mental model decouples from the code.
 
-The accumulation is invisible. Code review approves PRs that look fine. Tests pass. Another item enters the queue. The organizational assumption that reviewed code is understood code quietly becomes false.
+The accumulation is invisible. Reviewers approve PRs that look fine, tests pass, and another item enters the queue. The assumption that reviewed code is understood code quietly becomes false.
 
 Six months later somebody asks "why did we build it this way?" and the honest answer is: the agent did, the reviewer was busy, the spec didn't say, and now nobody knows whether changing it will break something three layers downstream.
 
-That's not a code problem. The code is fine. It compiles. It runs. The problem is that the **chain of reasoning from evidence to decision to implementation is broken**.
+The code is fine. It compiles, it runs, it passes tests. What's broken is the **chain of reasoning from evidence to decision to implementation**.
 
 ## Why specs alone don't close the gap
 
-Spec-driven development has critical mass. GitHub's Spec Kit has crossed 72k stars. AWS built Kiro as a spec-first IDE. OpenSpec, Tessl, BMAD, and twenty-five other frameworks all converge on the same idea: write the spec first, then have the agent build to it.
+Spec-driven development is everywhere right now. GitHub's Spec Kit has crossed 72k stars. AWS built Kiro as a spec-first IDE. OpenSpec, Tessl, BMAD, and twenty-five other frameworks are converging on the same idea: write the spec first, then have the agent build to it.
 
-This is real progress. It beats prompting an agent with one-line tickets and hoping.
+This is real progress, a step up from prompting an agent with one-line tickets and hoping.
 
 But spec-driven tools optimize for one moment in time: the moment you hand a spec to an agent. They don't answer the questions that matter when the spec was written six months ago by a teammate who left, the research it referenced has been updated twice, and three downstream specs were derived from it before any of that happened.
 
@@ -111,7 +109,7 @@ Specifically, doc-based spec tools don't tell you:
 - **What other work depends on this?** If I change this spec, which downstream specs are now built on stale assumptions?
 - **Has the evidence changed?** If the research that justified this spec was updated, who needs to know?
 
-These are graph questions. Specs are nodes. They aren't enough on their own. You need the **edges between specs, evidence, and code**, and those edges need versions.
+These are graph questions. Specs are nodes, but nodes aren't enough on their own. You need the **edges between specs, evidence, and code**, and those edges need versions.
 
 ## The missing layer
 
@@ -140,7 +138,7 @@ Every edge records the version of both endpoints at the moment it was bound. Whe
 | Bidirectional feedback (code → spec) | | ✓ |
 | Git-native | ✓ | ✓ |
 
-These aren't competitors. Lattice complements them. You can keep your specs in Spec Kit format and still let Lattice track the edges between them, the research underneath them, and the code on top.
+Lattice complements these tools rather than competing with them. You can keep your specs in Spec Kit format and still let Lattice track the edges between them, the research underneath them, and the code on top.
 
 ## What it looks like
 
@@ -159,13 +157,13 @@ lattice drift
 
 That third command is the one comprehension debt needs. If the thesis behind REQ-BILLING-014 was edited last month because early data showed the original pricing assumption was wrong, \`lattice drift\` flags it. The agent (and the human reviewing the PR) sees that this work is built on a thesis that has shifted, and gets a chance to verify before shipping.
 
-When the implementation lands, the graph closes the loop:
+When the implementation lands, the graph records what happened:
 
 \`\`\`bash
 lattice verify IMP-BILLING-FLOW-002 satisfies REQ-BILLING-014 --tests-pass --coverage 0.91
 \`\`\`
 
-That edge is the **receipt**. It binds a specific version of the implementation to a specific version of the requirement, with evidence. Three months later when somebody asks "does this still do what we said it does?" the answer doesn't depend on anyone remembering.
+That edge records what shipped against which version of the requirement, with evidence attached. Three months later when somebody asks "does this still do what we said it does?" the answer doesn't depend on anyone remembering.
 
 And when the implementation reveals the spec was wrong, \`lattice refine\` pushes the gap back upstream:
 
@@ -173,13 +171,11 @@ And when the implementation reveals the spec was wrong, \`lattice refine\` pushe
 lattice refine REQ-BILLING-014 --gap-type design_decision --title 'Refund grace period not specified' --implementation IMP-BILLING-FLOW-002
 \`\`\`
 
-That's the bidirectional feedback most spec systems lack. Code teaches the spec. The graph remembers.
+That's the bidirectional feedback most spec systems lack. Implementation gets to shape the spec, not just satisfy it.
 
 ## The compounding cost
 
-Here's why this matters more every quarter, not less.
-
-Anthropic's 2026 Agentic Coding Trends Report describes agent task horizons stretching from minutes to **days and weeks**. Multi-agent teams running in parallel on the same codebase. Engineers shifting from writing code to orchestrating systems that write it.
+Anthropic's 2026 Agentic Coding Trends Report describes agent task horizons stretching from minutes to **days and weeks**, multi-agent teams running in parallel on the same codebase, and engineers shifting from writing code to orchestrating systems that write it.
 
 Every one of those trends multiplies comprehension debt:
 
@@ -187,11 +183,11 @@ Every one of those trends multiplies comprehension debt:
 - **Multi-agent parallelism** means five agents resolving the same ambiguity five different ways.
 - **Orchestration** means humans further from the code, more reliant on whatever institutional knowledge actually got captured.
 
-Without infrastructure that captures intent and tracks drift, the costs compound fast. With it, the infrastructure does the remembering. Humans do the judgment.
+Without infrastructure that captures intent and tracks changes, the gap widens with every agent run. With it, the system remembers the reasoning so humans can focus on judgment.
 
 One recent piece pushed back on the inevitability framing: *"Context debt isn't an inevitable consequence of AI adoption. It's an infrastructure failure. A failure to build systems that capture, maintain, and surface the institutional knowledge that makes code comprehensible and architecturally coherent."*
 
-The moat framing is right. Teams that build this infrastructure now will pull ahead. Teams that don't will keep accumulating an invisible tax until something downstream breaks and nobody can explain why.
+The teams building this infrastructure now will have an easier time maintaining their codebases next year. The teams that skip it will keep paying an invisible tax, until something downstream breaks and nobody can explain why.
 
 ## Where to start
 
@@ -206,8 +202,6 @@ lattice init --skill
 \`\`\`
 
 \`lattice init --skill\` installs the Claude Code skill so agents can query and update the graph natively. From there, the workflow is incremental: capture the next decision as a source, link it to a thesis, derive requirements, verify implementations. The graph grows as you work.
-
-Comprehension debt has a name. Now it needs infrastructure.
 
 - [Lattice on GitHub](${GITHUB_REPO_URL})
 - [Live dashboard](${LATTICE_DASHBOARD_URL})
