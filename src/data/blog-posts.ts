@@ -25,6 +25,7 @@ export interface BlogPost {
   discussionPrompt?: string
   sources?: BlogSource[]
   ogImage?: string
+  product?: string
 }
 
 export const blogPosts: BlogPost[] = [
@@ -39,6 +40,7 @@ export const blogPosts: BlogPost[] = [
       github: 'https://github.com/georgemoon',
       x: 'https://x.com/georgemoon',
     },
+    product: 'lattice',
     excerpt:
       "Comprehension debt finally has a name: the gap between code that exists and code anyone understands. Better specs don't close it. Versioned edges between specs, evidence, and code do.",
     discussionPrompt: "What's a decision in your codebase nobody on your team can explain anymore?",
@@ -218,6 +220,7 @@ lattice init --skill
       github: 'https://github.com/georgemoon',
       x: 'https://x.com/georgemoon',
     },
+    product: 'lattice',
     excerpt:
       "AI agent memory systems store preferences as flat files with no relationships. When context changes, nothing flags stale memories for review. We ran into this building our own site, and realized it's the same problem Lattice solves for code.",
     discussionPrompt: 'What knowledge systems outside of code do you wish had version tracking and drift detection?',
@@ -301,6 +304,7 @@ ${INSTALL_CMD}
       github: 'https://github.com/georgemoon',
       x: 'https://x.com/georgemoon',
     },
+    product: 'lattice',
     excerpt:
       "Your agent passes every lint check, writes clean tests, and ships code that solves a problem nobody asked it to solve. The failure isn't in execution. It's in intent.",
     discussionPrompt:
@@ -435,6 +439,7 @@ lattice init --skill
       github: 'https://github.com/georgemoon',
       x: 'https://x.com/georgemoon',
     },
+    product: 'lattice',
     excerpt:
       'Context engineering is everywhere right now, but most approaches focus on runtime: what fills the context window for each LLM call. The missing piece is upstream: where does the knowledge come from, and is it still valid?',
     discussionPrompt:
@@ -572,6 +577,7 @@ lattice init
       github: 'https://github.com/georgemoon',
       x: 'https://x.com/georgemoon',
     },
+    product: 'lattice',
     excerpt:
       "Lattice gives you traceability. But traceability assumes you know what you're looking for. QMD adds the missing piece: semantic search over your knowledge graph, running entirely on-device.",
     discussionPrompt:

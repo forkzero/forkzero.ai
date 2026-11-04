@@ -13,18 +13,36 @@
  *
  * Runtime: cloudfront-js-2.0
  */
+// Permanent moves: old path -> new path (301)
+var MOVED_PATHS = {
+  '/getting-started': '/lattice/getting-started',
+}
+
 function handler(event) {
-  var request = event.request;
-  var uri = request.uri;
+  var request = event.request
+  var uri = request.uri
 
   // Skip root — CloudFront Default Root Object handles it
   if (uri === '/') {
-    return request;
+    return request
   }
 
   // Skip URIs that already have a file extension
   if (/\.\w+$/.test(uri)) {
-    return request;
+    return request
+  }
+
+  // Normalize trailing slash for moved-path lookup
+  var lookupUri = uri.endsWith('/') ? uri.slice(0, -1) : uri
+  if (MOVED_PATHS[lookupUri]) {
+    return {
+      statusCode: 301,
+      statusDescription: 'Moved Permanently',
+      headers: {
+        location: { value: MOVED_PATHS[lookupUri] },
+        'cache-control': { value: 'public, max-age=86400' },
+      },
+    }
   }
 
   // Redirect trailing slash to non-trailing (301)
@@ -36,11 +54,11 @@ function handler(event) {
         location: { value: uri.slice(0, -1) },
         'cache-control': { value: 'public, max-age=86400' },
       },
-    };
+    }
   }
 
   // Rewrite clean URL to /index.html for S3 lookup
-  request.uri = uri + '/index.html';
+  request.uri = uri + '/index.html'
 
-  return request;
+  return request
 }

@@ -35,7 +35,7 @@ const styles: Record<string, React.CSSProperties> = {
 }
 
 const NAV_LINKS = [
-  { label: 'Get Started', href: '/getting-started' },
+  { label: 'Get Started', href: '/lattice/getting-started' },
   { label: 'Blog', href: '/blog' },
 ]
 
@@ -62,7 +62,7 @@ export function PrivacyPage() {
       <Header
         navLinks={NAV_LINKS}
         githubUrl={GITHUB_ORG_URL}
-        ctaLink={{ label: 'Get Started', href: '/getting-started' }}
+        ctaLink={{ label: 'Get Started', href: '/lattice/getting-started' }}
       />
       <main style={styles.page}>
         <h1 style={styles.title}>Privacy Policy</h1>

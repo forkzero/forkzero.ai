@@ -18,6 +18,37 @@ import { blogPosts, type BlogPost } from '../data/blog-posts'
 
 const NAV_LINKS = [{ label: 'Blog', href: '/blog' }]
 
+// --- Product tag registry ---
+
+const PRODUCT_LABELS: Record<string, { label: string; color: string }> = {
+  lattice: { label: 'Lattice', color: colors.accentBlue },
+}
+
+function ProductPill({ product }: { product?: string }) {
+  if (!product) return null
+  const info = PRODUCT_LABELS[product]
+  if (!info) return null
+  return (
+    <span
+      style={{
+        display: 'inline-block',
+        fontSize: '0.7rem',
+        fontWeight: 600,
+        letterSpacing: '0.04em',
+        textTransform: 'uppercase',
+        color: info.color,
+        background: `${info.color}14`,
+        border: `1px solid ${info.color}30`,
+        borderRadius: '100px',
+        padding: '0.2rem 0.6rem',
+        lineHeight: 1.4,
+      }}
+    >
+      {info.label}
+    </span>
+  )
+}
+
 // --- SEO helpers ---
 
 function setMetaTag(name: string, content: string) {
@@ -878,7 +909,7 @@ function BlogListing() {
       <Header
         navLinks={NAV_LINKS}
         githubUrl={GITHUB_ORG_URL}
-        ctaLink={{ label: 'Get Started', href: '/getting-started' }}
+        ctaLink={{ label: 'Get Started', href: '/lattice/getting-started' }}
       />
       <div style={s.container}>
         <h1 style={s.pageTitle}>Blog</h1>
@@ -887,6 +918,11 @@ function BlogListing() {
         </p>
         {blogPosts.map((post) => (
           <a key={post.id} href={`/blog/${post.slug}`} style={s.postCard}>
+            {post.product && (
+              <div style={{ marginBottom: '0.75rem' }}>
+                <ProductPill product={post.product} />
+              </div>
+            )}
             <h2 style={s.postCardTitle}>{post.title}</h2>
             <div style={s.postMeta}>
               {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -929,13 +965,18 @@ function BlogPostView({ post }: { post: BlogPost }) {
       <Header
         navLinks={NAV_LINKS}
         githubUrl={GITHUB_ORG_URL}
-        ctaLink={{ label: 'Get Started', href: '/getting-started' }}
+        ctaLink={{ label: 'Get Started', href: '/lattice/getting-started' }}
       />
       <div style={s.container}>
         <a href="/blog" style={s.backLink}>
           &larr; All posts
         </a>
         <article style={s.article}>
+          {post.product && (
+            <div style={{ marginBottom: '1rem' }}>
+              <ProductPill product={post.product} />
+            </div>
+          )}
           <h1 style={s.articleTitle}>{post.title}</h1>
           <div style={s.articleMeta}>
             {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -951,7 +992,7 @@ function BlogPostView({ post }: { post: BlogPost }) {
 
         {post.discussionPrompt && <DiscussionCTA prompt={post.discussionPrompt} />}
         <EmailCapture
-          heading="Enjoyed this post? Stay sharp."
+          heading="Get new posts by email"
           subtext="Occasional emails on knowledge coordination, context engineering, and requirements-driven development."
           style={s.emailSection}
         />
@@ -977,7 +1018,7 @@ function BlogNotFound() {
       <Header
         navLinks={NAV_LINKS}
         githubUrl={GITHUB_ORG_URL}
-        ctaLink={{ label: 'Get Started', href: '/getting-started' }}
+        ctaLink={{ label: 'Get Started', href: '/lattice/getting-started' }}
       />
       <div style={{ ...s.container, textAlign: 'center' as const, paddingTop: '4rem' }}>
         <h1 style={s.pageTitle}>Post not found</h1>

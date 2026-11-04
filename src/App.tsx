@@ -9,7 +9,7 @@ type PageRoute = 'home' | 'reader' | 'getting-started' | 'blog' | 'blog-post' | 
 
 export function parseRoute(path: string): { page: PageRoute; slug?: string } {
   if (path === '/reader' || path === '/reader/') return { page: 'reader' }
-  if (path === '/getting-started' || path === '/getting-started/') return { page: 'getting-started' }
+  if (path === '/lattice/getting-started' || path === '/lattice/getting-started/') return { page: 'getting-started' }
   if (path === '/design-system' || path === '/design-system/') return { page: 'design-system' }
   if (path === '/privacy' || path === '/privacy/') return { page: 'privacy' }
   if (path === '/blog' || path === '/blog/') return { page: 'blog' }

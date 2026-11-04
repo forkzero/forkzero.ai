@@ -47,7 +47,7 @@ describe('pre-rendered homepage', () => {
   it('has noscript navigation links', () => {
     const html = readFileSync(file, 'utf-8')
     expect(html).toContain('<nav>')
-    expect(html).toContain('href="/getting-started"')
+    expect(html).toContain('href="/lattice/getting-started"')
     expect(html).toContain('href="/blog"')
     expect(html).toContain('href="/privacy"')
   })
@@ -72,7 +72,7 @@ describe('pre-rendered homepage', () => {
 })
 
 describe('pre-rendered getting-started', () => {
-  const file = join(distDir, 'getting-started', 'index.html')
+  const file = join(distDir, 'lattice', 'getting-started', 'index.html')
 
   it('exists', () => {
     expect(existsSync(file)).toBe(true)
@@ -281,7 +281,7 @@ describe('sitemap.xml', () => {
   it('contains all pages', () => {
     const xml = readFileSync(file, 'utf-8')
     expect(xml).toContain('https://forkzero.ai/')
-    expect(xml).toContain('https://forkzero.ai/getting-started')
+    expect(xml).toContain('https://forkzero.ai/lattice/getting-started')
     expect(xml).toContain('https://forkzero.ai/blog')
     expect(xml).toContain('https://forkzero.ai/privacy')
   })

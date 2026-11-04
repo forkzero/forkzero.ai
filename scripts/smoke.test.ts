@@ -31,7 +31,7 @@ async function get(path: string) {
 // --- HTTP status codes ---
 
 describe('status codes', () => {
-  it.each(['/', '/blog', '/getting-started', '/privacy', '/reader'])('%s returns 200', async (path) => {
+  it.each(['/', '/blog', '/lattice/getting-started', '/privacy', '/reader'])('%s returns 200', async (path) => {
     const res = await head(path)
     expect(res.status).toBe(200)
   })
@@ -50,11 +50,22 @@ describe('status codes', () => {
 // --- Trailing slash redirects ---
 
 describe('trailing slash redirects', () => {
-  it.each(['/blog/', '/getting-started/', '/privacy/', '/reader/'])('%s redirects to non-trailing', async (path) => {
-    const res = await head(path)
+  it.each(['/blog/', '/lattice/getting-started/', '/privacy/', '/reader/'])(
+    '%s redirects to non-trailing',
+    async (path) => {
+      const res = await head(path)
+      expect(res.status).toBe(301)
+      const location = res.headers.get('location')
+      expect(location).toBe(path.slice(0, -1))
+    },
+  )
+})
+
+describe('moved paths', () => {
+  it('/getting-started 301s to /lattice/getting-started', async () => {
+    const res = await head('/getting-started')
     expect(res.status).toBe(301)
-    const location = res.headers.get('location')
-    expect(location).toBe(path.slice(0, -1))
+    expect(res.headers.get('location')).toBe('/lattice/getting-started')
   })
 })
 

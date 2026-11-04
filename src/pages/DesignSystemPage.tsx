@@ -148,7 +148,7 @@ function FocusDemo() {
 }
 
 const NAV_LINKS = [
-  { label: 'Get Started', href: '/getting-started' },
+  { label: 'Get Started', href: '/lattice/getting-started' },
   { label: 'Blog', href: '/blog' },
 ]
 

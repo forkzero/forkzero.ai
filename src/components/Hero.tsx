@@ -287,7 +287,7 @@ export function Hero() {
           Git-native knowledge graph, so any collaborator (human or AI) can pick up where the last one left off.
         </p>
         <div style={styles.ctaRow}>
-          <a href="/getting-started" style={styles.ctaPrimary}>
+          <a href="/lattice/getting-started" style={styles.ctaPrimary}>
             Install Lattice
           </a>
           <a href={GITHUB_REPO_URL} style={styles.ctaSecondary} target="_blank" rel="noopener noreferrer">

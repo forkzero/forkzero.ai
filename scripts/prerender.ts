@@ -39,10 +39,10 @@ const routes: RouteMeta[] = [
     ogImage: post.ogImage,
   })),
   {
-    path: '/getting-started',
+    path: '/lattice/getting-started',
     title: 'Get Started with Lattice — Forkzero',
     description: 'Install Lattice and start building a knowledge-coordinated codebase in under five minutes.',
-    canonical: 'https://forkzero.ai/getting-started',
+    canonical: 'https://forkzero.ai/lattice/getting-started',
   },
   {
     path: '/reader',
@@ -151,7 +151,7 @@ const today = new Date().toISOString().split('T')[0]
 const latestPostDate = blogPosts.length > 0 ? blogPosts[0].date : today
 const sitemapUrls: { loc: string; lastmod: string }[] = [
   { loc: 'https://forkzero.ai/', lastmod: today },
-  { loc: 'https://forkzero.ai/getting-started', lastmod: today },
+  { loc: 'https://forkzero.ai/lattice/getting-started', lastmod: today },
   { loc: 'https://forkzero.ai/blog', lastmod: latestPostDate },
   ...blogPosts.map((post) => ({
     loc: `https://forkzero.ai/blog/${post.slug}`,
@@ -193,12 +193,12 @@ function buildNoscript(route: RouteMeta): string | null {
         `</ul>`,
         `<h2>Projects</h2>`,
         `<ul>${projectList}</ul>`,
-        `<nav><p><a href="/getting-started">Get Started</a> · <a href="/blog">Blog</a> · <a href="/privacy">Privacy</a></p></nav>`,
+        `<nav><p><a href="/lattice/getting-started">Get Started</a> · <a href="/blog">Blog</a> · <a href="/privacy">Privacy</a></p></nav>`,
       ].join(''),
     )
   }
 
-  if (route.path === '/getting-started') {
+  if (route.path === '/lattice/getting-started') {
     return wrap(
       [
         `<h1>Getting Started with Lattice</h1>`,
@@ -357,7 +357,7 @@ function buildJsonLd(route: RouteMeta): string {
     }
   }
 
-  if (route.path === '/getting-started') {
+  if (route.path === '/lattice/getting-started') {
     schemas.push({
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -374,7 +374,7 @@ function buildJsonLd(route: RouteMeta): string {
           '@type': 'ListItem',
           position: 2,
           name: 'Getting Started',
-          item: 'https://forkzero.ai/getting-started',
+          item: 'https://forkzero.ai/lattice/getting-started',
         },
       ],
     })

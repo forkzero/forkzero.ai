@@ -886,7 +886,7 @@ export function HomePage() {
       <Header
         navLinks={NAV_LINKS}
         githubUrl={GITHUB_ORG_URL}
-        ctaLink={{ label: 'Get Started', href: '/getting-started' }}
+        ctaLink={{ label: 'Get Started', href: '/lattice/getting-started' }}
       />
       <Hero />
       <Problem />

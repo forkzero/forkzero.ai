@@ -19,12 +19,16 @@ describe('parseRoute', () => {
     expect(parseRoute('/reader/')).toEqual({ page: 'reader' })
   })
 
-  it('returns getting-started for /getting-started', () => {
-    expect(parseRoute('/getting-started')).toEqual({ page: 'getting-started' })
+  it('returns getting-started for /lattice/getting-started', () => {
+    expect(parseRoute('/lattice/getting-started')).toEqual({ page: 'getting-started' })
   })
 
-  it('returns getting-started for /getting-started/ with trailing slash', () => {
-    expect(parseRoute('/getting-started/')).toEqual({ page: 'getting-started' })
+  it('returns getting-started for /lattice/getting-started/ with trailing slash', () => {
+    expect(parseRoute('/lattice/getting-started/')).toEqual({ page: 'getting-started' })
+  })
+
+  it('returns home for the old /getting-started path (CloudFront 301s this)', () => {
+    expect(parseRoute('/getting-started')).toEqual({ page: 'home' })
   })
 
   it('returns design-system for /design-system', () => {

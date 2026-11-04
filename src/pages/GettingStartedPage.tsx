@@ -456,7 +456,7 @@ export function GettingStartedPage() {
       'Install Lattice and start building a knowledge-coordinated codebase in under five minutes.',
     )
     setOgTag('og:type', 'website')
-    setOgTag('og:url', 'https://forkzero.ai/getting-started')
+    setOgTag('og:url', 'https://forkzero.ai/lattice/getting-started')
     setOgTag('og:image', 'https://forkzero.ai/og-default.png')
     setOgTag('og:site_name', 'Forkzero')
     setMetaTag('twitter:card', 'summary_large_image')
@@ -473,7 +473,7 @@ export function GettingStartedPage() {
       <Header
         navLinks={NAV_LINKS}
         githubUrl={GITHUB_ORG_URL}
-        ctaLink={{ label: 'Get Started', href: '/getting-started' }}
+        ctaLink={{ label: 'Get Started', href: '/lattice/getting-started' }}
       />
 
       {/* Hero */}
