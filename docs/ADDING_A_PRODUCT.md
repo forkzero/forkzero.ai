@@ -45,8 +45,14 @@ pre-rendered HTML and the sitemap entry all derive from that entry.
 5. **Blog posts.** Tag posts with `product: '{slug}'` in
    `src/data/blog-posts.ts` to show the product pill.
 
-6. **CloudFront.** The URL rewrite function (`infra/cloudfront-url-rewrite.js`)
-   serves `/{path}/index.html` for clean URLs, so new routes need no edge change.
+6. **CloudFront.** The `lattice/*` behavior sends everything under `/lattice/`
+   to the installer bucket. If the new product's slug has its own CloudFront
+   behavior like that, add `{slug}/getting-started*` to
+   `infra/cloudfront-site-paths.json` and run `infra/setup-cloudfront.sh`.
+   Otherwise no edge change is needed: the URL rewrite function serves
+   `/{path}/index.html` for clean URLs. The 5-minute monitor alerts if a
+   sitemap page stops returning 200 or the live distribution differs from
+   that file.
 
 7. **Lattice.** Record the work as a requirement and implementation in
    `.lattice/`, then run `make pre-commit`.

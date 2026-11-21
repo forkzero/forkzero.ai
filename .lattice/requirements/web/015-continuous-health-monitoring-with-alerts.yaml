@@ -1,0 +1,29 @@
+id: REQ-WEB-015
+type: requirement
+title: Continuous health monitoring with alerts for routes, deploys and CloudFront drift
+body: 'forkzero.ai shall be checked every 5 minutes: every sitemap page returns 200 HTML that is not the 404 page, referenced JS/CSS assets load, the installer scripts are served as scripts, key redirects and the 404 page behave, the subscribe API responds, the TLS certificate has at least 14 days left, and the live CloudFront function and behaviors match the repo. Failures shall alert by email (SNS topic forkzero-alerts) within about 10 minutes, with a recovery notice, and an alert shall also fire if the monitor stops running. Failed deploys, failed post-deploy smoke tests and failed CI on main shall alert the same topic. The daily analytics email shall open with the health checks, flag failures in its subject, and exclude monitor traffic from its statistics. Prompted by /lattice/getting-started returning 404 for 17 days (about 31 visitors) despite failing deploy smoke tests.'
+status: active
+version: 1.0.0
+created_at: 2026-11-21T15:42:28.539203+00:00
+created_by: agent:claude-opus-5-5
+requested_by: George Moon <george.moon@gmail.com>
+priority: P1
+category: WEB
+tags:
+- monitoring
+- alerting
+- cloudfront
+- analytics
+edges:
+  supported_by:
+  - target: SRC-ANALYTICS-RESEARCH-001
+    version: 1.0.0
+    rationale: Research showed the daily email buries real problems under scanner noise and never checks routes
+  derives_from:
+  - target: THX-AI-FIRST-TOOLING
+    version: 1.0.0
+  depends_on:
+  - target: REQ-WEB-003
+    version: 1.0.0
+  - target: REQ-WEB-012
+    version: 1.0.1

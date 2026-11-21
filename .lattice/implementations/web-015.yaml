@@ -1,0 +1,29 @@
+id: IMP-WEB-015
+type: implementation
+title: 5-minute monitor Lambda, CloudWatch alarms, deploy/CI alerts, health section in daily email
+body: 'infra/analytics-report/checks.mjs: route checks (sitemap pages, page assets, installer, redirects, 404 page, robots/llms, subscribe API, TLS) and CloudFront drift checks (live function vs infra/cloudfront-url-rewrite.js; behaviors from infra/cloudfront-site-paths.json ordered before lattice/*, on the site origin, with the function; default behavior function and headers policy; 404 error page), unit-tested in checks.test.mjs with a fake site. monitor.mjs runs them every 5 minutes and publishes Forkzero/Monitor FailingChecks and ChecksRun; alarms forkzero-health-checks-failing (2 of 3 runs) and forkzero-monitor-not-running (15 min) notify the forkzero-alerts topic. index.mjs opens the daily email with the health section, uses an [ALERT] subject on failure, and excludes the forkzero-monitor user agent. deploy.yml publishes to forkzero-alerts when a deploy or smoke test fails and when CI fails on main. setup-analytics.sh builds the shared package and creates all of it idempotently; setup-cloudfront.sh reads the shared site-paths file. Runbook in docs/MONITORING.md. Verified against the live site and live CloudFront config (all route and drift checks pass).'
+status: active
+version: 1.0.0
+created_at: 2026-11-21T15:42:28.578477+00:00
+created_by: agent:claude-opus-5-5
+requested_by: George Moon <george.moon@gmail.com>
+meta:
+  language: javascript
+  files:
+  - path: infra/analytics-report/checks.mjs
+  - path: infra/analytics-report/checks.test.mjs
+  - path: infra/analytics-report/monitor.mjs
+  - path: infra/analytics-report/index.mjs
+  - path: infra/setup-analytics.sh
+  - path: infra/setup-cloudfront.sh
+  - path: infra/cloudfront-site-paths.json
+  - path: .github/workflows/deploy.yml
+  - path: docs/MONITORING.md
+  - path: docs/ADDING_A_PRODUCT.md
+  test_command: make pre-push
+  verified_at: 2026-11-21T15:42:28.588822+00:00
+edges:
+  satisfies:
+  - target: REQ-WEB-015
+    version: 1.0.0
+    rationale: tests pass

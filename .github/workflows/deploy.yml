@@ -77,3 +77,47 @@ jobs:
         if: always()
         run: |
           node scripts/test-summary.mjs --md >> $GITHUB_STEP_SUMMARY || true
+
+      # Email the forkzero-alerts topic (infra/setup-analytics.sh) so a failed
+      # deploy or failed smoke test can't go unnoticed. Values come in through
+      # env, never interpolated into the script.
+      - name: Alert on failure
+        if: failure()
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
+          COMMIT_MSG: ${{ github.event.workflow_run.head_commit.message }}
+        run: |
+          ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+          printf 'The forkzero.ai deploy failed. The site may be partly updated or broken.\n\nCommit: %s\n%s\n\nRun: %s\n' \
+            "$COMMIT_SHA" "$(printf '%s' "$COMMIT_MSG" | head -1)" "$RUN_URL" > alert.txt
+          aws sns publish --topic-arn "arn:aws:sns:us-east-1:${ACCOUNT}:forkzero-alerts" \
+            --subject "[ALERT] forkzero.ai deploy failed" --message file://alert.txt \
+            || echo "::warning::Could not publish alert (has infra/setup-analytics.sh been run?)"
+
+  # CI failed on main, so nothing was deployed: the live site is unchanged but
+  # main is not releasable until it is fixed.
+  alert-ci-failure:
+    name: Alert on CI failure
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: Publish alert
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: us-east-1
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          COMMIT_SHA: ${{ github.event.workflow_run.head_sha }}
+          COMMIT_MSG: ${{ github.event.workflow_run.head_commit.message }}
+        run: |
+          ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
+          printf 'CI failed on main, so this commit was not deployed. The live site is unchanged.\n\nCommit: %s\n%s\n\nRun: %s\n' \
+            "$COMMIT_SHA" "$(printf '%s' "$COMMIT_MSG" | head -1)" "$RUN_URL" > alert.txt
+          aws sns publish --topic-arn "arn:aws:sns:us-east-1:${ACCOUNT}:forkzero-alerts" \
+            --subject "[ALERT] forkzero.ai CI failed on main" --message file://alert.txt \
+            || echo "::warning::Could not publish alert (has infra/setup-analytics.sh been run?)"
+

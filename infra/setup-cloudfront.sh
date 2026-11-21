@@ -153,9 +153,11 @@ DIST_ETAG=$(jq -r '.ETag' "${TMPDIR}/config.json")
 # Site pages that live under a path another cache behavior claims. The
 # `lattice/*` behavior routes to the installer bucket (forkzero-lattice-prod)
 # with no URL rewrite, so product Getting Started pages need their own
-# behavior pointing at the site bucket. Keep in sync with gettingStartedPath
-# in src/data/products.ts.
-SITE_PATHS_UNDER_OTHER_BEHAVIORS='["lattice/getting-started*"]'
+# behavior pointing at the site bucket. The list lives in
+# infra/cloudfront-site-paths.json (keep in sync with gettingStartedPath in
+# src/data/products.ts); the 5-minute monitor checks the live distribution
+# against the same file.
+SITE_PATHS_UNDER_OTHER_BEHAVIORS=$(jq -c . "$(dirname "$0")/cloudfront-site-paths.json")
 
 # Build updated config with jq:
 #   - Set function association on default cache behavior

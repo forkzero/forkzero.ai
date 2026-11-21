@@ -19,7 +19,7 @@ meta:
   - path: scripts/prerender.ts
   - path: docs/ADDING_A_PRODUCT.md
   test_command: make pre-push
-  verified_at: 2026-11-21T15:12:04.504569+00:00
+  verified_at: 2026-11-21T15:42:28.607653+00:00
 edges:
   satisfies:
   - target: REQ-WEB-013

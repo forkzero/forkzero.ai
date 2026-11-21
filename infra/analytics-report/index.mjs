@@ -4,10 +4,15 @@
  * Queries Athena against CloudFront access logs for yesterday's data,
  * formats a concise SMS summary, and publishes it via SNS.
  *
+ * Opens with the health checks from monitor.mjs (sitemap pages, installer,
+ * redirects, 404 page, subscribe API, TLS, CloudFront drift); any failure is
+ * listed first and flagged in the subject line.
+ *
  * Environment variables:
  *   SNS_TOPIC_ARN   — ARN of the SNS topic to publish to
  *   ATHENA_DATABASE — Athena database name (default: forkzero)
  *   ATHENA_OUTPUT   — S3 path for Athena query results
+ *   plus DISTRIBUTION_ID and SUBSCRIBE_API_URL for the health checks
  */
 
 import {
@@ -17,6 +22,8 @@ import {
   GetQueryResultsCommand,
 } from "@aws-sdk/client-athena";
 import { SNSClient, PublishCommand } from "@aws-sdk/client-sns";
+import { runAllChecks } from "./monitor.mjs";
+import { formatHealth } from "./checks.mjs";
 
 const athena = new AthenaClient();
 const sns = new SNSClient();
@@ -97,10 +104,12 @@ function formatBytes(bytes) {
 }
 
 async function buildReport(dateOverride) {
+  const health = await checkHealth();
   const { dateStr, display } = dateOverride
     ? { dateStr: dateOverride, display: dateOverride }
     : yesterday();
-  const dateFilter = `"date" = DATE '${dateStr}'`;
+  // Exclude the 5-minute monitor's own requests (user agent from checks.mjs)
+  const dateFilter = `"date" = DATE '${dateStr}' AND cs_user_agent NOT LIKE 'forkzero-monitor%'`;
 
   // 1. Overview: requests, unique IPs, bandwidth
   const overview = await runQuery(`
@@ -213,7 +222,7 @@ async function buildReport(dateOverride) {
   `);
 
   // Format report
-  const lines = [`forkzero.ai — ${display}`, ""];
+  const lines = [`forkzero.ai — ${display}`, "", ...health.lines, ""];
   lines.push(`Requests: ${total} | Unique IPs: ${unique} | Bandwidth: ${formatBytes(totalBytes)}`);
 
   // Status codes
@@ -278,18 +287,31 @@ async function buildReport(dateOverride) {
     }
   }
 
-  return lines.join("\n");
+  return { report: lines.join("\n"), failing: health.failing };
+}
+
+/** Current health (checked now, not for the report date). Never throws. */
+async function checkHealth() {
+  try {
+    const checks = await runAllChecks();
+    return { lines: formatHealth(checks), failing: checks.filter((c) => !c.ok).length };
+  } catch (err) {
+    return { lines: [`⚠ HEALTH: checks could not run: ${err?.message || err}`], failing: 1 };
+  }
 }
 
 export async function handler(event) {
-  const report = await buildReport(event?.dateOverride);
+  const { report, failing } = await buildReport(event?.dateOverride);
   console.log(report);
 
   await sns.send(
     new PublishCommand({
       TopicArn: TOPIC_ARN,
       Message: report,
-      Subject: "forkzero.ai daily analytics",
+      Subject: failing
+        ? // SNS subjects must be ASCII
+          `[ALERT] forkzero.ai: ${failing} health check${failing === 1 ? "" : "s"} failing`
+        : "forkzero.ai daily analytics",
     })
   );
 
