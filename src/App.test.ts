@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseRoute, gettingStartedPages } from './App'
+import { parseRoute, gettingStartedPages, pageLoaders } from './App'
 import { products } from './data/products'
 
 describe('parseRoute', () => {
@@ -83,5 +83,12 @@ describe('product registry routing', () => {
     for (const product of products) {
       expect(gettingStartedPages[product.slug], `missing page for ${product.slug}`).toBeDefined()
     }
+  })
+})
+
+describe('lazy page loaders', () => {
+  it.each(Object.entries(pageLoaders))('%s resolves to a page component', async (_name, load) => {
+    const { default: Page } = await load()
+    expect(typeof Page).toBe('function')
   })
 })

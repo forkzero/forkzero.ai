@@ -15,13 +15,21 @@ pre-rendered HTML and the sitemap entry all derive from that entry.
    it in `gettingStartedPages` in `src/App.tsx`:
 
    ```ts
-   export const gettingStartedPages: Record<string, ComponentType> = {
+   const NewProductGettingStartedPage = lazy(() =>
+     import('./pages/NewProductGettingStartedPage').then((m) => ({ default: m.NewProductGettingStartedPage })),
+   )
+
+   export const gettingStartedPages: Record<string, LazyExoticComponent<ComponentType>> = {
      lattice: GettingStartedPage,
      newproduct: NewProductGettingStartedPage,
    }
    ```
 
-   `App.test.ts` fails if a registered product has no page here.
+   `App.test.ts` fails if a registered product has no page here. Pages are
+   lazy-loaded, so define it with `lazy()` like the existing entries, and add
+   its source file to `PAGE_SOURCES` in `scripts/prerender.ts` as
+   `'getting-started:{slug}'`. The build fails if it is missing, because the
+   pre-rendered page needs a `modulepreload` link for its chunk.
 
 3. **Check the pre-rendered output.** `scripts/prerender.ts` picks up the new
    route, title (`Get Started with {name} — Forkzero`), description, JSON-LD and

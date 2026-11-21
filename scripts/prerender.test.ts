@@ -322,3 +322,32 @@ describe('404.html', () => {
     expect(html).toContain('href="/"')
   })
 })
+
+describe('per-route modulepreload', () => {
+  const cases: [string, string][] = [
+    ['index.html', 'HomePage'],
+    ['blog/index.html', 'BlogPage'],
+    [`blog/${blogPosts[0].slug}/index.html`, 'BlogPage'],
+    ['lattice/getting-started/index.html', 'GettingStartedPage'],
+    ['reader/index.html', 'ReaderPage'],
+    ['privacy/index.html', 'PrivacyPage'],
+  ]
+
+  it.each(cases)('%s preloads the %s chunk and its imports', (file, page) => {
+    const html = readFileSync(join(distDir, file), 'utf-8')
+    const preloads = [...html.matchAll(/<link rel="modulepreload" crossorigin href="\/(assets\/[^"]+)"/g)].map(
+      (m) => m[1],
+    )
+    expect(preloads.some((p) => p.startsWith(`assets/${page}-`))).toBe(true)
+    for (const p of preloads) expect(existsSync(join(distDir, p)), `${p} exists`).toBe(true)
+  })
+
+  it('does not preload other pages', () => {
+    const html = readFileSync(join(distDir, 'privacy/index.html'), 'utf-8')
+    expect(html).not.toMatch(/modulepreload[^>]+(HomePage|BlogPage|ReaderPage|GettingStartedPage)-/)
+  })
+
+  it('does not deploy the Vite manifest', () => {
+    expect(existsSync(join(distDir, '.vite'))).toBe(false)
+  })
+})

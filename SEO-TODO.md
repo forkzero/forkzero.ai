@@ -9,12 +9,6 @@ and build output on 2026-11-21. Shipped work is recorded in REQ/IMP-WEB-010.
 
 ### High
 
-- [ ] **Code-split routes with `React.lazy()`**
-  Still one main bundle (now ~328 KB, up from 287 KB) with every page statically
-  imported. Giscus is already split out. Lazy-load the Reader, Design System and
-  Getting Started pages behind `Suspense`.
-  File: `src/App.tsx`
-
 - [ ] **Cross-link blog posts and Getting Started**
   None of the five posts link to each other or to `/lattice/getting-started`.
   Add contextual inline links where posts build on each other, and a "Get
@@ -22,6 +16,12 @@ and build output on 2026-11-21. Shipped work is recorded in REQ/IMP-WEB-010.
   File: `src/data/blog-posts.ts`
 
 ### Medium
+
+- [ ] **Keep blog post bodies off the homepage**
+  The homepage shows only the featured post's title and excerpt but loads the
+  whole `blog-posts` chunk (13 KB gzipped). Split post metadata from post
+  bodies so only `BlogPage` loads the bodies.
+  Files: `src/data/blog-posts.ts`, `src/pages/HomePage.tsx`, `scripts/prerender.ts`
 
 - [ ] **Self-host the Outfit font or drop it**
   Google Fonts CSS is still render-blocking (`index.html`). Outfit is used only
@@ -56,9 +56,6 @@ and build output on 2026-11-21. Shipped work is recorded in REQ/IMP-WEB-010.
 - [ ] **Publish more posts.** Five posts today; aim for 8–12 covering knowledge
   coordination, context engineering and developer tooling.
 
-- [ ] **Add `<link rel="modulepreload">` for the JS bundle.**
-  File: `scripts/prerender.ts` or `index.html`
-
 - [ ] **Cache the GitHub star count** in `localStorage` with a TTL. The hero
   fetches `api.github.com` on every load.
   File: `src/components/Hero.tsx`
@@ -79,3 +76,5 @@ and build output on 2026-11-21. Shipped work is recorded in REQ/IMP-WEB-010.
 - [x] `author.url` in BlogPosting schema
 - [x] Explicit GPTBot, ClaudeBot and PerplexityBot rules in `robots.txt`
 - [x] `CollectionPage` schema for `/blog`
+- [x] Route-level code splitting with `React.lazy()` (2026-11-21): entry bundle 328 KB → 200 KB (97.5 → 63 KB gzipped); JS per page down 12–32%
+- [x] Per-route `<link rel="modulepreload">` for each page's chunks (2026-11-21)

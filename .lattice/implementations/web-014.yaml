@@ -1,0 +1,25 @@
+id: IMP-WEB-014
+type: implementation
+title: React.lazy page chunks with modulepreload injected at prerender
+body: App.tsx lazy-loads all six pages behind a null Suspense fallback (pre-rendered pages already show an empty root until JS runs). vite.config.ts emits a build manifest; scripts/prerender.ts maps each route to its page source (PAGE_SOURCES), walks the manifest for the page chunk and its non-entry imports, injects modulepreload links, and deletes dist/.vite. Entry bundle 328 KB to 200 KB (97.5 to 63 KB gzipped); total JS per page down 12% (home) to 32% (privacy). Homepage still loads the blog-posts chunk for the featured post (tracked in SEO-TODO.md). Tests in scripts/prerender.test.ts check each route preloads its own chunk, not others, and that the manifest is not deployed.
+status: active
+version: 1.0.1
+created_at: 2026-11-21T15:11:01.735552+00:00
+created_by: agent:claude-opus-5-5
+requested_by: George Moon <george.moon@gmail.com>
+meta:
+  language: typescript
+  files:
+  - path: src/App.tsx
+  - path: src/App.test.ts
+  - path: vite.config.ts
+  - path: scripts/prerender.ts
+  - path: scripts/prerender.test.ts
+  - path: docs/ADDING_A_PRODUCT.md
+  test_command: make pre-push
+  verified_at: 2026-11-21T15:12:04.493908+00:00
+edges:
+  satisfies:
+  - target: REQ-WEB-014
+    version: 1.0.0
+    rationale: tests pass

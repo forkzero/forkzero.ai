@@ -7,7 +7,7 @@
  * OG tags, JSON-LD structured data, and a <noscript> fallback for crawlers.
  */
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs'
+import { readFileSync, writeFileSync, mkdirSync, existsSync, rmSync } from 'fs'
 import { join } from 'path'
 import { blogPosts } from '../src/data/blog-posts.js'
 import { projects } from '../src/data/projects.js'
@@ -16,6 +16,55 @@ import { INSTALL_CMD, GITHUB_REPO_URL, GITHUB_ORG_URL } from '../src/constants.j
 
 const distDir = join(import.meta.dirname, '..', 'dist')
 const template = readFileSync(join(distDir, 'index.html'), 'utf-8')
+
+// --- Per-route modulepreload ---
+// App.tsx lazy-loads each page. Preloading the route's page chunk (and the
+// shared chunks it imports) lets the browser fetch it in parallel with the
+// entry bundle instead of after it.
+
+interface ManifestChunk {
+  file: string
+  isEntry?: boolean
+  imports?: string[]
+}
+
+// Page component source for each lazily loaded route (keys match App.tsx).
+const PAGE_SOURCES = {
+  home: 'src/pages/HomePage.tsx',
+  blog: 'src/pages/BlogPage.tsx',
+  reader: 'src/pages/ReaderPage.tsx',
+  privacy: 'src/pages/PrivacyPage.tsx',
+  'getting-started:lattice': 'src/pages/GettingStartedPage.tsx',
+} as const
+
+const manifestPath = join(distDir, '.vite', 'manifest.json')
+const manifest: Record<string, ManifestChunk> = JSON.parse(readFileSync(manifestPath, 'utf-8'))
+// The manifest is a build artifact only; keep it out of the deployed site.
+rmSync(join(distDir, '.vite'), { recursive: true, force: true })
+
+function pageSourceFor(path: string): string {
+  if (path === '/') return PAGE_SOURCES.home
+  if (path === '/blog' || path.startsWith('/blog/')) return PAGE_SOURCES.blog
+  if (path === '/reader') return PAGE_SOURCES.reader
+  if (path === '/privacy') return PAGE_SOURCES.privacy
+  const product = getProductByGettingStartedPath(path)
+  const source = product && PAGE_SOURCES[`getting-started:${product.slug}` as keyof typeof PAGE_SOURCES]
+  if (source) return source
+  throw new Error(`prerender: no page source for ${path}; add it to PAGE_SOURCES`)
+}
+
+function modulePreloadTags(path: string): string {
+  const files = new Set<string>()
+  const visit = (key: string) => {
+    const chunk = manifest[key]
+    if (!chunk) throw new Error(`prerender: ${key} missing from Vite manifest`)
+    if (chunk.isEntry || files.has(chunk.file)) return
+    files.add(chunk.file)
+    chunk.imports?.forEach(visit)
+  }
+  visit(pageSourceFor(path))
+  return [...files].map((file) => `<link rel="modulepreload" crossorigin href="/${file}" />`).join('\n    ')
+}
 
 interface RouteMeta {
   path: string
@@ -99,6 +148,7 @@ for (const route of routes) {
     `<meta name="twitter:description" content="${escapeAttr(route.description)}" />`,
     `<meta name="twitter:image" content="${ogImageUrl}" />`,
     `<link rel="canonical" href="${route.canonical}" />`,
+    modulePreloadTags(route.path),
   ].join('\n    ')
 
   // Inject JSON-LD structured data

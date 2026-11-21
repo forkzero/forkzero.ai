@@ -1,17 +1,31 @@
-import type { ComponentType } from 'react'
-import { HomePage } from './pages/HomePage'
-import { ReaderPage } from './pages/ReaderPage'
-import { BlogPage } from './pages/BlogPage'
-import { GettingStartedPage } from './pages/GettingStartedPage'
-import { DesignSystemPage } from './pages/DesignSystemPage'
-import { PrivacyPage } from './pages/PrivacyPage'
+import { lazy, Suspense, type ComponentType, type LazyExoticComponent } from 'react'
 import { getProductByGettingStartedPath } from './data/products'
+
+// Each page is its own chunk, loaded on demand. scripts/prerender.ts adds
+// <link rel="modulepreload"> for the right chunk to each pre-rendered page
+// (see PAGE_SOURCES there), so the chunk downloads alongside the entry bundle.
+/** Dynamic import for each page; App.test.ts checks each resolves to a component. */
+export const pageLoaders = {
+  home: () => import('./pages/HomePage').then((m) => ({ default: m.HomePage })),
+  reader: () => import('./pages/ReaderPage').then((m) => ({ default: m.ReaderPage })),
+  blog: () => import('./pages/BlogPage').then((m) => ({ default: m.BlogPage })),
+  gettingStarted: () => import('./pages/GettingStartedPage').then((m) => ({ default: m.GettingStartedPage })),
+  designSystem: () => import('./pages/DesignSystemPage').then((m) => ({ default: m.DesignSystemPage })),
+  privacy: () => import('./pages/PrivacyPage').then((m) => ({ default: m.PrivacyPage })),
+}
+
+const HomePage = lazy(pageLoaders.home)
+const ReaderPage = lazy(pageLoaders.reader)
+const BlogPage = lazy(pageLoaders.blog)
+const GettingStartedPage = lazy(pageLoaders.gettingStarted)
+const DesignSystemPage = lazy(pageLoaders.designSystem)
+const PrivacyPage = lazy(pageLoaders.privacy)
 
 /**
  * Getting Started page component for each product slug in src/data/products.ts.
  * Every registered product needs an entry here (enforced by App.test.ts).
  */
-export const gettingStartedPages: Record<string, ComponentType> = {
+export const gettingStartedPages: Record<string, LazyExoticComponent<ComponentType>> = {
   lattice: GettingStartedPage,
 }
 
@@ -32,14 +46,24 @@ export function parseRoute(path: string): { page: PageRoute; slug?: string } {
 }
 
 export function App() {
+  // Pre-rendered pages have an empty #root until JS runs, so a null fallback
+  // matches what visitors already see while the page chunk loads.
+  return (
+    <Suspense fallback={null}>
+      <Page />
+    </Suspense>
+  )
+}
+
+function Page() {
   const route = parseRoute(window.location.pathname)
 
   switch (route.page) {
     case 'reader':
       return <ReaderPage />
     case 'getting-started': {
-      const Page = route.slug ? gettingStartedPages[route.slug] : undefined
-      return Page ? <Page /> : <HomePage />
+      const ProductPage = route.slug ? gettingStartedPages[route.slug] : undefined
+      return ProductPage ? <ProductPage /> : <HomePage />
     }
     case 'design-system':
       return <DesignSystemPage />
