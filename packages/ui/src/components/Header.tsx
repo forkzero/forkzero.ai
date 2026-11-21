@@ -27,6 +27,10 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
+    // wrap the nav under the logo on narrow screens instead of forcing the
+    // whole document wider than the viewport (which clipped every page on mobile)
+    flexWrap: 'wrap' as const,
+    rowGap: '0.5rem',
     position: 'sticky' as const,
     top: 0,
     zIndex: 100,
@@ -48,6 +52,8 @@ const styles = {
     display: 'flex',
     gap: '1.5rem',
     alignItems: 'center',
+    flexWrap: 'wrap' as const,
+    rowGap: '0.5rem',
   },
   navLink: {
     color: 'rgba(255,255,255,0.9)',

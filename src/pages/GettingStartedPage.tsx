@@ -288,6 +288,7 @@ const s: Record<string, React.CSSProperties> = {
     fontFamily: fonts.mono,
     margin: 0,
     lineHeight: 1.5,
+    overflowX: 'auto',
   },
 
   // Steps
