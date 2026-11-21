@@ -96,6 +96,10 @@ jobs:
 
       - name: Install lattice
         run: curl -fsSL https://raw.githubusercontent.com/forkzero/lattice/main/install.sh | sh
+        env:
+          # authenticates the installer's latest-release lookup (unauthenticated
+          # api.github.com calls from shared runners hit the 60/hour limit)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run lattice lint
         run: lattice lint
@@ -131,6 +135,10 @@ jobs:
 
       - name: Install lattice
         run: curl -fsSL https://raw.githubusercontent.com/forkzero/lattice/main/install.sh | sh
+        env:
+          # authenticates the installer's latest-release lookup (unauthenticated
+          # api.github.com calls from shared runners hit the 60/hour limit)
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Export lattice data
         run: lattice export --format pages --output _site
