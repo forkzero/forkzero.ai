@@ -50,6 +50,33 @@ jobs:
         run: |
           node scripts/test-summary.mjs --md >> $GITHUB_STEP_SUMMARY || true
 
+  infra:
+    name: Infrastructure (CDK) typecheck and tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: infra/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: infra
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+        working-directory: infra
+
+      - name: Test stack and health checks
+        run: npm test
+        working-directory: infra
+
   validate-lattice:
     name: Validate Lattice Structure
     runs-on: ubuntu-latest

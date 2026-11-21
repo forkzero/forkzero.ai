@@ -1,15 +1,38 @@
 # Monitoring and alerts
 
-All of this is created by `infra/setup-analytics.sh` (idempotent; re-run it
-after changing anything under `infra/analytics-report/` or the CloudFront
-files listed below).
+All of this is the CDK stack `ForkzeroAi-Monitoring`
+(`infra/lib/monitoring-stack.ts`; Lambda code in `infra/analytics-report/`).
+
+```bash
+make infra-diff   REPORT_EMAIL=you@example.com   # preview changes
+make infra-deploy REPORT_EMAIL=you@example.com   # typecheck, test, deploy
+```
+
+`ALERT_EMAIL` is optional (defaults to `REPORT_EMAIL`). Emails are passed at
+deploy time so they stay out of the repo; the stack refuses to synthesize
+without them, so a deploy can't silently drop the subscriptions. Redeploy after
+changing anything under `infra/analytics-report/`, or
+`infra/cloudfront-url-rewrite.js` / `infra/cloudfront-site-paths.json` (the
+monitor's drift check bundles them). New email subscriptions must be confirmed
+from the inbox.
+
+CloudFront, S3 hosting and the subscribe endpoint are still managed by the
+`infra/setup-*.sh` scripts until they move into CDK.
+
+**One-time migration (Nov 2026):** the daily report used to be hand-made
+resources (`forkzero-daily-analytics` Lambda, topic, role and rule). After the
+first deploy, confirm both new subscriptions, wait for the first
+`forkzero-daily-report` email, then remove the old resources with
+`./infra/scripts/remove-legacy-analytics.sh` (it refuses to run until the stack
+is deployed and the new subscription is confirmed). Until then you get two
+daily emails.
 
 ## What runs
 
 | What | When | Where it reports |
 |---|---|---|
-| **Monitor** (`forkzero-monitor` Lambda, `monitor.handler`) | Every 5 minutes | CloudWatch metrics `Forkzero/Monitor` → alarms → `forkzero-alerts` email |
-| **Daily report** (`forkzero-daily-analytics`, `index.handler`) | 10:00 UTC | `forkzero-daily-analytics` email; opens with the same health checks |
+| **Monitor** (`forkzero-monitor` Lambda) | Every 5 minutes | CloudWatch metrics `Forkzero/Monitor` → alarms → `forkzero-alerts` email |
+| **Daily report** (`forkzero-daily-report` Lambda) | 10:00 UTC | `forkzero-daily-report` email; opens with the same health checks |
 | **Deploy / CI failure alert** (`.github/workflows/deploy.yml`) | When a deploy, its smoke tests, or CI on `main` fails | `forkzero-alerts` email |
 
 The monitor checks (`infra/analytics-report/checks.mjs`):
@@ -35,6 +58,7 @@ report excludes from traffic numbers.
 |---|---|---|
 | `forkzero-health-checks-failing` | Any check failed in 2 of the last 3 runs (~10 min) | Checks pass again (you get an OK email) |
 | `forkzero-monitor-not-running` | No monitor run recorded for 15 minutes | The monitor reports again |
+| `forkzero-daily-report-failed` | The daily report Lambda errored (so no report email was sent) | After an hour without errors |
 
 ## When an alert arrives
 
@@ -53,11 +77,14 @@ report excludes from traffic numbers.
 5. **Deploy failed:** the alert links the run. The site may be partly updated;
    fix and push, or re-run the last good deploy.
 6. **Monitor not running:** look for Lambda errors in its log group and confirm
-   the `forkzero-monitor-5min` EventBridge rule is enabled.
+   its EventBridge schedule (in the `ForkzeroAi-Monitoring` stack) is enabled.
+7. **Daily report failed:** `aws logs tail /aws/lambda/forkzero-daily-report --since 1d`;
+   usually an Athena or permissions error. Re-run with
+   `aws lambda invoke --function-name forkzero-daily-report /tmp/r.json`.
 
 ## Paging
 
 Alerts go to the `forkzero-alerts` SNS topic, which emails `ALERT_EMAIL`. To
-page instead, add a subscription to that topic (no code changes): for example a
-PagerDuty CloudWatch integration (HTTPS endpoint), or a small forwarder Lambda
-for Pushover or ntfy.
+page instead, add a subscription to that topic in `monitoring-stack.ts`: for
+example a PagerDuty CloudWatch integration (`subs.UrlSubscription` to its
+HTTPS endpoint), or a small forwarder Lambda for Pushover or ntfy.

@@ -1,0 +1,24 @@
+{
+  "name": "@forkzero/forkzero-ai-infra",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "synth": "cdk synth",
+    "diff": "cdk diff",
+    "deploy": "cdk deploy"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "2.243.0",
+    "constructs": "10.5.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "aws-cdk": "2.1111.0",
+    "tsx": "4.21.0",
+    "typescript": "5.9.3",
+    "vitest": "3.2.6"
+  }
+}

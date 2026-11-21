@@ -1,0 +1,11 @@
+{
+  "app": "npx tsx bin/forkzero-ai-infra.ts",
+  "watch": {
+    "include": ["bin/**", "lib/**", "analytics-report/**"],
+    "exclude": ["node_modules", "cdk.out"]
+  },
+  "context": {
+    "@aws-cdk/core:checkSecretUsage": true,
+    "@aws-cdk/core:target-partitions": ["aws"]
+  }
+}

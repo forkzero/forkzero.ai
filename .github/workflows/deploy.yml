@@ -78,7 +78,7 @@ jobs:
         run: |
           node scripts/test-summary.mjs --md >> $GITHUB_STEP_SUMMARY || true
 
-      # Email the forkzero-alerts topic (infra/setup-analytics.sh) so a failed
+      # Email the forkzero-alerts topic (infra/lib/monitoring-stack.ts) so a failed
       # deploy or failed smoke test can't go unnoticed. Values come in through
       # env, never interpolated into the script.
       - name: Alert on failure
@@ -96,7 +96,7 @@ jobs:
             "$COMMIT_SHA" "$(printf '%s' "$COMMIT_MSG" | head -1)" "$RUN_URL" > alert.txt
           aws sns publish --topic-arn "arn:aws:sns:us-east-1:${ACCOUNT}:forkzero-alerts" \
             --subject "[ALERT] forkzero.ai deploy failed" --message file://alert.txt \
-            || echo "::warning::Could not publish alert (has infra/setup-analytics.sh been run?)"
+            || echo "::warning::Could not publish alert (is the ForkzeroAi-Monitoring stack deployed?)"
 
   # CI failed on main, so nothing was deployed: the live site is unchanged but
   # main is not releasable until it is fixed.
@@ -119,5 +119,5 @@ jobs:
             "$COMMIT_SHA" "$(printf '%s' "$COMMIT_MSG" | head -1)" "$RUN_URL" > alert.txt
           aws sns publish --topic-arn "arn:aws:sns:us-east-1:${ACCOUNT}:forkzero-alerts" \
             --subject "[ALERT] forkzero.ai CI failed on main" --message file://alert.txt \
-            || echo "::warning::Could not publish alert (has infra/setup-analytics.sh been run?)"
+            || echo "::warning::Could not publish alert (is the ForkzeroAi-Monitoring stack deployed?)"
 

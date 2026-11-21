@@ -5,11 +5,12 @@
  * two CloudWatch metrics in the Forkzero/Monitor namespace:
  *   FailingChecks — number of failing checks (alarm: >= 1 twice in a row)
  *   ChecksRun     — 1 per run (alarm: none for 15 minutes = monitor stopped)
- * Both alarms notify the forkzero-alerts SNS topic (see setup-analytics.sh).
+ * Both alarms notify the forkzero-alerts SNS topic (infra/lib/monitoring-stack.ts).
  *
- * The deploy package also contains cloudfront-url-rewrite.js and
- * cloudfront-site-paths.json, copied from infra/ by setup-analytics.sh, which
- * the drift checks compare against the live distribution.
+ * The drift checks compare the live distribution against
+ * infra/cloudfront-url-rewrite.js and infra/cloudfront-site-paths.json. The
+ * Lambda asset (infra/lib/monitoring-stack.ts) keeps the repo layout, so they
+ * are read from the parent directory both locally and in Lambda.
  *
  * Environment variables:
  *   DISTRIBUTION_ID   — CloudFront distribution for forkzero.ai
@@ -28,7 +29,7 @@ const cloudwatch = new CloudWatchClient();
 const FUNCTION_NAME = "forkzero-url-rewrite";
 
 function readPackaged(file) {
-  return readFileSync(new URL(`./${file}`, import.meta.url), "utf-8");
+  return readFileSync(new URL(`../${file}`, import.meta.url), "utf-8");
 }
 
 /** All checks: what visitors see, plus live CloudFront vs the repo. */

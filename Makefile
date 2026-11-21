@@ -1,4 +1,4 @@
-.PHONY: ci install format format-check lint typecheck build build-ui test smoke-test test-all clean pre-commit pre-push lattice-fresh help
+.PHONY: ci install format format-check lint typecheck build build-ui test smoke-test test-all clean pre-commit pre-push lattice-fresh help infra-install infra-test infra-diff infra-deploy infra-check-env
 
 # Pre-commit gate: fast checks (format check + lint + lattice health strict)
 pre-commit: format-check lint
@@ -25,7 +25,7 @@ pre-push: pre-commit lattice-fresh typecheck test build
 ci: install format lint typecheck build test
 	@echo "CI passed."
 
-install:
+install: infra-install
 	npm ci
 
 # Auto-fix formatting
@@ -48,8 +48,33 @@ typecheck: build-ui
 build: build-ui
 	npm run build
 
-test:
+test: infra-test
 	npm test
+
+# --- Infrastructure (CDK app in infra/; see docs/MONITORING.md) ---
+
+infra-install:
+	cd infra && npm ci
+
+# Typecheck the CDK app, then test the stack and the Lambda checks
+infra-test:
+	@test -d infra/node_modules || (cd infra && npm ci)
+	cd infra && npx tsc --noEmit && npm test
+
+# Values the stack needs at deploy time. Emails stay out of the repo; the
+# distribution is looked up by its forkzero.ai alias.
+INFRA_ENV = DISTRIBUTION_ID=$$(aws cloudfront list-distributions \
+	  --query "DistributionList.Items[?Aliases.Items[?@=='forkzero.ai']].Id | [0]" --output text)
+
+infra-diff: infra-check-env
+	cd infra && $(INFRA_ENV) npx cdk diff
+
+infra-deploy: infra-check-env infra-test
+	cd infra && $(INFRA_ENV) npx cdk deploy
+
+infra-check-env:
+	@test -n "$(REPORT_EMAIL)" || (echo "Set REPORT_EMAIL (and optionally ALERT_EMAIL), e.g. make infra-deploy REPORT_EMAIL=you@example.com"; exit 1)
+	@test -d infra/node_modules || (cd infra && npm ci)
 
 # Smoke tests against live site (run after deploy)
 smoke-test:

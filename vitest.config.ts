@@ -2,7 +2,8 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
-    exclude: ['**/node_modules/**', '**/smoke.test.*'],
+    // infra/ is its own package with its own tests (make infra-test)
+    exclude: ['**/node_modules/**', '**/smoke.test.*', 'infra/**'],
     reporters: ['default', ['junit', { outputFile: 'test-results/unit.xml' }]],
     coverage: {
       provider: 'v8',

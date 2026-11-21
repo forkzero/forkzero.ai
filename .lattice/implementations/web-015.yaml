@@ -1,9 +1,9 @@
 id: IMP-WEB-015
 type: implementation
-title: 5-minute monitor Lambda, CloudWatch alarms, deploy/CI alerts, health section in daily email
-body: 'infra/analytics-report/checks.mjs: route checks (sitemap pages, page assets, installer, redirects, 404 page, robots/llms, subscribe API, TLS) and CloudFront drift checks (live function vs infra/cloudfront-url-rewrite.js; behaviors from infra/cloudfront-site-paths.json ordered before lattice/*, on the site origin, with the function; default behavior function and headers policy; 404 error page), unit-tested in checks.test.mjs with a fake site. monitor.mjs runs them every 5 minutes and publishes Forkzero/Monitor FailingChecks and ChecksRun; alarms forkzero-health-checks-failing (2 of 3 runs) and forkzero-monitor-not-running (15 min) notify the forkzero-alerts topic. index.mjs opens the daily email with the health section, uses an [ALERT] subject on failure, and excludes the forkzero-monitor user agent. deploy.yml publishes to forkzero-alerts when a deploy or smoke test fails and when CI fails on main. setup-analytics.sh builds the shared package and creates all of it idempotently; setup-cloudfront.sh reads the shared site-paths file. Runbook in docs/MONITORING.md. Verified against the live site and live CloudFront config (all route and drift checks pass).'
+title: 'CDK monitoring stack: 5-minute monitor, alarms, deploy/CI alerts, health section in daily email'
+body: 'CDK stack ForkzeroAi-Monitoring (infra/lib/monitoring-stack.ts, app infra/bin/forkzero-ai-infra.ts) replaces the hand-made analytics resources and the old setup-analytics.sh. It creates topics forkzero-daily-report and forkzero-alerts (email subscriptions passed at deploy time), Lambdas forkzero-daily-report and forkzero-monitor from one asset that keeps the infra/ layout (analytics-report/*.mjs plus cloudfront-url-rewrite.js and cloudfront-site-paths.json for the drift check), schedules (10:00 UTC daily, every 5 minutes), alarms forkzero-health-checks-failing (2 of 3 runs), forkzero-monitor-not-running (15 min) and forkzero-daily-report-failed, all notifying forkzero-alerts on alarm and recovery, scoped IAM (Athena primary workgroup, Glue forkzero.cloudfront_logs, logs/results buckets, CloudFront reads, PutMetricData in Forkzero/Monitor), and sns:Publish on forkzero-alerts for the GitHub Actions deploy user. checks.mjs holds the route and drift checks (23 unit tests); test/monitoring-stack.test.ts asserts the stack and the exact asset contents. deploy.yml alerts on failed deploys/smoke tests and failed CI on main. make infra-diff / infra-deploy supply the distribution ID and require REPORT_EMAIL; CI runs the infra typecheck and tests. infra/scripts/remove-legacy-analytics.sh removes the old resources after the new email is confirmed. Runbook: docs/MONITORING.md.'
 status: active
-version: 1.0.0
+version: 1.0.1
 created_at: 2026-11-21T15:42:28.578477+00:00
 created_by: agent:claude-opus-5-5
 requested_by: George Moon <george.moon@gmail.com>
@@ -14,14 +14,19 @@ meta:
   - path: infra/analytics-report/checks.test.mjs
   - path: infra/analytics-report/monitor.mjs
   - path: infra/analytics-report/index.mjs
-  - path: infra/setup-analytics.sh
+  - path: infra/lib/monitoring-stack.ts
+  - path: infra/bin/forkzero-ai-infra.ts
+  - path: infra/test/monitoring-stack.test.ts
+  - path: infra/scripts/remove-legacy-analytics.sh
   - path: infra/setup-cloudfront.sh
   - path: infra/cloudfront-site-paths.json
   - path: .github/workflows/deploy.yml
+  - path: .github/workflows/ci.yml
+  - path: Makefile
   - path: docs/MONITORING.md
   - path: docs/ADDING_A_PRODUCT.md
   test_command: make pre-push
-  verified_at: 2026-11-21T15:42:28.588822+00:00
+  verified_at: 2026-11-21T16:04:02.098208+00:00
 edges:
   satisfies:
   - target: REQ-WEB-015
