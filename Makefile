@@ -69,8 +69,10 @@ INFRA_ENV = DISTRIBUTION_ID=$$(aws cloudfront list-distributions \
 infra-diff: infra-check-env
 	cd infra && $(INFRA_ENV) npx cdk diff
 
+# Deploys both stacks. CI (infra.yml) deploys only ForkzeroAi-Monitoring;
+# ForkzeroAi-CiBootstrap (the CI role) changes only through this target.
 infra-deploy: infra-check-env infra-test
-	cd infra && $(INFRA_ENV) npx cdk deploy
+	cd infra && $(INFRA_ENV) npx cdk deploy --all
 
 infra-check-env:
 	@test -n "$(REPORT_EMAIL)" || (echo "Set REPORT_EMAIL (and optionally ALERT_EMAIL), e.g. make infra-deploy REPORT_EMAIL=you@example.com"; exit 1)

@@ -1,0 +1,23 @@
+id: REQ-WEB-016
+type: requirement
+title: Infrastructure changes deploy from CI with a reviewed diff
+body: Changes to the forkzero.ai CDK app shall deploy from GitHub Actions on push to main, so committed infrastructure changes cannot sit unapplied. The workflow shall test, then show a cdk diff produced with read-only credentials, and deploy only after reviewer approval on a protected GitHub environment. Credentials shall come from GitHub OIDC (no long-lived keys); the deploy role shall be trusted only for that environment and the diff role only for main, both with exact subject matches. The roles themselves shall change only through a local deploy. A failed infrastructure deploy shall alert the forkzero-alerts topic.
+status: active
+version: 1.0.0
+created_at: 2026-11-21T16:36:50.099091+00:00
+created_by: agent:claude-opus-5-5
+requested_by: George Moon <george.moon@gmail.com>
+priority: P1
+category: WEB
+tags:
+- infrastructure
+- ci
+- security
+- cdk
+edges:
+  derives_from:
+  - target: THX-AI-FIRST-TOOLING
+    version: 1.0.0
+  depends_on:
+  - target: REQ-WEB-015
+    version: 1.0.0

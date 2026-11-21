@@ -3,6 +3,10 @@
 All of this is the CDK stack `ForkzeroAi-Monitoring`
 (`infra/lib/monitoring-stack.ts`; Lambda code in `infra/analytics-report/`).
 
+Changes under `infra/` deploy through `.github/workflows/infra.yml` on push to
+`main` (diff in the run summary, then deploy after approval on the `infra`
+environment); see `infra/README.md`. Locally:
+
 ```bash
 make infra-diff   REPORT_EMAIL=you@example.com   # preview changes
 make infra-deploy REPORT_EMAIL=you@example.com   # typecheck, test, deploy
