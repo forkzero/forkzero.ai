@@ -1,0 +1,15 @@
+id: IMP-WEB-011
+type: implementation
+title: Homepage copy rewrite with pain-first messaging
+body: 'Rewrote Hero.tsx: headline to ''Your agent writes the code. Who remembers why?'', subtitle trimmed from 55 to 30 words, brand subtitle to ''by Forkzero'', CTA to ''Install Lattice''. Rewrote HomePage.tsx: added Problem section, added BeforeAfter comparison table, added section heading to value props, trimmed all card bodies, rewrote Who Its For card 1, cut card 3, simplified How It Works intro, moved email capture up, removed What Makes It Different section, updated meta tags.'
+status: active
+version: 1.0.0
+created_at: 2026-03-21T18:09:38.504857+00:00
+created_by: agent:claude-2026-03-21
+requested_by: George Moon <george.moon@gmail.com>
+meta: {}
+edges:
+  satisfies:
+  - target: REQ-WEB-011
+    version: 1.0.0
+    rationale: tests pass

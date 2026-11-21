@@ -9,4 +9,8 @@ created_by: agent:claude-2026-02-08
 requested_by: George Moon <george.moon@gmail.com>
 priority: P0
 category: WEB
-edges: {}
+edges:
+  derives_from:
+  - target: THX-AI-FIRST-TOOLING
+    version: 1.0.0
+    rationale: Hosted lattice reader demonstrates the knowledge graph tool to potential users

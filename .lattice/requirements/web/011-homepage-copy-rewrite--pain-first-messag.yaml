@@ -1,0 +1,23 @@
+id: REQ-WEB-011
+type: requirement
+title: 'Homepage copy rewrite: pain-first messaging and conversion flow'
+body: 'Rewrite homepage copy using pain-first messaging pattern. Add Problem section after hero, Before/After comparison table, trim value prop cards to 1-2 sentences. Restructure page flow: Hero, Problem, How It Works, Value Props, Before/After, Who Its For, Email Capture, Featured Article, Open Source. Update hero headline, subtitle, CTA, and brand subtitle. Update all meta tags to be product-focused.'
+status: active
+version: 1.0.0
+created_at: 2026-03-21T18:09:17.187245+00:00
+created_by: agent:claude-2026-03-21
+requested_by: George Moon <george.moon@gmail.com>
+priority: P1
+category: WEB
+tags:
+- copy
+- marketing
+- conversion
+edges:
+  supported_by:
+  - target: SRC-COPY-REWRITE-001
+    version: 1.1.1
+    rationale: Copy analysis identified that homepage copy was feature-focused rather than pain-focused, and not leveraging Lattice's strongest differentiators
+  derives_from:
+  - target: THX-AI-FIRST-TOOLING
+    version: 1.0.0

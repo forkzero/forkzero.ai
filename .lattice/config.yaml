@@ -2,3 +2,4 @@
 version: "1.0"
 project: "forkzero.ai"
 description: "Forkzero - AI-first developer tooling"
+schema_version: "0.2.0"
