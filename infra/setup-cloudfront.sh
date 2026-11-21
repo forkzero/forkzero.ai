@@ -150,11 +150,21 @@ trap 'rm -rf "${TMPDIR}"' EXIT
 aws cloudfront get-distribution-config --id "${DIST_ID}" > "${TMPDIR}/config.json"
 DIST_ETAG=$(jq -r '.ETag' "${TMPDIR}/config.json")
 
+# Site pages that live under a path another cache behavior claims. The
+# `lattice/*` behavior routes to the installer bucket (forkzero-lattice-prod)
+# with no URL rewrite, so product Getting Started pages need their own
+# behavior pointing at the site bucket. Keep in sync with gettingStartedPath
+# in src/data/products.ts.
+SITE_PATHS_UNDER_OTHER_BEHAVIORS='["lattice/getting-started*"]'
+
 # Build updated config with jq:
 #   - Set function association on default cache behavior
 #   - Set response headers policy on default cache behavior
+#   - Give each SITE_PATHS_UNDER_OTHER_BEHAVIORS pattern a copy of the default
+#     behavior, placed first so it takes precedence (replaces earlier copies)
 #   - Set custom error responses (403 → SPA fallback, 404 → /404.html)
-jq --arg fn_arn "${FUNCTION_ARN}" --arg policy_id "${POLICY_ID}" '
+jq --arg fn_arn "${FUNCTION_ARN}" --arg policy_id "${POLICY_ID}" \
+   --argjson site_paths "${SITE_PATHS_UNDER_OTHER_BEHAVIORS}" '
   .DistributionConfig
   | .DefaultCacheBehavior.FunctionAssociations = {
       "Quantity": 1,
@@ -164,6 +174,12 @@ jq --arg fn_arn "${FUNCTION_ARN}" --arg policy_id "${POLICY_ID}" '
       }]
     }
   | .DefaultCacheBehavior.ResponseHeadersPolicyId = $policy_id
+  | .DefaultCacheBehavior as $default
+  | ((.CacheBehaviors.Items // []) | map(select(.PathPattern as $p | $site_paths | index($p) | not))) as $others
+  | .CacheBehaviors = {
+      "Quantity": (($site_paths | length) + ($others | length)),
+      "Items": ([$site_paths[] | $default + {"PathPattern": .}] + $others)
+    }
   | .CustomErrorResponses = {
       "Quantity": 2,
       "Items": [
