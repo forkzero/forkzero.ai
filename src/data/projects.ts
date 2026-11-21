@@ -1,4 +1,10 @@
-import { GITHUB_REPO_URL, LATTICE_DASHBOARD_URL } from '../constants'
+import { products, type Product } from './products'
+
+/**
+ * Homepage "Open Source" grid. Products flagged `showOnHomepage` in
+ * products.ts come first (the first entry is the featured card); other
+ * open-source projects without a forkzero.ai product page follow.
+ */
 
 export interface Project {
   name: string
@@ -11,18 +17,20 @@ export interface Project {
   readerUrl?: string
 }
 
-export const projects: Project[] = [
-  {
-    name: 'Lattice',
-    tagline: 'Knowledge coordination protocol',
-    description:
-      'The knowledge coordination protocol. Four layers — sources, theses, requirements, implementations — connected by version-bound edges with automatic drift detection. CLI, MCP server, and Claude Code integration built in.',
-    status: 'Active',
-    statusColor: '#10b981',
-    tech: ['Rust', 'MCP', 'YAML'],
-    url: GITHUB_REPO_URL,
-    readerUrl: LATTICE_DASHBOARD_URL,
-  },
+function productToProject(p: Product): Project {
+  return {
+    name: p.name,
+    tagline: p.tagline,
+    description: p.description,
+    status: p.status,
+    statusColor: p.statusColor,
+    tech: p.tech ?? [],
+    url: p.repoUrl ?? `https://forkzero.ai${p.gettingStartedPath}`,
+    readerUrl: p.readerUrl,
+  }
+}
+
+const otherProjects: Project[] = [
   {
     name: 'Team of Rivals',
     tagline: 'Multi-agent debate system',
@@ -44,3 +52,5 @@ export const projects: Project[] = [
     url: 'https://github.com/forkzero/s3proxy',
   },
 ]
+
+export const projects: Project[] = [...products.filter((p) => p.showOnHomepage).map(productToProject), ...otherProjects]

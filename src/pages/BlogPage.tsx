@@ -15,18 +15,15 @@ import { BlogComments } from '../components/BlogComments'
 import { EmailCapture } from '../components/EmailCapture'
 import { LatticeFlowDiagram } from '../components/LatticeFlowDiagram'
 import { blogPosts, type BlogPost } from '../data/blog-posts'
+import { getProduct } from '../data/products'
 
 const NAV_LINKS = [{ label: 'Blog', href: '/blog' }]
 
-// --- Product tag registry ---
-
-const PRODUCT_LABELS: Record<string, { label: string; color: string }> = {
-  lattice: { label: 'Lattice', color: colors.accentBlue },
-}
+// --- Product tag pill (derives from src/data/products.ts) ---
 
 function ProductPill({ product }: { product?: string }) {
   if (!product) return null
-  const info = PRODUCT_LABELS[product]
+  const info = getProduct(product)
   if (!info) return null
   return (
     <span
@@ -44,7 +41,7 @@ function ProductPill({ product }: { product?: string }) {
         lineHeight: 1.4,
       }}
     >
-      {info.label}
+      {info.name}
     </span>
   )
 }

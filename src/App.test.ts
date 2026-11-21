@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { parseRoute } from './App'
+import { parseRoute, gettingStartedPages } from './App'
+import { products } from './data/products'
 
 describe('parseRoute', () => {
   it('returns home for /', () => {
@@ -20,11 +21,11 @@ describe('parseRoute', () => {
   })
 
   it('returns getting-started for /lattice/getting-started', () => {
-    expect(parseRoute('/lattice/getting-started')).toEqual({ page: 'getting-started' })
+    expect(parseRoute('/lattice/getting-started')).toEqual({ page: 'getting-started', slug: 'lattice' })
   })
 
   it('returns getting-started for /lattice/getting-started/ with trailing slash', () => {
-    expect(parseRoute('/lattice/getting-started/')).toEqual({ page: 'getting-started' })
+    expect(parseRoute('/lattice/getting-started/')).toEqual({ page: 'getting-started', slug: 'lattice' })
   })
 
   it('returns home for the old /getting-started path (CloudFront 301s this)', () => {
@@ -69,5 +70,18 @@ describe('parseRoute', () => {
       page: 'blog-post',
       slug: 'context-engineering-knowledge-layer',
     })
+  })
+})
+
+describe('product registry routing', () => {
+  it.each(products.map((p) => [p.slug, p] as const))('routes %s to its Getting Started page', (slug, product) => {
+    expect(parseRoute(product.gettingStartedPath)).toEqual({ page: 'getting-started', slug })
+    expect(parseRoute(`${product.gettingStartedPath}/`)).toEqual({ page: 'getting-started', slug })
+  })
+
+  it('has a Getting Started page component for every registered product', () => {
+    for (const product of products) {
+      expect(gettingStartedPages[product.slug], `missing page for ${product.slug}`).toBeDefined()
+    }
   })
 })

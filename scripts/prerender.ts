@@ -11,6 +11,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs'
 import { join } from 'path'
 import { blogPosts } from '../src/data/blog-posts.js'
 import { projects } from '../src/data/projects.js'
+import { products, getProductByGettingStartedPath } from '../src/data/products.js'
 import { INSTALL_CMD, GITHUB_REPO_URL, GITHUB_ORG_URL } from '../src/constants.js'
 
 const distDir = join(import.meta.dirname, '..', 'dist')
@@ -38,12 +39,12 @@ const routes: RouteMeta[] = [
     canonical: `https://forkzero.ai/blog/${post.slug}`,
     ogImage: post.ogImage,
   })),
-  {
-    path: '/lattice/getting-started',
-    title: 'Get Started with Lattice — Forkzero',
-    description: 'Install Lattice and start building a knowledge-coordinated codebase in under five minutes.',
-    canonical: 'https://forkzero.ai/lattice/getting-started',
-  },
+  ...products.map((product) => ({
+    path: product.gettingStartedPath,
+    title: `Get Started with ${product.name} — Forkzero`,
+    description: product.gettingStartedDescription,
+    canonical: `https://forkzero.ai${product.gettingStartedPath}`,
+  })),
   {
     path: '/reader',
     title: 'Lattice Dashboard — Forkzero',
@@ -151,7 +152,7 @@ const today = new Date().toISOString().split('T')[0]
 const latestPostDate = blogPosts.length > 0 ? blogPosts[0].date : today
 const sitemapUrls: { loc: string; lastmod: string }[] = [
   { loc: 'https://forkzero.ai/', lastmod: today },
-  { loc: 'https://forkzero.ai/lattice/getting-started', lastmod: today },
+  ...products.map((product) => ({ loc: `https://forkzero.ai${product.gettingStartedPath}`, lastmod: today })),
   { loc: 'https://forkzero.ai/blog', lastmod: latestPostDate },
   ...blogPosts.map((post) => ({
     loc: `https://forkzero.ai/blog/${post.slug}`,
@@ -198,7 +199,14 @@ function buildNoscript(route: RouteMeta): string | null {
     )
   }
 
-  if (route.path === '/lattice/getting-started') {
+  const gettingStartedProduct = getProductByGettingStartedPath(route.path)
+  if (gettingStartedProduct && gettingStartedProduct.slug !== 'lattice') {
+    return wrap(
+      `<h1>Getting Started with ${esc(gettingStartedProduct.name)}</h1><p>${esc(gettingStartedProduct.gettingStartedDescription)}</p>`,
+    )
+  }
+
+  if (gettingStartedProduct?.slug === 'lattice') {
     return wrap(
       [
         `<h1>Getting Started with Lattice</h1>`,
@@ -357,7 +365,8 @@ function buildJsonLd(route: RouteMeta): string {
     }
   }
 
-  if (route.path === '/lattice/getting-started') {
+  const gettingStartedProduct = getProductByGettingStartedPath(route.path)
+  if (gettingStartedProduct) {
     schemas.push({
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -374,7 +383,7 @@ function buildJsonLd(route: RouteMeta): string {
           '@type': 'ListItem',
           position: 2,
           name: 'Getting Started',
-          item: 'https://forkzero.ai/lattice/getting-started',
+          item: route.canonical,
         },
       ],
     })
