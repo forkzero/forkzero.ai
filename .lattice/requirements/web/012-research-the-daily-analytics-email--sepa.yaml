@@ -25,6 +25,10 @@ tags:
 - research
 - cloudfront
 edges:
+  supported_by:
+  - target: SRC-ANALYTICS-RESEARCH-001
+    version: 1.0.0
+    rationale: Research findings and recommendation requested by this requirement, pending review
   derives_from:
   - target: THX-AI-FIRST-TOOLING
     version: 1.0.0

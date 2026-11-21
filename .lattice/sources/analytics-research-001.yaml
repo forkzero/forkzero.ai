@@ -1,0 +1,23 @@
+id: SRC-ANALYTICS-RESEARCH-001
+type: source
+title: 'Daily analytics email research: scanner noise vs real traffic (2026-11-21)'
+body: |-
+  Read-only research for REQ-WEB-012 using the deployed Lambda, the EventBridge rule and Athena over the CloudFront logs (2026-11-07 to 2026-11-21).
+
+  1. Pipeline: the deployed forkzero-daily-analytics Lambda is byte-identical to infra/analytics-report/index.mjs (now committed); schedule cron(0 10 * * ? *) is enabled and reports the previous UTC day. The cloudfront_logs table has no partitions, so each of the 8 daily queries scans the whole log history (47 MB, ~29k objects, ~0.5M rows since 2026-03-01): negligible cost today; add partition projection if logs pass ~1 GB. Top pages are LIMIT 10 over non-asset paths, so low-volume routes such as the installer never appear.
+
+  2. Installer: zero /lattice/install.* requests on 2026-11-20 UTC. The integration test runs landed at 05:31 and 05:49 UTC on 2026-11-21 (each run: one install.sh GET with curl/8.18.0 and one install.ps1 GET with a Windows PowerShell user agent, from different edges), plus manual curl checks from a single macOS client. The report groups by UTC day, so the runs fall in the next day's email. Tests are only distinguishable by user agent heuristics today.
+
+  3. Noise: on 2026-11-20, 35 of 160 IPs sent 2,317 of 2,803 requests (83%) and received almost only errors; 7 IPs sent 2,178. 98% of probe requests came from 15 IPs in four hosting networks (Google Cloud, TC Datacenter LT, TechTies BG, Tencent SG). The 05-06 UTC burst was one scanner (446 requests to 444 paths in 75 s at 05:49) plus a coordinated group of four IPs at 06:17; the 07h and 21h spikes were a single IP (1,232 requests over the day). Every day of the prior two weeks looks the same: probe IPs sent 60-95% of requests while real HTML page views held at 75-150 per day from roughly 63-104 IPs. Nothing sensitive was served: since the 404 page went live (2026-03-21) probe paths only received 301 (HTTP to HTTPS, or trailing slash), 404 or aborted responses; the 14,409 earlier 200s were the old SPA fallback serving index.html (at most 5 KB of HTML). No .env or .git content exists in the site bucket.
+
+  4. Recommended report shape: classify a request as a probe when its IP had more than half its requests answered 4xx that UTC day. Report one line 'Probes: N reqs from M IPs (K networks)' and compute top pages, user agents, referrers and cache hit rate over non-probe requests only. Add 'Page views: N (V visitors)' from 200 text/html responses, a key-routes line (/, /blog, /blog/*, /lattice/getting-started, /reader) and an installer line (install.sh / install.ps1 counts, tests broken out). Have the installer tests send a distinctive user agent (e.g. lattice-install-test/<version>) rather than a query string, so caching is unaffected and the report can subtract them.
+
+  5. Edge blocking: not recommended now. Probe traffic is ~2-4k requests/day, costing well under $1/month at CloudFront and S3 request prices, while AWS WAF starts around $5/month per web ACL plus $1 per rule or managed group and $0.60 per million requests. Requests blocked at the edge still appear in CloudFront standard logs, so blocking would not clean the report; the report-side classification is needed either way. A CloudFront Function deny list (free, the function already runs) would only save S3 lookups and would not cover the lattice/* behavior. Revisit if probe volume grows by orders of magnitude or anything starts returning 2xx to probe paths.
+status: active
+version: 1.0.0
+created_at: 2026-11-21T15:08:09.204833+00:00
+created_by: agent:claude-opus-5-5
+requested_by: George Moon <george.moon@gmail.com>
+meta:
+  reliability: industry
+  retrieved_at: 2026-11-21
