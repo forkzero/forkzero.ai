@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { products, getProduct, getProductByGettingStartedPath } from './products'
-import { projects } from './projects'
+import { projects, productToProject } from './projects'
 import { blogPosts } from './blog-posts'
 
 describe('product registry', () => {
@@ -38,6 +38,13 @@ describe('homepage projects', () => {
   it('leads with the homepage products, in registry order', () => {
     const homepageProducts = products.filter((p) => p.showOnHomepage).map((p) => p.name)
     expect(projects.slice(0, homepageProducts.length).map((p) => p.name)).toEqual(homepageProducts)
+  })
+
+  it('falls back to the Getting Started page and no tech tags when a product has no repo or tech', () => {
+    const lattice = getProduct('lattice')!
+    const card = productToProject({ ...lattice, repoUrl: undefined, tech: undefined })
+    expect(card.url).toBe('https://forkzero.ai/lattice/getting-started')
+    expect(card.tech).toEqual([])
   })
 
   it('keeps the other open-source projects', () => {

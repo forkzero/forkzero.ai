@@ -17,7 +17,7 @@ export interface Project {
   readerUrl?: string
 }
 
-function productToProject(p: Product): Project {
+export function productToProject(p: Product): Project {
   return {
     name: p.name,
     tagline: p.tagline,
