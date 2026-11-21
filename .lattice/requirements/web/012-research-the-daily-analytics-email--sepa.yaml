@@ -1,0 +1,30 @@
+id: REQ-WEB-012
+type: requirement
+title: 'Research the daily analytics email: separate scanner noise from real traffic, and account for installer downloads'
+body: |-
+  Research the forkzero.ai daily analytics email (SNS topic forkzero-daily-analytics, built from the site's CloudFront traffic) and recommend how to make it show real use rather than internet background noise. Findings and a recommendation are the deliverable; no change to the report until they are reviewed.
+
+  Prompted by: on 2026-11-20 the report showed 2803 requests with 2451 (87%) answered 4xx, a 5% cache hit rate (2458 'Error' results), and a burst at 05-06 UTC. Its top pages were almost all vulnerability probes: /wp-admin/install.php (a WordPress setup page; the site is not WordPress), /.env, /.env.production, /.env.local, /.env.dev, /.env.prod, /backend/.env, /.git/config, and /api/session/properties (no such route is known). A 'WP-Safe-S...' user agent made 77 requests. Integration tests of the Lattice installer ran that day and did not appear: the installer is https://forkzero.ai/lattice/install.sh, and the top-pages list stops at 9 hits, so a few test downloads fall below the cut-off.
+
+  Questions to answer:
+  1. How the report is built: infra/setup-analytics.sh in this repo (untracked as of 2026-11-21, so on one machine only) creates the SNS topic, an IAM role, a Lambda and a daily EventBridge rule, with Athena over the CloudFront logs bucket. Check the deployed Lambda matches the script, and how it ranks pages, agents and bots; recommend committing the script.
+  2. The installer: how many requests /lattice/install.sh received on 2026-11-20, from where and when, and whether they match the test runs; whether the tests should mark themselves (a user agent or query parameter) so they can be told apart from real installs.
+  3. The noise: what share of each day is error-only probing (paths that do not exist answered 4xx), whether it comes from a few IPs or ASNs, and whether the 05-06 UTC burst is one scanner. Confirm every probe was answered 4xx and nothing was served (no .env or .git content exists in the bucket).
+  4. The report's shape: propose separating probes from real traffic (for example a one-line 'blocked probes: N from M IPs' count, and top pages, user agents and cache hit rate over non-probe requests only), and adding a line for installer downloads and other key routes (/, /blog, /getting-started, /reader).
+  5. Whether to block at the edge: weigh a CloudFront Function or AWS WAF managed rule for common probe paths (cost, false positives, effect on the logs) against leaving them as cheap 4xx.
+
+  Constraints: read-only access to logs and AWS while researching; no personal data or account identifiers written into this lattice; any change to the report or the edge comes later as its own requirement.
+status: draft
+version: 1.0.1
+created_at: 2026-11-21T13:42:29.345856+00:00
+created_by: agent:claude
+priority: P2
+category: WEB
+tags:
+- analytics
+- research
+- cloudfront
+edges:
+  derives_from:
+  - target: THX-AI-FIRST-TOOLING
+    version: 1.0.0
